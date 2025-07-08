@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/extensions/theme_context_extension.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_view.dart';
+import 'package:mobile_app/ui/views/investment/investment_view.dart';
+import 'package:mobile_app/ui/views/profile/profile_view.dart';
+import 'package:mobile_app/ui/views/saving/saving_view.dart';
 import 'package:stacked/stacked.dart';
 
 import 'bottom_nav_viewmodel.dart';
@@ -13,73 +18,64 @@ class BottomNavView extends StackedView<BottomNavViewModel> {
     BottomNavViewModel viewModel,
     Widget? child,
   ) {
-    return Scaffold(bottomNavigationBar: _buildBottomNavigationBar());
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        border: Border(
-          top: BorderSide(
-            color: Colors.grey[800]!,
-            width: 1,
+    return Scaffold(
+      body: AnimatedSwitcher(
+          switchInCurve: Curves.easeInOutQuad,
+          duration: const Duration(milliseconds: 300),
+          child: _getViewForIndex(viewModel.currentIndex)),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: context.dividerColor, // Or use a color from your theme
+              width: 1, // Thin line
+            ),
           ),
         ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildNavItem(
-            icon: Icons.home,
-            label: 'Dashboard',
-            isActive: true,
-          ),
-          _buildNavItem(
-            icon: Icons.savings_outlined,
-            label: 'Savings',
-            isActive: false,
-          ),
-          _buildNavItem(
-            icon: Icons.trending_up,
-            label: 'Invest',
-            isActive: false,
-          ),
-          _buildNavItem(
-            icon: Icons.person_outline,
-            label: 'Profile',
-            isActive: false,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required IconData icon,
-    required String label,
-    required bool isActive,
-  }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isActive ? const Color(0xFF8B5CF6) : Colors.grey[400],
-          size: 24,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: GoogleFonts.inter(
+        child: BottomNavigationBar(
+          currentIndex: viewModel.currentIndex,
+          type: BottomNavigationBarType.fixed,
+          onTap: viewModel.setIndex,
+          backgroundColor: context.cardColor,
+          selectedItemColor: context.navBarSelected,
+          unselectedItemColor: context.navBarUnselected,
+          unselectedLabelStyle: GoogleFonts.inter(
+            color: context.tabSelectedColor,
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: isActive ? const Color(0xFF8B5CF6) : Colors.grey[400],
           ),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.savings_outlined),
+              label: 'Savings',
+            ),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.trending_up), label: 'Invest'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'Profile',
+            ),
+          ],
         ),
-      ],
+      ),
     );
+  }
+
+  Widget _getViewForIndex(int index) {
+    switch (index) {
+      case 0:
+        return const DashboardView();
+      case 1:
+        return const SavingView();
+      case 2:
+        return const InvestmentView();
+      default:
+        return const ProfileView();
+    }
   }
 
   @override

@@ -16,45 +16,41 @@ class DashboardView extends StackedView<DashboardViewModel> {
     Widget? child,
   ) {
     return Scaffold(
-      backgroundColor: context.backgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                //Header section
-                _buildHeader(context),
-                SizedBox(
-                  height: 30,
-                ),
+        backgroundColor: context.backgroundColor,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //Header section
+                  _buildHeader(context),
+                  SizedBox(height: 30),
 
-                //Balance card
-                _buildBalanceCard(context),
-                SizedBox(height: 30),
+                  //Balance card
+                  _buildBalanceCard(context),
+                  SizedBox(height: 30),
 
-                //Action Buttons
-                _buildActionButtons(),
-                SizedBox(height: 30),
+                  //Action Buttons
+                  _buildActionButtons(context),
+                  SizedBox(height: 30),
 
-                //Interest Earnings chat
-                _buildInterestEarningsChart(),
-                SizedBox(height: 30),
+                  //Interest Earnings chart
+                  _buildInterestEarningsChart(context),
+                  SizedBox(height: 30),
 
-                //Navigation Buttons
-                _buildNavigationButtons(),
-                SizedBox(height: 30),
+                  //Navigation Buttons
+                  _buildNavigationButtons(context),
+                  SizedBox(height: 30),
 
-                //Savings Goal
-                _buildSavingsGoal()
-              ],
+                  //Savings Goal
+                  _buildSavingsGoal(context)
+                ],
+              ),
             ),
           ),
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
-    );
+        ));
   }
 
   Widget _buildHeader(BuildContext context) {
@@ -88,8 +84,11 @@ class DashboardView extends StackedView<DashboardViewModel> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[800],
+                color: context.cardColor,
                 borderRadius: BorderRadius.circular(30),
+                border: context.isDarkMode
+                    ? Border.all(color: context.cardBorder)
+                    : null,
               ),
               child: Center(
                 child: Icon(
@@ -141,13 +140,13 @@ class DashboardView extends StackedView<DashboardViewModel> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: AppColors.walletAddressBg,
                   borderRadius: BorderRadius.circular(28),
                 ),
                 child: Center(
                   child: Icon(
                     Icons.account_balance_wallet_outlined,
-                    color: context.primaryTextColor,
+                    color: Colors.white,
                     size: 25,
                   ),
                 ),
@@ -155,27 +154,35 @@ class DashboardView extends StackedView<DashboardViewModel> {
             ],
           ),
           Text(
-            '\$10,000.00',
+            '\$24,567.89',
             style: GoogleFonts.poppins(
                 fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
           ),
-          const SizedBox(height: 10),
-          Row(
+          const SizedBox(width: 8),
+        Row(
             children: [
               Text(
                 'Wallet:',
                 style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: context.walletTextColor),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: context.walletTextColor,
+                ),
               ),
               const SizedBox(width: 8),
-              Text(
-                '0xCEER...h47B',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.walletAddressBg,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '0xCEER...h47B',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -191,63 +198,80 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(BuildContext context) {
     return Row(
       children: [
         _buildActionButton(
+          context: context,
           icon: Icons.arrow_downward,
           label: 'Deposit',
-          color: const Color(0xFF10B981),
+          backgroundColor: context.cardColor,
+          iconColor: context.depositIconColor,
         ),
         const SizedBox(width: 16),
         _buildActionButton(
+          context: context,
           icon: Icons.savings_outlined,
           label: 'Save',
-          color: const Color(0xFF3B82F6),
+          backgroundColor: context.cardColor,
+          iconColor: context.saveIconColor,
         ),
         const SizedBox(width: 16),
         _buildActionButton(
+          context: context,
           icon: Icons.arrow_upward,
           label: 'Withdraw',
-          color: const Color(0xFF8B5CF6),
+          backgroundColor: context.cardColor,
+          iconColor: context.withdrawIconColor,
         ),
       ],
     );
   }
 
   Widget _buildActionButton({
+    required BuildContext context,
     required IconData icon,
     required String label,
-    required Color color,
+    required Color backgroundColor,
+    required Color iconColor,
   }) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 28, 28, 28),
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(16),
+          boxShadow: context.isDarkMode
+              ? null
+              : [
+                  BoxShadow(
+                    color: context.cardShadow,
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         child: Column(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
+                color: iconColor.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                color: color,
-                size: 24,
+                color: iconColor,
+                size: 20,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               label,
               style: GoogleFonts.inter(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Colors.white,
+                color: context.primaryTextColor,
               ),
             ),
           ],
@@ -256,19 +280,24 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildInterestEarningsChart() {
+  Widget _buildInterestEarningsChart(BuildContext context) {
     List<double> weeklyData = [0.7, 0.9, 0.6, 1.0, 0.8, 0.7, 0.9];
     List<String> days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 28, 28, 28),
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(20),
-        // border: Border.all(
-        //   color: Colors.grey[800]!,
-        //   width: 1,
-        // ),
+        boxShadow: context.isDarkMode
+            ? null
+            : [
+                BoxShadow(
+                  color: context.cardShadow,
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,9 +311,9 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   Text(
                     'Interest Earnings',
                     style: GoogleFonts.inter(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: context.primaryTextColor,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -293,7 +322,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: Colors.grey[400],
+                      color: context.secondaryTextColor,
                     ),
                   ),
                 ],
@@ -306,7 +335,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                     style: GoogleFonts.poppins(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF10B981),
+                      color: context.successColor,
                     ),
                   ),
                   Text(
@@ -314,7 +343,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
-                      color: Colors.grey[400],
+                      color: context.secondaryTextColor,
                     ),
                   ),
                 ],
@@ -333,20 +362,14 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
-                      width: 24,
+                      width: 20,
                       height: weeklyData[index] * 90,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            Color(0xFF8B5CF6),
-                            Color(0xFFBB85FF),
-                          ],
+                        gradient: context.chartBarGradient,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
                         ),
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12)),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -355,7 +378,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
-                        color: Colors.grey[400],
+                        color: context.secondaryTextColor,
                       ),
                     ),
                   ],
@@ -367,9 +390,9 @@ class DashboardView extends StackedView<DashboardViewModel> {
           Text(
             'Total Earned: \$99.00',
             style: GoogleFonts.inter(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF10B981),
+              color: context.successColor,
             ),
           ),
         ],
@@ -377,11 +400,11 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildNavigationButtons() {
+  Widget _buildNavigationButtons(BuildContext context) {
     return Container(
       height: 55,
       decoration: BoxDecoration(
-        color: Color(0xFF2D2D2D),
+        color: context.tabBackground,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -389,11 +412,11 @@ class DashboardView extends StackedView<DashboardViewModel> {
           // Milestones Tab (Active)
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(left: 5),
+              padding: const EdgeInsets.all(4),
               child: Container(
-                height: 45,
+                height: 47,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 18, 17, 17),
+                  color: context.cardColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -401,14 +424,14 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   children: [
                     Icon(
                       Icons.emoji_events_outlined,
-                      color: Color(0xFF8B5CF6),
+                      color: context.tabSelectedColor,
                       size: 18,
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text(
                       'Milestones',
-                      style: TextStyle(
-                        color: Color(0xFF8B5CF6),
+                      style: GoogleFonts.inter(
+                        color: context.tabSelectedColor,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -420,27 +443,24 @@ class DashboardView extends StackedView<DashboardViewModel> {
           ),
           // Transactions Tab (Inactive)
           Expanded(
-            child: Container(
-              margin: EdgeInsets.all(4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.format_list_bulleted,
-                    color: Color(0xFF666666),
-                    size: 18,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.format_list_bulleted,
+                  color: context.tabUnselectedColor,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Transactions',
+                  style: GoogleFonts.inter(
+                    color: context.tabUnselectedColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
-                  SizedBox(width: 8),
-                  Text(
-                    'Transactions',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -448,27 +468,33 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildSavingsGoal() {
+  Widget _buildSavingsGoal(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 28, 28, 28),
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          width: 1,
-        ),
+        boxShadow: context.isDarkMode
+            ? null
+            : [
+                BoxShadow(
+                  color: context.cardShadow,
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.amber.withOpacity(0.2),
+              color: context.goldColor.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.star_outline,
-              color: Colors.amber,
+              color: context.goldColor,
               size: 24,
             ),
           ),
@@ -482,7 +508,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   style: GoogleFonts.inter(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: context.primaryTextColor,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -491,15 +517,15 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: Colors.grey[400],
+                    color: context.secondaryTextColor,
                   ),
                 ),
                 const SizedBox(height: 12),
                 LinearProgressIndicator(
                   value: 0.85,
-                  backgroundColor: Colors.grey[700],
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                    Color(0xFF8B5CF6),
+                  backgroundColor: context.progressBarInactiveColor,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    AppColors.progressBarActive,
                   ),
                 ),
               ],
@@ -507,72 +533,6 @@ class DashboardView extends StackedView<DashboardViewModel> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        border: Border(
-          top: BorderSide(
-            color: Colors.grey[800]!,
-            width: 1,
-          ),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildNavItem(
-            icon: Icons.home,
-            label: 'Dashboard',
-            isActive: true,
-          ),
-          _buildNavItem(
-            icon: Icons.savings_outlined,
-            label: 'Savings',
-            isActive: false,
-          ),
-          _buildNavItem(
-            icon: Icons.trending_up,
-            label: 'Invest',
-            isActive: false,
-          ),
-          _buildNavItem(
-            icon: Icons.person_outline,
-            label: 'Profile',
-            isActive: false,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required IconData icon,
-    required String label,
-    required bool isActive,
-  }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isActive ? const Color(0xFF8B5CF6) : Colors.grey[400],
-          size: 24,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: isActive ? const Color(0xFF8B5CF6) : Colors.grey[400],
-          ),
-        ),
-      ],
     );
   }
 

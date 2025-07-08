@@ -14,73 +14,63 @@ class ProfileView extends StackedView<ProfileViewModel> {
     Widget? child,
   ) {
     return Scaffold(
-      backgroundColor: context.backgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            //Main Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Profile Header
-                    _buildProfileHeader(),
-                    const SizedBox(height: 32),
-                    
-                    // Statistics Section
-                    _buildStatisticsSection(),
-                    const SizedBox(height: 32),
-                    
-                    // Achievements Section
-                    _buildAchievementsSection(),
-                    const SizedBox(height: 32),
-                    
-                    // Wallet Address Section
-                    _buildWalletAddressSection(),
-                    const SizedBox(height: 24),
-                    
-                    // Privacy Section
-                    _buildPrivacySection(),
-                    const SizedBox(height: 16),
-                    
-                    // Log Out Section
-                    _buildLogOutSection(),
-                  ],
-                )
+        backgroundColor: context.backgroundColor,
+        body: SafeArea(
+          child: Column(
+            children: [
+              //Main Content
+              Expanded(
+                child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Profile Header
+                        _buildProfileHeader(context),
+                        const SizedBox(height: 32),
+
+                        // Statistics Section
+                        _buildStatisticsSection(context),
+                        const SizedBox(height: 32),
+
+                        // Achievements Section
+                        _buildAchievementsSection(context),
+                        const SizedBox(height: 32),
+
+                        // Wallet Address Section
+                        _buildWalletAddressSection(context),
+                        const SizedBox(height: 24),
+
+                        // Privacy Section
+                        _buildPrivacySection(context),
+                        const SizedBox(height: 16),
+
+                        // Log Out Section
+                        _buildLogOutSection(context),
+                      ],
+                    )),
               ),
-            ),
-          ],
-        ),
-      )
-    );
+            ],
+          ),
+        ));
   }
 
-
-    Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(BuildContext context) {
     return Row(
       children: [
         // Profile Avatar
         Container(
           width: 60,
           height: 60,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF9F7AEA),
-                Color(0xFF667EEA),
-              ],
-            ),
+          decoration: BoxDecoration(
+            gradient: context.balanceCardGradient,
             shape: BoxShape.circle,
           ),
-          child: const Center(
+          child: Center(
             child: Text(
               'US',
               style: TextStyle(
-                color: Colors.white,
+                color: context.primaryTextColor,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
               ),
@@ -88,33 +78,33 @@ class ProfileView extends StackedView<ProfileViewModel> {
           ),
         ),
         const SizedBox(width: 16),
-        
+
         // Profile Info
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Uchechukwu Solomon',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: context.primaryTextColor,
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   letterSpacing: -0.3,
                 ),
               ),
-              const Text(
+              Text(
                 'solomonu928@gmail.com',
                 style: TextStyle(
-                  color: Color(0xFF8B8B8B),
+                  color: context.secondaryTextColor,
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              const Text(
+              Text(
                 'FlowCoin Member',
                 style: TextStyle(
-                  color: Color(0xFF667EEA),
+                  color: context.tabSelectedColor,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -126,77 +116,86 @@ class ProfileView extends StackedView<ProfileViewModel> {
     );
   }
 
-  Widget _buildStatisticsSection() {
+  Widget _buildStatisticsSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Statistics',
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
+            color: context.primaryTextColor,
+            fontSize: 18,
             fontWeight: FontWeight.w600,
             letterSpacing: -0.3,
           ),
         ),
         const SizedBox(height: 16),
-        
+
         // Statistics Cards
         Row(
           children: [
             // Day Streak Card
             Expanded(
               child: _buildStatCard(
+                context,
                 icon: Icons.local_fire_department_outlined,
                 iconColor: const Color(0xFFFF8A65),
                 value: '47',
                 label: 'Day Streak',
-                backgroundColor: const Color(0xFF1F1F1F),
               ),
             ),
             const SizedBox(width: 16),
-            
+
             // FlowCoins Card
             Expanded(
               child: _buildStatCard(
+                context,
                 icon: Icons.monetization_on_outlined,
-                iconColor: const Color(0xFF9F7AEA),
+                iconColor: context.tabSelectedColor,
                 value: '2,847',
                 label: 'FlowCoins',
-                backgroundColor: const Color(0xFF1F1F1F),
               ),
             ),
           ],
         ),
         const SizedBox(height: 16),
-        
+
         // Total Returns Card
         _buildStatCard(
+          context,
           icon: Icons.trending_up_rounded,
-          iconColor: const Color(0xFF10B981),
+          iconColor: context.successColor,
           value: '\$1,247.83',
           label: 'Total Returns This Year',
-          backgroundColor: const Color(0xFF1F1F1F),
           isWide: true,
         ),
       ],
     );
   }
 
-  Widget _buildStatCard({
+  Widget _buildStatCard(
+    BuildContext context, {
     required IconData icon,
     required Color iconColor,
     required String value,
     required String label,
-    required Color backgroundColor,
     bool isWide = false,
   }) {
     return Container(
       width: isWide ? double.infinity : null,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 28, 28, 28),
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: context.isDarkMode
+            ? null
+            : [
+                BoxShadow(
+                  color: context.cardShadow,
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: Row(
         children: [
@@ -220,8 +219,8 @@ class ProfileView extends StackedView<ProfileViewModel> {
               children: [
                 Text(
                   value,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: context.primaryTextColor,
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.5,
@@ -229,8 +228,8 @@ class ProfileView extends StackedView<ProfileViewModel> {
                 ),
                 Text(
                   label,
-                  style: const TextStyle(
-                    color: Color(0xFF8B8B8B),
+                  style: TextStyle(
+                    color: context.secondaryTextColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
@@ -243,53 +242,62 @@ class ProfileView extends StackedView<ProfileViewModel> {
     );
   }
 
-  Widget _buildAchievementsSection() {
+  Widget _buildAchievementsSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Achievements',
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
+            color: context.primaryTextColor,
+            fontSize: 18,
             fontWeight: FontWeight.w600,
             letterSpacing: -0.3,
           ),
         ),
         const SizedBox(height: 16),
-        
+
         // Achievement Cards
         Row(
           children: [
             // First Save Achievement
             Expanded(
               child: _buildAchievementCard(
+                context,
                 icon: Icons.savings_outlined,
-                iconColor: const Color(0xFFFFB74D),
+                iconColor: context.goldColor,
                 title: 'First Save',
-                backgroundColor: const Color(0xFF2D2416),
+                backgroundColor: context.isDarkMode
+                    ? const Color(0xFF2D2416)
+                    : const Color(0xFFFFF8E1),
               ),
             ),
             const SizedBox(width: 12),
-            
+
             // Goal Master Achievement
             Expanded(
               child: _buildAchievementCard(
+                context,
                 icon: Icons.trending_up_rounded,
-                iconColor: const Color(0xFF10B981),
+                iconColor: context.successColor,
                 title: 'Goal Master',
-                backgroundColor: const Color(0xFF0F2419),
+                backgroundColor: context.isDarkMode
+                    ? const Color(0xFF0F2419)
+                    : const Color(0xFFE8F5E8),
               ),
             ),
             const SizedBox(width: 12),
-            
+
             // Investor Achievement
             Expanded(
               child: _buildAchievementCard(
+                context,
                 icon: Icons.show_chart_rounded,
-                iconColor: const Color(0xFF9F7AEA),
+                iconColor: context.tabSelectedColor,
                 title: 'Investor',
-                backgroundColor: const Color(0xFF251B2E),
+                backgroundColor: context.isDarkMode
+                    ? const Color(0xFF251B2E)
+                    : const Color(0xFFF3E5F5),
               ),
             ),
           ],
@@ -298,18 +306,18 @@ class ProfileView extends StackedView<ProfileViewModel> {
     );
   }
 
-  Widget _buildAchievementCard({
+  Widget _buildAchievementCard(
+    BuildContext context, {
     required IconData icon,
     required Color iconColor,
     required String title,
     required Color backgroundColor,
   }) {
     return Container(
-      padding: const EdgeInsets.only(left: 10, right: 10, top: 9, bottom: 9),
+      padding: const EdgeInsets.only(left: 10, right: 10, top: 12, bottom: 12),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
-
       ),
       child: Column(
         children: [
@@ -318,7 +326,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
             color: iconColor,
             size: 20,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
             title,
             style: TextStyle(
@@ -333,12 +341,21 @@ class ProfileView extends StackedView<ProfileViewModel> {
     );
   }
 
-  Widget _buildWalletAddressSection() {
+  Widget _buildWalletAddressSection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 28, 28, 28),
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
+        boxShadow: context.isDarkMode
+            ? null
+            : [
+                BoxShadow(
+                  color: context.cardShadow,
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: Row(
         children: [
@@ -346,19 +363,19 @@ class ProfileView extends StackedView<ProfileViewModel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Wallet Address',
                   style: TextStyle(
-                    color: Color(0xFF8B8B8B),
+                    color: context.secondaryTextColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   '0xCEER...h47B',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: context.primaryTextColor,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5,
@@ -371,12 +388,12 @@ class ProfileView extends StackedView<ProfileViewModel> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFF2A2A2A),
+              color: context.actionButtonBackground,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.copy_outlined,
-              color: Color(0xFF667EEA),
+              color: context.tabSelectedColor,
               size: 20,
             ),
           ),
@@ -385,26 +402,35 @@ class ProfileView extends StackedView<ProfileViewModel> {
     );
   }
 
-  Widget _buildPrivacySection() {
+  Widget _buildPrivacySection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 28, 28, 28),
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
+        boxShadow: context.isDarkMode
+            ? null
+            : [
+                BoxShadow(
+                  color: context.cardShadow,
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
-      child: const Row(
+      child: Row(
         children: [
           Icon(
             Icons.security_outlined,
-            color: Color(0xFF8B8B8B),
+            color: context.secondaryTextColor,
             size: 24,
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Text(
               'Privacy',
               style: TextStyle(
-                color: Colors.white,
+                color: context.primaryTextColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
@@ -412,7 +438,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
           ),
           Icon(
             Icons.arrow_forward_ios,
-            color: Color(0xFF8B8B8B),
+            color: context.secondaryTextColor,
             size: 16,
           ),
         ],
@@ -420,12 +446,21 @@ class ProfileView extends StackedView<ProfileViewModel> {
     );
   }
 
-  Widget _buildLogOutSection() {
+  Widget _buildLogOutSection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 28, 28, 28),
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
+        boxShadow: context.isDarkMode
+            ? null
+            : [
+                BoxShadow(
+                  color: context.cardShadow,
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: const Row(
         children: [
@@ -448,12 +483,9 @@ class ProfileView extends StackedView<ProfileViewModel> {
     );
   }
 
-  
-
   @override
   ProfileViewModel viewModelBuilder(
     BuildContext context,
   ) =>
       ProfileViewModel();
 }
-

@@ -8,6 +8,7 @@ import 'package:mobile_app/ui/views/dashboard/dashboard_view.dart';
 import 'package:mobile_app/ui/views/bottom_nav/bottom_nav_view.dart';
 import 'package:mobile_app/ui/views/investment/investment_view.dart';
 import 'package:mobile_app/ui/views/profile/profile_view.dart';
+import 'package:mobile_app/ui/views/saving/saving_view.dart';
 // @stacked-import
 
 @StackedApp(
@@ -18,6 +19,7 @@ import 'package:mobile_app/ui/views/profile/profile_view.dart';
     MaterialRoute(page: BottomNavView),
     MaterialRoute(page: InvestmentView),
     MaterialRoute(page: ProfileView),
+    MaterialRoute(page: SavingView),
 // @stacked-route
   ],
   dependencies: [

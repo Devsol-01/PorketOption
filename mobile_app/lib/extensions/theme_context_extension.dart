@@ -1,50 +1,96 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/ui/common/app_colors.dart';
 
-import '../ui/common/app_colors.dart' as AppColors;
-
+// ============================================================================
+// THEME EXTENSION CLASS
+// ============================================================================
 extension ThemeContextExtension on BuildContext {
   // Check if dark mode is active
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
 
   // Background color for scaffold or full pages
   Color get backgroundColor =>
-      isDarkMode ? AppColors.darkBackground : AppColors.lightBackground;
+      isDarkMode ? darkBackground : lightBackground;
 
   // Card color
-  Color get cardColor => isDarkMode ? AppColors.darkCard : AppColors.lightCard;
+  Color get cardColor => isDarkMode ? darkCard : lightCard;
 
   // Primary text (e.g., headings)
   Color get primaryTextColor =>
-      isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+      isDarkMode ? darkTextPrimary : lightTextPrimary;
 
   // Secondary text (e.g., smaller labels)
   Color get secondaryTextColor =>
-      isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+      isDarkMode ? darkTextSecondary : lightTextSecondary;
 
   // Tab background (the container for Milestones/Transactions toggle)
   Color get tabBackground =>
-      isDarkMode ? AppColors.darkTabBackground : AppColors.lightTabBackground;
+      isDarkMode ? darkTabBackground : lightTabBackground;
 
   // Tab unselected icon/text
-  Color get tabUnselectedColor => AppColors.tabUnselected;
+  Color get tabUnselectedColor => tabUnselected;
 
   // Tab selected icon/text
-  Color get tabSelectedColor => AppColors.tabSelected;
+  Color get tabSelectedColor => tabSelected;
 
-  // Buttons like "Save", "Deposit"
+  // Action buttons backgrounds
+  Color get depositButtonBg => isDarkMode ? darkDepositButtonBg : lightDepositButtonBg;
+  Color get saveButtonBg => isDarkMode ? darkSaveButtonBg : lightSaveButtonBg;
+  Color get withdrawButtonBg => isDarkMode ? darkWithdrawButtonBg : lightWithdrawButtonBg;
+
+  // Action button icons
+  Color get depositIconColor => isDarkMode ? darkDepositIcon : lightDepositIcon;
+  Color get saveIconColor => isDarkMode ? darkSaveIcon : lightSaveIcon;
+  Color get withdrawIconColor => isDarkMode ? darkWithdrawIcon : lightWithdrawIcon;
+
+  // General action button background
   Color get actionButtonBackground => isDarkMode
-      ? AppColors.darkButtonBackground
-      : AppColors.lightButtonBackground;
+      ? darkButtonBackground
+      : lightButtonBackground;
+
+  // Card shadows and borders
+  Color get cardShadow => isDarkMode ? transparent : lightCardShadow;
+  Color get cardBorder => isDarkMode ? darkCardBorder : transparent;
+
+  // Dividers
+  Color get dividerColor => isDarkMode ? dividerDark : dividerLight;
+
+  // Chart background
+  Color get chartBackground => isDarkMode ? chartBackgroundDark : chartBackgroundLight;
+
+  // Progress bar
+  Color get progressBarInactiveColor => isDarkMode ? progressBarInactive : progressBarInactiveLight;
+
+  // Navigation colors
+  Color get navBarSelected => isDarkMode ? navBarSelectedDark : navBarSelectedLight;
+  Color get navBarUnselected => isDarkMode ? navBarUnselectedDark : navBarUnselectedLight;
 
   // Green success color
-  Color get successColor => AppColors.green;
+  Color get successColor => green;
 
   // Milestone gold
-  Color get goldColor => AppColors.gold;
+  Color get goldColor => gold;
 
   // Wallet subtitle text
-  Color get walletTextColor => AppColors.lilac;
+  Color get walletTextColor => lilac;
 
   // Transparent
-  Color get transparent => AppColors.transparent;
+  Color get transparent => transparent;
+
+  // Balance card gradient
+  LinearGradient get balanceCardGradient => const LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [balanceGradientStart, balanceGradientEnd],
+  );
+
+  // Chart bar gradient
+  LinearGradient get chartBarGradient => LinearGradient(
+    begin: Alignment.bottomCenter,
+    end: Alignment.topCenter,
+    colors: [
+      chartBarColor.withOpacity(0.6),
+      chartBarColor,
+    ],
+  );
 }

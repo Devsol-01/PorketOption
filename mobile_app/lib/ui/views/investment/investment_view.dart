@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:stacked/stacked.dart';
 
@@ -25,12 +26,12 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Header
-                        const Text(
+                        Text(
                           'My Investments',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
+                          style: GoogleFonts.inter(
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
+                            color: context.primaryTextColor,
                           ),
                         ),
                         SizedBox(height: 24),
@@ -42,13 +43,12 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'Vetted Opportunities',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: -0.3,
+                              style: GoogleFonts.inter(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: context.primaryTextColor,
                               ),
                             ),
                             Row(
@@ -80,18 +80,21 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                             scrollDirection: Axis.horizontal,
                             children: [
                               _buildOpportunityCard(
+                                context,
                                 returnPercentage: '19.5',
                                 investorsCount: '1260',
                                 title: 'Crypto Portfolio',
                                 description: '19.5% • returns in 6\nmonths',
                               ),
                               _buildOpportunityCard(
+                                context,
                                 returnPercentage: '17.0',
                                 investorsCount: '890',
                                 title: 'DeFi Yield Farming',
                                 description: '17.0% • returns in 3\nmonths',
                               ),
                               _buildOpportunityCard(
+                                context,
                                 returnPercentage: '21.0',
                                 investorsCount: '750',
                                 title: 'Staking',
@@ -104,11 +107,11 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                         const SizedBox(height: 32),
 
                         // Active/Matured Toggle
-                        _buildToggleSection(),
+                        _buildToggleSection(context),
                         const SizedBox(height: 55),
 
                         // Active Investments Section
-                        _buildActiveInvestmentsSection(),
+                        _buildActiveInvestmentsSection(context),
                       ])))
         ])));
   }
@@ -166,7 +169,8 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
     );
   }
 
-  Widget _buildOpportunityCard({
+  Widget _buildOpportunityCard(
+    BuildContext context, {
     required String returnPercentage,
     required String investorsCount,
     required String title,
@@ -175,11 +179,20 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
   }) {
     return Container(
       width: 200,
-      margin: EdgeInsets.only(right: isLast ? 0 : 16),
+      margin: EdgeInsets.only(right: isLast ? 0 : 18),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 28, 28, 28),
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
+        boxShadow: context.isDarkMode
+            ? null
+            : [
+                BoxShadow(
+                  color: context.cardShadow,
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +216,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Return Percentage Circle
           Container(
             width: 60,
@@ -224,7 +237,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
             ),
           ),
           const SizedBox(height: 14),
-          
+
           // Investors Count
           Text(
             'INVESTORS: $investorsCount',
@@ -236,7 +249,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
             ),
           ),
           const SizedBox(height: 6),
-          
+
           // Title
           Text(
             title,
@@ -248,7 +261,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
             ),
           ),
           const SizedBox(height: 4),
-          
+
           // Description
           Flexible(
             child: Text(
@@ -268,11 +281,11 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
     );
   }
 
-  Widget _buildToggleSection() {
+  Widget _buildToggleSection(BuildContext context) {
     return Container(
       height: 55,
       decoration: BoxDecoration(
-        color: Color(0xFF2D2D2D),
+        color: context.tabBackground,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -280,20 +293,21 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
           // Milestones Tab (Active)
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(left: 5),
+              padding: const EdgeInsets.all(4),
               child: Container(
-                height: 45,
+                height: 47,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 18, 17, 17),
+                  color: context.cardColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const SizedBox(width: 8),
                     Text(
                       'Active',
-                      style: TextStyle(
-                        color: Color(0xFF8B5CF6),
+                      style: GoogleFonts.inter(
+                        color: context.tabSelectedColor,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -305,22 +319,19 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
           ),
           // Transactions Tab (Inactive)
           Expanded(
-            child: Container(
-              margin: EdgeInsets.all(4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(width: 8),
-                  Text(
-                    'Matured',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(width: 8),
+                Text(
+                  'Matured',
+                  style: GoogleFonts.inter(
+                    color: context.tabUnselectedColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -328,20 +339,16 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
     );
   }
 
-  Widget _buildActiveInvestmentsSection() {
+  Widget _buildActiveInvestmentsSection(BuildContext context) {
     return Center(
       child: Column(
         children: [
           Container(
             width: 60,
             height: 60,
-
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 28, 28, 28),
+              color: context.tabBackground,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                width: 1,
-              ),
             ),
             child: Center(
               child: const Icon(
@@ -356,8 +363,8 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
             'No active investments yet',
             style: TextStyle(
               color: Color(0xFF8B8B8B),
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
             ),
           ),
           const SizedBox(height: 8),
@@ -365,7 +372,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
             'Start investing to see your portfolio here',
             style: TextStyle(
               color: Color(0xFF5A5A5A),
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: FontWeight.w400,
             ),
           ),
