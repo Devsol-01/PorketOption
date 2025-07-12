@@ -27,8 +27,8 @@ class BottomNavView extends StackedView<BottomNavViewModel> {
         decoration: BoxDecoration(
           border: Border(
             top: BorderSide(
-              color: context.dividerColor, // Or use a color from your theme
-              width: 1, // Thin line
+              color: context.dividerColor,
+              width: 1,
             ),
           ),
         ),
@@ -46,7 +46,7 @@ class BottomNavView extends StackedView<BottomNavViewModel> {
           ),
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.home_outlined),
               label: 'Dashboard',
             ),
             BottomNavigationBarItem(

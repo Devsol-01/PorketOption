@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
+import 'package:mobile_app/ui/common/app_colors.dart';
 import 'package:stacked/stacked.dart';
 
 import 'profile_viewmodel.dart';
@@ -221,8 +222,8 @@ class ProfileView extends StackedView<ProfileViewModel> {
                   value,
                   style: TextStyle(
                     color: context.primaryTextColor,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 21,
+                    fontWeight: FontWeight.w600,
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -343,7 +344,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
 
   Widget _buildWalletAddressSection(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
@@ -376,8 +377,8 @@ class ProfileView extends StackedView<ProfileViewModel> {
                   '0xCEER...h47B',
                   style: TextStyle(
                     color: context.primaryTextColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -431,7 +432,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
               'Privacy',
               style: TextStyle(
                 color: context.primaryTextColor,
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -466,15 +467,15 @@ class ProfileView extends StackedView<ProfileViewModel> {
         children: [
           Icon(
             Icons.logout_outlined,
-            color: Color(0xFFFF6B6B),
+            color: notificationRed,
             size: 24,
           ),
           SizedBox(width: 16),
           Text(
             'Log Out',
             style: TextStyle(
-              color: Color(0xFFFF6B6B),
-              fontSize: 16,
+              color: notificationRed,
+              fontSize: 15,
               fontWeight: FontWeight.w500,
             ),
           ),

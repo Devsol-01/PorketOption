@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
@@ -34,7 +35,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                             color: context.primaryTextColor,
                           ),
                         ),
-                        SizedBox(height: 24),
+                        const SizedBox(height: 24),
                         _buildInvestmentSummaryCard(),
 
                         const SizedBox(height: 32),
@@ -51,9 +52,9 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                                 color: context.primaryTextColor,
                               ),
                             ),
-                            Row(
+                            const Row(
                               children: [
-                                const Text(
+                                Text(
                                   'Find More',
                                   style: TextStyle(
                                     color: Color(0xFF8B7CF6),
@@ -61,8 +62,8 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                const SizedBox(width: 6),
-                                const Icon(
+                                SizedBox(width: 6),
+                                Icon(
                                   Icons.arrow_forward_ios,
                                   color: Color(0xFF8B7CF6),
                                   size: 12,
@@ -74,37 +75,50 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                         const SizedBox(height: 20),
 
                         // Investment Opportunities
-                        SizedBox(
-                          height: 220,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: [
-                              _buildOpportunityCard(
-                                context,
-                                returnPercentage: '19.5',
-                                investorsCount: '1260',
-                                title: 'Crypto Portfolio',
-                                description: '19.5% • returns in 6\nmonths',
-                              ),
-                              _buildOpportunityCard(
-                                context,
-                                returnPercentage: '17.0',
-                                investorsCount: '890',
-                                title: 'DeFi Yield Farming',
-                                description: '17.0% • returns in 3\nmonths',
-                              ),
-                              _buildOpportunityCard(
-                                context,
-                                returnPercentage: '21.0',
-                                investorsCount: '750',
-                                title: 'Staking',
-                                description: '21.0% • returns in 12\nmonths',
-                                isLast: true,
-                              ),
-                            ],
-                          ),
+
+                        CarouselSlider(
+                          options: CarouselOptions(
+                              height: 250, // Keep original height
+                              enlargeCenterPage: false,
+                              enableInfiniteScroll: false,
+                              viewportFraction: 0.65,
+                              padEnds: false,
+                              scrollPhysics: RangeMaintainingScrollPhysics()),
+                          items: [
+                            _buildProtocolCard(
+                              context,
+                              title: 'Solend',
+                              subtitle: 'Decentralized\nlending protocol',
+                              apy: '8.5%',
+                              tvl: '\$120M',
+                              riskLevel: 'Medium',
+                              iconColor: const Color(0xFF6366F1), // Blue
+                              iconData: Icons.shield_outlined,
+                            ),
+                            _buildProtocolCard(
+                              context,
+                              title: 'Mango Markets',
+                              subtitle: 'Perpetual trading\nplatform',
+                              apy: '12.3%',
+                              tvl: '\$85M',
+                              riskLevel: 'High',
+                              iconColor: const Color(0xFFEF4444), // Red/Orange
+                              iconData: Icons.trending_up,
+                            ),
+                            _buildProtocolCard(
+                              context,
+                              title: 'Jupitar',
+                              subtitle: 'Perpetual trading\nplatform',
+                              apy: '12.3%',
+                              tvl: '\$85M',
+                              riskLevel: 'Low',
+                              iconColor: Colors.purple, // Red/Orange
+                              iconData: Icons.trending_up,
+                            )
+                          ],
                         ),
-                        const SizedBox(height: 32),
+
+                        SizedBox(height: 32),
 
                         // Active/Matured Toggle
                         _buildToggleSection(context),
@@ -132,10 +146,10 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
         ),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Up to 35% returns',
             style: TextStyle(
               color: Colors.white,
@@ -144,8 +158,8 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
               letterSpacing: 0.2,
             ),
           ),
-          const SizedBox(height: 6),
-          const Text(
+          SizedBox(height: 6),
+          Text(
             'Total Investment',
             style: TextStyle(
               color: Colors.white,
@@ -154,126 +168,14 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
               letterSpacing: 0.1,
             ),
           ),
-          const SizedBox(height: 4),
-          const Text(
+          SizedBox(height: 4),
+          Text(
             '\$4,250.00',
             style: TextStyle(
               color: Colors.white,
               fontSize: 30,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.9,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOpportunityCard(
-    BuildContext context, {
-    required String returnPercentage,
-    required String investorsCount,
-    required String title,
-    required String description,
-    bool isLast = false,
-  }) {
-    return Container(
-      width: 200,
-      margin: EdgeInsets.only(right: isLast ? 0 : 18),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: context.isDarkMode
-            ? null
-            : [
-                BoxShadow(
-                  color: context.cardShadow,
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Invest Now Button
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-            decoration: BoxDecoration(
-              color: const Color(0xFF10B981),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Text(
-              'INVEST NOW',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Return Percentage Circle
-          Container(
-            width: 60,
-            height: 60,
-            decoration: const BoxDecoration(
-              color: Color(0xFF2A2A2A),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                '$returnPercentage%',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
-
-          // Investors Count
-          Text(
-            'INVESTORS: $investorsCount',
-            style: const TextStyle(
-              color: Color(0xFF8B8B8B),
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 6),
-
-          // Title
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              letterSpacing: -0.2,
-            ),
-          ),
-          const SizedBox(height: 4),
-
-          // Description
-          Flexible(
-            child: Text(
-              description,
-              style: const TextStyle(
-                color: Color(0xFF8B8B8B),
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                height: 1.2,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
             ),
           ),
         ],
@@ -350,8 +252,8 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
               color: context.tabBackground,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Center(
-              child: const Icon(
+            child: const Center(
+              child: Icon(
                 Icons.trending_up_rounded,
                 color: Color(0xFF4A4A4A),
                 size: 40,
@@ -380,6 +282,176 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
       ),
     );
   }
+
+  Widget _buildProtocolCard(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required String apy,
+    required String tvl,
+    required String riskLevel,
+    required Color iconColor,
+    required IconData iconData,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Container(
+        height: 240, 
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.protocolCardBackground,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: context.protocolCardBorder,
+            width: 1,
+          ),
+          boxShadow: context.isDarkMode
+              ? []
+              : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Icon 
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: iconColor,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Icon(
+                iconData,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 12), 
+      
+            // Title 
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: context.primaryTextColor,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 6), // Reduced from 8
+      
+            // Subtitle
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 14,
+                color: context.secondaryTextColor,
+                height: 1.3, // Reduced line height
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 12), // Reduced from 16
+      
+            // APY and Risk Level (keeping original design)
+            Row(
+              children: [
+                Text(
+                  'APY: ',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: context.secondaryTextColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  apy,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: context.protocolApyColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 25),
+                _buildRiskBadge(context, riskLevel),
+              ],
+            ),
+            const SizedBox(height: 10), // Reduced from 12
+      
+            // TVL and External Link (keeping original design)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'TVL: $tvl',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: context.protocolTvlColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Icon(
+                  Icons.launch,
+                  size: 16,
+                  color: context.protocolExternalLinkColor,
+                ),
+              ],
+            ),
+      
+            // Add spacer to fill remaining space and prevent overflow
+            const Spacer(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRiskBadge(BuildContext context, String riskLevel) {
+    Color backgroundColor;
+    Color textColor;
+
+    switch (riskLevel.toLowerCase()) {
+      case 'high':
+        backgroundColor = context.protocolRiskHighBackground;
+        textColor = context.protocolRiskHighText;
+        break;
+      case 'medium':
+        backgroundColor = context.protocolRiskMediumBackground;
+        textColor = context.protocolRiskMediumText;
+        break;
+      case 'low':
+        backgroundColor = context.protocolRiskLowBackground;
+        textColor = context.protocolRiskLowText;
+        break;
+      default:
+        backgroundColor = context.protocolRiskMediumBackground;
+        textColor = context.protocolRiskMediumText;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        riskLevel,
+        style: TextStyle(
+          fontSize: 12,
+          color: textColor,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
 
   @override
   InvestmentViewModel viewModelBuilder(

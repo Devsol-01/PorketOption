@@ -11,8 +11,6 @@ const Color kcBackgroundColor = kcDarkGreyColor;
 // Primary brand color
 const Color primary = Color(0xFFA45EFF);
 
-
-
 // ============================================================================
 // GRADIENTS
 // ============================================================================
@@ -22,9 +20,6 @@ const Color gradientEnd = Color(0xFF5552F2);
 // Balance card gradient (purple gradient from your design)
 const Color balanceGradientStart = Color(0xFFA45EFF);
 const Color balanceGradientEnd = Color(0xFF7B46F5);
-
-
-
 
 // ============================================================================
 // LIGHT THEME COLORS
@@ -49,6 +44,9 @@ const Color lightWithdrawIcon = Color(0xFF9C27B0);
 // Light theme - Card shadows
 const Color lightCardShadow = Color(0x1A000000);
 
+// Light Outer container (whole section background)
+const Color usdtSectionBgLight = Color(0xFFF5F5F7);
+
 // ============================================================================
 // DARK THEME COLORS
 // ============================================================================
@@ -72,8 +70,8 @@ const Color darkWithdrawIcon = Color(0xFFBA68C8);
 // Dark theme - Card borders
 const Color darkCardBorder = Color(0xFF2A2A2A);
 
-
-
+// Dark Outer container (whole section background)
+const Color usdtSectionBgDark = Color(0xFF2B2B2B);
 
 // ============================================================================
 // SHARED/UNIVERSAL COLORS
@@ -115,3 +113,29 @@ const Color walletAddressBg = Color(0x33FFFFFF);
 // Interest earnings chart background
 const Color chartBackgroundLight = Color(0xFFFAFAFA);
 const Color chartBackgroundDark = Color(0xFF1A1A1A);
+
+// QR Code colors
+const Color qrCodeBackgroundLight = Color(0xFFF5F5F5);
+const Color qrCodeBackgroundDark = Color(0xFF2A2A2A);
+const Color qrCodeForegroundLight = Color(0xFF000000);
+const Color qrCodeForegroundDark = Color(0xFFFFFFFF);
+
+// Wallet address container colors
+const Color walletAddressBackgroundLight = Color(0xFFF8F8F8);
+const Color walletAddressBackgroundDark = Color(0xFF1E1E1E);
+
+// Address field colors
+const Color addressFieldBackgroundLight = Color(0xFFFFFFFF);
+const Color addressFieldBackgroundDark = Color(0xFF000000);
+
+// Copy button color
+const Color copyButtonColor = Color(0xFFA45EFF);
+
+// Warning message colors
+const Color warningBackgroundLight = Color(0xFFFFF8E1);
+const Color warningBackgroundDark = Color(0xFF2D2416);
+const Color warningBorderLight = Color(0xFFFFE082);
+const Color warningBorderDark = Color(0xFF5D4E2A);
+const Color warningTextLight = Color(0xFF8B6914);
+const Color warningTextDark = Color(0xFFFFCC02);
+const Color warningIconColor = Color(0xFFFFB000);

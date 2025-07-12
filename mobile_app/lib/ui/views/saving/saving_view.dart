@@ -31,53 +31,65 @@ class SavingView extends StackedView<SavingViewModel> {
                     color: context.primaryTextColor,
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 _buildBalanceCard(context),
-                SizedBox(height: 32),
-                Text('Choose a Savings Plan', style: TextStyle(fontSize: 16)),
-                SizedBox(height: 20),
-
-                // Savings Plans Grid
+                const SizedBox(height: 32),
+                const Text('Choose a Savings Plan',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 20),
                 GridView.count(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
-                  mainAxisSpacing: 20,
-                  childAspectRatio: 1,
+                  mainAxisSpacing: 25,
+                  childAspectRatio: 0.95,
                   children: [
-                    _buildSavingsPlan(
-                      context: context,
-                      icon: Icons.savings,
-                      color: Colors.blue,
-                      title: 'Flexi Save',
-                      description: 'Save with complete flexibility',
-                      apy: '4.5%',
+                    _buildSavingsCard(
+                        context: context,
+                        title: 'Flexi Save',
+                        subtitle: 'Save with complete flexibility',
+                        apy: '3.50% APY',
+                        icon: Icons.flash_on,
+                        primaryColor: const Color(0xFF007AFF),
+                        secondaryColor: const Color(0xFF4A90E2),
+                        textColor: Colors.blue,
+                        onTap: viewModel.navigateToFlexiSave
                     ),
-                    _buildSavingsPlan(
+                    _buildSavingsCard(
+                        context: context,
+                        title: 'Goal Save',
+                        subtitle: 'Save towards specific goals',
+                        apy: '4.20% APY',
+                        icon: Icons.center_focus_strong,
+                        primaryColor: const Color(0xFF34C759),
+                        secondaryColor: const Color(0xFF52D76A),
+                        textColor: Colors.green,
+                        onTap: viewModel.navigateToGoalSave
+                        ),
+                    _buildSavingsCard(
                       context: context,
-                      icon: Icons.gps_fixed,
-                      color: Colors.green,
-                      title: 'Goal Save',
-                      description: 'Save towards specific goals',
-                      apy: '6.2%',
-                    ),
-                    _buildSavingsPlan(
-                      context: context,
-                      icon: Icons.lock,
-                      color: Colors.purple,
                       title: 'Lock Save',
-                      description: 'Lock funds to avoid temptation',
-                      apy: '8.7%',
+                      subtitle: 'Lock funds to avoid temptation',
+                      apy: '6.80% APY',
+                      icon: Icons.lock,
+                      primaryColor: const Color(0xFF8E44AD),
+                      secondaryColor: const Color(0x00ab56c4),
+                      textColor: Colors.purple,
+                      onTap: viewModel.navigateToLockSave
                     ),
-                    _buildSavingsPlan(
-                      context: context,
-                      icon: Icons.group,
-                      color: Colors.orange,
-                      title: 'Group Save',
-                      description: 'Save together with friends',
-                      apy: '5.8%',
-                    ),
+                    _buildSavingsCard(
+                        context: context,
+                        title: 'Group Save',
+                        subtitle: 'Save together with friends',
+                        apy: '5.10% APY',
+                        icon: Icons.group,
+                        primaryColor: const Color(0xFFFF6B35),
+                        secondaryColor: const Color(0xFFFF8F65),
+                        textColor: const Color.fromARGB(255, 249, 150, 1),
+                        onTap: viewModel.navigateToGroupSave
+                        ),
                   ],
                 ),
               ],
@@ -93,7 +105,7 @@ class SavingView extends StackedView<SavingViewModel> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [Color(0xFFB16CEA), Color(0xFF8A4FFF)],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
@@ -148,87 +160,137 @@ class SavingView extends StackedView<SavingViewModel> {
     );
   }
 
-  Widget _buildSavingsPlan({
+  Widget _buildSavingsCard({
     required BuildContext context,
-    required IconData icon,
-    required Color color,
     required String title,
-    required String description,
+    required String subtitle,
     required String apy,
+    required IconData icon,
+    required Color primaryColor,
+    required Color secondaryColor,
+    required Color textColor,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.only(top: 20, right: 20, left: 20),
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: context.isDarkMode
-            ? null
-            : [
-                BoxShadow(
-                  color: context.cardShadow,
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: context.isDarkMode
+                ? [
+                    primaryColor.withOpacity(0.3),
+                    primaryColor.withOpacity(0.1),
+                  ]
+                : [
+                    primaryColor.withOpacity(0.1),
+                    primaryColor.withOpacity(0.05),
+                  ],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: context.isDarkMode
+                ? primaryColor.withOpacity(0.2)
+                : primaryColor.withOpacity(0.1),
+            width: 2.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: context.cardShadow,
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Background decorative circles
+            Positioned(
+              top: -20,
+              right: -20,
+              child: Container(
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 24,
+                  shape: BoxShape.circle,
+                  color: primaryColor.withOpacity(0.1),
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+            ),
+            Positioned(
+              bottom: -30,
+              left: -30,
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: secondaryColor.withOpacity(0.08),
+                ),
+              ),
+            ),
+            // Main content
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Icon
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: primaryColor.withOpacity(0.2),
+                    ),
+                    child: Icon(
+                      icon,
+                      color: primaryColor,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Title
                   Text(
-                    apy,
-                    style: GoogleFonts.inter(
-                      color: Colors.green[400],
+                    title,
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      color: textColor,
                     ),
                   ),
+                  const SizedBox(height: 4),
+                  // Subtitle
                   Text(
-                    'APY',
-                    style: GoogleFonts.inter(
-                      color: context.primaryTextColor.withOpacity(0.6),
-                      fontSize: 12,
-                    ),
+                    subtitle,
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: context.secondaryTextColor,
+                        fontWeight: FontWeight.w500),
                   ),
+                  const SizedBox(height: 16),
+                  // APY
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  //   decoration: BoxDecoration(
+                  //     color: primaryColor.withOpacity(0.15),
+                  //     borderRadius: BorderRadius.circular(12),
+                  //   ),
+                  //   child: Text(
+                  //     apy,
+                  //     style: TextStyle(
+                  //       fontSize: 14,
+                  //       fontWeight: FontWeight.w600,
+                  //       color: primaryColor,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: GoogleFonts.inter(
-              color: context.primaryTextColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            description,
-            style: GoogleFonts.inter(
-              color: context.primaryTextColor.withOpacity(0.6),
-              fontSize: 14,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

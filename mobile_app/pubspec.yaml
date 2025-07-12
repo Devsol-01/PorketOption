@@ -7,9 +7,11 @@ environment:
   sdk: '>=3.0.3 <4.0.0'
 
 dependencies:
+  carousel_slider: ^5.1.1
   flutter:
     sdk: flutter
   google_fonts: ^6.2.1
+  qr_flutter: ^4.1.0
   stacked: ^3.4.0
   stacked_services: ^1.1.0
 

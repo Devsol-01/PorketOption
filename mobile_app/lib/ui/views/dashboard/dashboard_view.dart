@@ -26,23 +26,23 @@ class DashboardView extends StackedView<DashboardViewModel> {
                 children: [
                   //Header section
                   _buildHeader(context),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
                   //Balance card
                   _buildBalanceCard(context),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
                   //Action Buttons
-                  _buildActionButtons(context),
-                  SizedBox(height: 30),
+                  _buildActionButtons(context, viewModel),
+                  const SizedBox(height: 30),
 
                   //Interest Earnings chart
                   _buildInterestEarningsChart(context),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
                   //Navigation Buttons
                   _buildNavigationButtons(context),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
                   //Savings Goal
                   _buildSavingsGoal(context)
@@ -98,7 +98,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                 ),
               ),
             ),
-            Positioned(
+            const Positioned(
               top: 8,
               right: 8,
               child: CircleAvatar(
@@ -117,7 +117,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [Color(0xFFB16CEA), Color(0xFF8A4FFF)],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
@@ -143,7 +143,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   color: AppColors.walletAddressBg,
                   borderRadius: BorderRadius.circular(28),
                 ),
-                child: Center(
+                child: const Center(
                   child: Icon(
                     Icons.account_balance_wallet_outlined,
                     color: Colors.white,
@@ -159,7 +159,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                 fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(width: 8),
-        Row(
+          Row(
             children: [
               Text(
                 'Wallet:',
@@ -198,7 +198,8 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
+  Widget _buildActionButtons(
+      BuildContext context, DashboardViewModel viewModel) {
     return Row(
       children: [
         _buildActionButton(
@@ -207,6 +208,9 @@ class DashboardView extends StackedView<DashboardViewModel> {
           label: 'Deposit',
           backgroundColor: context.cardColor,
           iconColor: context.depositIconColor,
+          onTap: () {
+            viewModel.showDepositSheet();
+          },
         ),
         const SizedBox(width: 16),
         _buildActionButton(
@@ -215,6 +219,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
           label: 'Save',
           backgroundColor: context.cardColor,
           iconColor: context.saveIconColor,
+          onTap: () {}
         ),
         const SizedBox(width: 16),
         _buildActionButton(
@@ -223,6 +228,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
           label: 'Withdraw',
           backgroundColor: context.cardColor,
           iconColor: context.withdrawIconColor,
+          // Add onTap if needed
         ),
       ],
     );
@@ -234,47 +240,51 @@ class DashboardView extends StackedView<DashboardViewModel> {
     required String label,
     required Color backgroundColor,
     required Color iconColor,
+    VoidCallback? onTap,
   }) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: context.isDarkMode
-              ? null
-              : [
-                  BoxShadow(
-                    color: context.cardShadow,
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.2),
-                shape: BoxShape.circle,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: context.isDarkMode
+                ? null
+                : [
+                    BoxShadow(
+                      color: context.cardShadow,
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: iconColor,
+                  size: 20,
+                ),
               ),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: 20,
+              const SizedBox(height: 12),
+              Text(
+                label,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: context.primaryTextColor,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: context.primaryTextColor,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -333,7 +343,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   Text(
                     '5.2%',
                     style: GoogleFonts.poppins(
-                      fontSize: 24,
+                      fontSize: 22,
                       fontWeight: FontWeight.w700,
                       color: context.successColor,
                     ),
@@ -387,12 +397,25 @@ class DashboardView extends StackedView<DashboardViewModel> {
             ),
           ),
           const SizedBox(height: 20),
-          Text(
-            'Total Earned: \$99.00',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: context.successColor,
+          Text.rich(
+            TextSpan(
+              text: 'Total Earned: ',
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: context.secondaryTextColor,
+              ),
+              children: [
+                TextSpan(
+                  text: '\$99.00',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: context
+                        .successColor, // Green or your custom success color
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -524,7 +547,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                 LinearProgressIndicator(
                   value: 0.85,
                   backgroundColor: context.progressBarInactiveColor,
-                  valueColor: AlwaysStoppedAnimation<Color>(
+                  valueColor: const AlwaysStoppedAnimation<Color>(
                     AppColors.progressBarActive,
                   ),
                 ),
