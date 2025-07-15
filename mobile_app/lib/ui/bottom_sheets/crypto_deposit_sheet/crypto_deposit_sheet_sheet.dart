@@ -55,7 +55,7 @@
 //                 const SizedBox(width: 40), // Spacer for center alignment
 //                 Text(
 //                   'Crypto Deposit',
-//                   style: TextStyle(
+//                   style: GoogleFonts.inter(
 //                     fontSize: 20,
 //                     fontWeight: FontWeight.w600,
 //                     color: context.primaryTextColor,
@@ -110,7 +110,7 @@
 //                     children: [
 //                       Text(
 //                         'USDT Address',
-//                         style: TextStyle(
+//                         style: GoogleFonts.inter(
 //                           fontSize: 16,
 //                           fontWeight: FontWeight.w500,
 //                           color: context.secondaryTextColor,
@@ -134,7 +134,7 @@
 //                               ),
 //                               child: Text(
 //                                 '0x742d35Cc6639C0532fEb52F64e8a1e8e5e1D2B7B',
-//                                 style: TextStyle(
+//                                 style: GoogleFonts.inter(
 //                                   fontSize: 14,
 //                                   fontFamily: 'monospace',
 //                                   color: context.primaryTextColor,
@@ -194,7 +194,7 @@
 //                         Expanded(
 //                           child: Text(
 //                             'Only send USDT to this address. Sending other cryptocurrencies may result in permanent loss.',
-//                             style: TextStyle(
+//                             style: GoogleFonts.inter(
 //                               fontSize: 14,
 //                               color: context.isDarkMode
 //                                   ? warningTextDark
@@ -219,7 +219,7 @@
 //                   //     ),
 //                   //     child: Text(
 //                   //       'Back',
-//                   //       style: TextStyle(
+//                   //       style: GoogleFonts.inter(
 //                   //         fontSize: 16,
 //                   //         fontWeight: FontWeight.w500,
 //                   //         color: context.secondaryTextColor,
@@ -301,7 +301,7 @@ class CryptoDepositSheetSheet
                     children: [
                       Text(
                         'Crypto Deposit',
-                        style: TextStyle(
+                        style: GoogleFonts.inter(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
                           color: context.primaryTextColor,
@@ -360,7 +360,7 @@ class CryptoDepositSheetSheet
                       children: [
                         Text(
                           'USDC Address',
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: context.secondaryTextColor,
@@ -385,7 +385,7 @@ class CryptoDepositSheetSheet
                               Expanded(
                                 child: Text(
                                   '0x742d35Cc6639C0532fEb52F64e8a1e8e5e1D2B7B',
-                                  style: GoogleFonts.robotoMono(
+                                  style: GoogleFonts.jetBrainsMono(
                                       fontSize: 14,
                                       color: context.primaryTextColor,
                                       height: 1.4),
@@ -452,7 +452,7 @@ class CryptoDepositSheetSheet
                         Expanded(
                           child: Text(
                             'Only send USDC to this address. Sending other cryptocurrencies may result in permanent loss.',
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                                 fontSize: 14, color: context.warningText),
                           ),
                         ),
@@ -468,7 +468,7 @@ class CryptoDepositSheetSheet
                         completer?.call(SheetResponse(confirmed: false)),
                     child: Text(
                       'Back',
-                      style: TextStyle(color: context.primaryTextColor),
+                      style: GoogleFonts.inter(color: context.primaryTextColor),
                     )),
 
                 // Bottom safe area padding

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -51,7 +52,7 @@ class DepositSheetSheet extends StackedView<DepositSheetSheetModel> {
               children: [
                 Text(
                   'Deposit Funds',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                     color: context.primaryTextColor,
@@ -163,7 +164,7 @@ class DepositSheetSheet extends StackedView<DepositSheetSheetModel> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                       color: context.primaryTextColor,
@@ -172,7 +173,7 @@ class DepositSheetSheet extends StackedView<DepositSheetSheetModel> {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 14,
                       color: context.secondaryTextColor,
                     ),

@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
+import 'package:mobile_app/ui/common/app_colors.dart';
 import 'package:stacked/stacked.dart';
 
 import 'investment_viewmodel.dart';
@@ -52,18 +53,18 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                                 color: context.primaryTextColor,
                               ),
                             ),
-                            const Row(
+                            Row(
                               children: [
                                 Text(
                                   'Find More',
-                                  style: TextStyle(
-                                    color: Color(0xFF8B7CF6),
+                                  style: GoogleFonts.inter(
+                                    color: const Color(0xFF8B7CF6),
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                SizedBox(width: 6),
-                                Icon(
+                                const SizedBox(width: 6),
+                                const Icon(
                                   Icons.arrow_forward_ios,
                                   color: Color(0xFF8B7CF6),
                                   size: 12,
@@ -83,7 +84,8 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                               enableInfiniteScroll: false,
                               viewportFraction: 0.65,
                               padEnds: false,
-                              scrollPhysics: RangeMaintainingScrollPhysics()),
+                             scrollPhysics: RangeMaintainingScrollPhysics()
+                              ),
                           items: [
                             _buildProtocolCard(
                               context,
@@ -146,32 +148,32 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
         ),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Up to 35% returns',
-            style: TextStyle(
+            style: GoogleFonts.inter(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w500,
               letterSpacing: 0.2,
             ),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
             'Total Investment',
-            style: TextStyle(
+            style: GoogleFonts.inter(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w400,
               letterSpacing: 0.1,
             ),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
             '\$4,250.00',
-            style: TextStyle(
+            style: GoogleFonts.inter(
               color: Colors.white,
               fontSize: 30,
               fontWeight: FontWeight.w700,
@@ -199,7 +201,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
               child: Container(
                 height: 47,
                 decoration: BoxDecoration(
-                  color: context.cardColor,
+                  color: primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -209,9 +211,9 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                     Text(
                       'Active',
                       style: GoogleFonts.inter(
-                        color: context.tabSelectedColor,
+                        color: context.primaryTextColor,
                         fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -230,7 +232,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                   style: GoogleFonts.inter(
                     color: context.tabUnselectedColor,
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -261,19 +263,19 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'No active investments yet',
-            style: TextStyle(
-              color: Color(0xFF8B8B8B),
+            style: GoogleFonts.inter(
+              color: const Color(0xFF8B8B8B),
               fontSize: 16,
               fontWeight: FontWeight.w400,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Start investing to see your portfolio here',
-            style: TextStyle(
-              color: Color(0xFF5A5A5A),
+            style: GoogleFonts.inter(
+              color: const Color(0xFF5A5A5A),
               fontSize: 15,
               fontWeight: FontWeight.w400,
             ),
@@ -337,7 +339,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
             // Title 
             Text(
               title,
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: context.primaryTextColor,
@@ -350,7 +352,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
             // Subtitle
             Text(
               subtitle,
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: 14,
                 color: context.secondaryTextColor,
                 height: 1.3, // Reduced line height
@@ -365,7 +367,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
               children: [
                 Text(
                   'APY: ',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     fontSize: 14,
                     color: context.secondaryTextColor,
                     fontWeight: FontWeight.w500,
@@ -373,7 +375,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                 ),
                 Text(
                   apy,
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     fontSize: 14,
                     color: context.protocolApyColor,
                     fontWeight: FontWeight.bold,
@@ -391,7 +393,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
               children: [
                 Text(
                   'TVL: $tvl',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     fontSize: 14,
                     color: context.protocolTvlColor,
                     fontWeight: FontWeight.w500,
@@ -443,7 +445,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
       ),
       child: Text(
         riskLevel,
-        style: TextStyle(
+        style: GoogleFonts.inter(
           fontSize: 12,
           color: textColor,
           fontWeight: FontWeight.w600,

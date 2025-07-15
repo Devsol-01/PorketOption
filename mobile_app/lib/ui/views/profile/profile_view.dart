@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:mobile_app/ui/common/app_colors.dart';
 import 'package:stacked/stacked.dart';
@@ -70,7 +71,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
           child: Center(
             child: Text(
               'US',
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 color: context.primaryTextColor,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -87,7 +88,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
             children: [
               Text(
                 'Uchechukwu Solomon',
-                style: TextStyle(
+                style: GoogleFonts.inter(
                   color: context.primaryTextColor,
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -96,7 +97,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
               ),
               Text(
                 'solomonu928@gmail.com',
-                style: TextStyle(
+                style: GoogleFonts.inter(
                   color: context.secondaryTextColor,
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -104,7 +105,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
               ),
               Text(
                 'FlowCoin Member',
-                style: TextStyle(
+                style: GoogleFonts.inter(
                   color: context.tabSelectedColor,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -123,7 +124,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
       children: [
         Text(
           'Statistics',
-          style: TextStyle(
+          style: GoogleFonts.inter(
             color: context.primaryTextColor,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -220,7 +221,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
               children: [
                 Text(
                   value,
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: context.primaryTextColor,
                     fontSize: 21,
                     fontWeight: FontWeight.w600,
@@ -229,7 +230,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
                 ),
                 Text(
                   label,
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: context.secondaryTextColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -249,7 +250,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
       children: [
         Text(
           'Achievements',
-          style: TextStyle(
+          style: GoogleFonts.inter(
             color: context.primaryTextColor,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -330,7 +331,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
           const SizedBox(height: 8),
           Text(
             title,
-            style: TextStyle(
+            style: GoogleFonts.inter(
               color: iconColor,
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -366,7 +367,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
               children: [
                 Text(
                   'Wallet Address',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: context.secondaryTextColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -375,7 +376,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
                 const SizedBox(height: 8),
                 Text(
                   '0xCEER...h47B',
-                  style: TextStyle(
+                  style: GoogleFonts.jetBrainsMono(
                     color: context.primaryTextColor,
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
@@ -386,16 +387,16 @@ class ProfileView extends StackedView<ProfileViewModel> {
             ),
           ),
           Container(
-            width: 40,
-            height: 40,
+            width: 35,
+            height: 35,
             decoration: BoxDecoration(
               color: context.actionButtonBackground,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               Icons.copy_outlined,
-              color: context.tabSelectedColor,
-              size: 20,
+              color: context.primaryTextColor,
+              size: 18,
             ),
           ),
         ],
@@ -430,7 +431,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
           Expanded(
             child: Text(
               'Privacy',
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 color: context.primaryTextColor,
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
@@ -463,17 +464,17 @@ class ProfileView extends StackedView<ProfileViewModel> {
                 ),
               ],
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.logout_outlined,
             color: notificationRed,
             size: 24,
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Text(
             'Log Out',
-            style: TextStyle(
+            style: GoogleFonts.inter(
               color: notificationRed,
               fontSize: 15,
               fontWeight: FontWeight.w500,

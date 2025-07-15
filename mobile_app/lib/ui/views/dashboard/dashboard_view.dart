@@ -66,6 +66,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: context.primaryTextColor,
+                letterSpacing: -0.5,
               ),
             ),
             const SizedBox(height: 2),
@@ -99,10 +100,10 @@ class DashboardView extends StackedView<DashboardViewModel> {
               ),
             ),
             const Positioned(
-              top: 8,
-              right: 8,
+              top: 0,
+              right: 3,
               child: CircleAvatar(
-                radius: 4,
+                radius: 5,
                 backgroundColor: AppColors.notificationRed,
               ),
             ),
@@ -118,9 +119,12 @@ class DashboardView extends StackedView<DashboardViewModel> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFB16CEA), Color(0xFF8A4FFF)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF8A4FFF),
+            Color(0xFF4F8AFF),
+          ],
         ),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -133,12 +137,12 @@ class DashboardView extends StackedView<DashboardViewModel> {
               Text(
                 'Total Balance',
                 style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
                     color: context.walletTextColor),
               ),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: AppColors.walletAddressBg,
                   borderRadius: BorderRadius.circular(28),
@@ -147,7 +151,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   child: Icon(
                     Icons.account_balance_wallet_outlined,
                     color: Colors.white,
-                    size: 25,
+                    size: 20,
                   ),
                 ),
               ),
@@ -155,8 +159,12 @@ class DashboardView extends StackedView<DashboardViewModel> {
           ),
           Text(
             '\$24,567.89',
-            style: GoogleFonts.poppins(
-                fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+            style: GoogleFonts.inter(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: -1.0,
+            ),
           ),
           const SizedBox(width: 8),
           Row(
@@ -165,7 +173,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                 'Wallet:',
                 style: GoogleFonts.inter(
                   fontSize: 14,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                   color: context.walletTextColor,
                 ),
               ),
@@ -178,7 +186,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                 ),
                 child: Text(
                   '0xCEER...h47B',
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.jetBrainsMono(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                     color: Colors.white,
@@ -214,13 +222,12 @@ class DashboardView extends StackedView<DashboardViewModel> {
         ),
         const SizedBox(width: 16),
         _buildActionButton(
-          context: context,
-          icon: Icons.savings_outlined,
-          label: 'Save',
-          backgroundColor: context.cardColor,
-          iconColor: context.saveIconColor,
-          onTap: () {}
-        ),
+            context: context,
+            icon: Icons.savings_outlined,
+            label: 'Save',
+            backgroundColor: context.cardColor,
+            iconColor: context.saveIconColor,
+            onTap: () {}),
         const SizedBox(width: 16),
         _buildActionButton(
           context: context,
@@ -278,7 +285,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
               Text(
                 label,
                 style: GoogleFonts.inter(
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: FontWeight.w500,
                   color: context.primaryTextColor,
                 ),
@@ -354,6 +361,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
                       color: context.secondaryTextColor,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ],
@@ -439,7 +447,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
               child: Container(
                 height: 47,
                 decoration: BoxDecoration(
-                  color: context.cardColor,
+                  color: AppColors.primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -447,16 +455,16 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   children: [
                     Icon(
                       Icons.emoji_events_outlined,
-                      color: context.tabSelectedColor,
+                      color: context.primaryTextColor,
                       size: 18,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'Milestones',
                       style: GoogleFonts.inter(
-                        color: context.tabSelectedColor,
+                        color: context.primaryTextColor,
                         fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -480,7 +488,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   style: GoogleFonts.inter(
                     color: context.tabUnselectedColor,
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -529,12 +537,12 @@ class DashboardView extends StackedView<DashboardViewModel> {
                 Text(
                   'Save \$10,000',
                   style: GoogleFonts.inter(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: context.primaryTextColor,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 1),
                 Text(
                   'Progress: 85.0%',
                   style: GoogleFonts.inter(

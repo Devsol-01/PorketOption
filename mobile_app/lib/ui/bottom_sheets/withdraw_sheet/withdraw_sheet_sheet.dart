@@ -42,7 +42,7 @@ class WithdrawSheetSheet extends StackedView<WithdrawSheetSheetModel> {
             verticalSpaceTiny,
             Text(
               request.description!,
-              style: const TextStyle(fontSize: 14, color: kcMediumGrey),
+              style: const TextStyle(fontSize: 14, color: mediumGrey),
               maxLines: 3,
               softWrap: true,
             ),

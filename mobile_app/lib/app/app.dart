@@ -1,4 +1,3 @@
-import 'package:mobile_app/ui/bottom_sheets/notice/notice_sheet.dart';
 import 'package:mobile_app/ui/dialogs/info_alert/info_alert_dialog.dart';
 import 'package:mobile_app/ui/views/startup/startup_view.dart';
 import 'package:stacked/stacked_annotations.dart';
@@ -38,7 +37,6 @@ import 'package:mobile_app/ui/bottom_sheets/withdraw_sheet/withdraw_sheet_sheet.
     // @stacked-service
   ],
   bottomsheets: [
-    StackedBottomsheet(classType: NoticeSheet),
     StackedBottomsheet(classType: DepositSheetSheet),
     StackedBottomsheet(classType: CryptoDepositSheetSheet),
     StackedBottomsheet(classType: WithdrawSheetSheet),

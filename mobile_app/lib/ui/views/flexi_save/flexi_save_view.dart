@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:mobile_app/ui/common/app_colors.dart';
 import 'package:stacked/stacked.dart';
@@ -20,15 +21,14 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
         backgroundColor: context.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: context.primaryTextColor,
-          ),
-          onPressed: () => viewModel.navigateBack()
-        ),
+            icon: Icon(
+              Icons.arrow_back,
+              color: context.primaryTextColor,
+            ),
+            onPressed: () => viewModel.navigateBack()),
         title: Text(
           'Flexible Savings',
-          style: TextStyle(
+          style: GoogleFonts.inter(
             color: context.primaryTextColor,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -45,55 +45,82 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
               // Balance Card
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 20.0),
                 decoration: BoxDecoration(
-                  gradient: context.balanceCardGradient,
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF7BA7FF),
+                      Color(0xFF5B8EFF),
+                      Color(0xFF4B7EF7),
+                    ],
+                  ),
                   borderRadius: BorderRadius.circular(16.0),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '4.5% per annum',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const Text(
-                          'Flexible Savings Balance',
-                          style: TextStyle(
+                child:
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Interest rate badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 6.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.25),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: Text(
+                          '\$4.5% per annum',
+                          style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Icon(
-                          Icons.visibility,
-                          color: Colors.white.withOpacity(0.8),
-                          size: 16,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      '\$0',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                  ],
-                ),
+
+                      const SizedBox(height: 16),
+
+                      // Title row with eye icon
+                      Row(
+                        children: [
+                          const Text(
+                            'Flexible Savings Balance',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.visibility_outlined,
+                            color: Colors.white.withOpacity(0.8),
+                            size: 18,
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Balance amount
+                      Text(
+                        '\$0',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w600,
+                          height: 1.0,
+                        ),
+                      ),
+                    ],
+                  ),
               ),
 
-              const SizedBox(height: 24),
+             SizedBox(height: 24),
 
               // AutoSave Card
               Container(
@@ -121,23 +148,23 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
                       children: [
                         Text(
                           'AutoSave is enabled',
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             color: context.primaryTextColor,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           '⚡',
-                          style: TextStyle(fontSize: 16),
+                          style: GoogleFonts.inter(fontSize: 16),
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'Your next AutoSave deposit is scheduled to be on Thursday 3rd of July 2025, by 8:00:00 AM',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: context.secondaryTextColor,
                         fontSize: 14,
                         height: 1.4,
@@ -149,7 +176,7 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
                       children: [
                         Text(
                           'AutoSave Amount: \$1,000 daily',
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             color: context.primaryTextColor,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -235,9 +262,9 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Create a Flexible Savings',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: primary,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -280,7 +307,7 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
                           child: Text(
                             'Ongoing',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: viewModel.isOngoingSelected
                                   ? Colors.white
                                   : context.secondaryTextColor,
@@ -307,7 +334,7 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
                           child: Text(
                             'Paid Back',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: !viewModel.isOngoingSelected
                                   ? Colors.white
                                   : context.secondaryTextColor,
@@ -344,7 +371,7 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
                     const SizedBox(height: 16),
                     Text(
                       'No ongoing flexible savings',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: context.primaryTextColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -353,7 +380,7 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
                     const SizedBox(height: 8),
                     Text(
                       'Create your first flexible savings to get started',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: context.secondaryTextColor,
                         fontSize: 14,
                       ),
@@ -396,7 +423,7 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
           const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.inter(
               color: textColor,
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -412,4 +439,6 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
     BuildContext context,
   ) =>
       FlexiSaveViewModel();
+
 }
+

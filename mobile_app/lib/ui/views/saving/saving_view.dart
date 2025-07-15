@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
+import 'package:mobile_app/ui/common/app_colors.dart' as AppColors;
 import 'package:stacked/stacked.dart';
 
 import 'saving_viewmodel.dart';
@@ -34,9 +35,9 @@ class SavingView extends StackedView<SavingViewModel> {
                 const SizedBox(height: 30),
                 _buildBalanceCard(context),
                 const SizedBox(height: 32),
-                const Text('Choose a Savings Plan',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                Text('Choose a Savings Plan',
+                    style: GoogleFonts.inter(
+                        fontSize: 16, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 20),
                 GridView.count(
                   shrinkWrap: true,
@@ -55,8 +56,7 @@ class SavingView extends StackedView<SavingViewModel> {
                         primaryColor: const Color(0xFF007AFF),
                         secondaryColor: const Color(0xFF4A90E2),
                         textColor: Colors.blue,
-                        onTap: viewModel.navigateToFlexiSave
-                    ),
+                        onTap: viewModel.navigateToFlexiSave),
                     _buildSavingsCard(
                         context: context,
                         title: 'Goal Save',
@@ -66,19 +66,17 @@ class SavingView extends StackedView<SavingViewModel> {
                         primaryColor: const Color(0xFF34C759),
                         secondaryColor: const Color(0xFF52D76A),
                         textColor: Colors.green,
-                        onTap: viewModel.navigateToGoalSave
-                        ),
+                        onTap: viewModel.navigateToGoalSave),
                     _buildSavingsCard(
-                      context: context,
-                      title: 'Lock Save',
-                      subtitle: 'Lock funds to avoid temptation',
-                      apy: '6.80% APY',
-                      icon: Icons.lock,
-                      primaryColor: const Color(0xFF8E44AD),
-                      secondaryColor: const Color(0x00ab56c4),
-                      textColor: Colors.purple,
-                      onTap: viewModel.navigateToLockSave
-                    ),
+                        context: context,
+                        title: 'Lock Save',
+                        subtitle: 'Lock funds to avoid temptation',
+                        apy: '6.80% APY',
+                        icon: Icons.lock,
+                        primaryColor: const Color(0xFF8E44AD),
+                        secondaryColor: const Color(0x00ab56c4),
+                        textColor: Colors.purple,
+                        onTap: viewModel.navigateToLockSave),
                     _buildSavingsCard(
                         context: context,
                         title: 'Group Save',
@@ -88,8 +86,7 @@ class SavingView extends StackedView<SavingViewModel> {
                         primaryColor: const Color(0xFFFF6B35),
                         secondaryColor: const Color(0xFFFF8F65),
                         textColor: const Color.fromARGB(255, 249, 150, 1),
-                        onTap: viewModel.navigateToGroupSave
-                        ),
+                        onTap: viewModel.navigateToGroupSave),
                   ],
                 ),
               ],
@@ -106,9 +103,12 @@ class SavingView extends StackedView<SavingViewModel> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFB16CEA), Color(0xFF8A4FFF)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF8A4FFF),
+            Color(0xFF4F8AFF),
+          ],
         ),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -126,16 +126,16 @@ class SavingView extends StackedView<SavingViewModel> {
                     color: context.walletTextColor),
               ),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: AppColors.walletAddressBg,
                   borderRadius: BorderRadius.circular(28),
                 ),
-                child: Center(
+                child: const Center(
                   child: Icon(
                     Icons.savings_outlined,
-                    color: context.primaryTextColor,
-                    size: 25,
+                    color: Colors.white,
+                    size: 20,
                   ),
                 ),
               ),
@@ -254,7 +254,7 @@ class SavingView extends StackedView<SavingViewModel> {
                   // Title
                   Text(
                     title,
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: textColor,
@@ -264,7 +264,7 @@ class SavingView extends StackedView<SavingViewModel> {
                   // Subtitle
                   Text(
                     subtitle,
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                         fontSize: 14,
                         color: context.secondaryTextColor,
                         fontWeight: FontWeight.w500),
@@ -279,7 +279,7 @@ class SavingView extends StackedView<SavingViewModel> {
                   //   ),
                   //   child: Text(
                   //     apy,
-                  //     style: TextStyle(
+                  //     style: GoogleFonts.inter(
                   //       fontSize: 14,
                   //       fontWeight: FontWeight.w600,
                   //       color: primaryColor,

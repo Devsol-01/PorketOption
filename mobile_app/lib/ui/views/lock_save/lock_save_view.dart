@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:mobile_app/ui/common/app_colors.dart';
 import 'package:stacked/stacked.dart';
@@ -27,7 +28,7 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
             onPressed: () => viewModel.navigateBack()),
         title: Text(
           'Lock Save',
-          style: TextStyle(
+          style: GoogleFonts.inter(
             color: context.primaryTextColor,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -51,9 +52,9 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     '8.7% per annum',
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -62,9 +63,9 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         'Lock Save Balance',
-                        style: TextStyle(
+                        style: GoogleFonts.inter(
                           color: Colors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -79,9 +80,9 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     '\$0',
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: Colors.white,
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
@@ -112,19 +113,19 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                   ),
                 ],
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Create a Lock Save',
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: primary,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(
+                  const SizedBox(width: 8),
+                  const Icon(
                     Icons.arrow_forward,
                     color: primary,
                     size: 16,
@@ -141,7 +142,7 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
               children: [
                 Text(
                   'Recommendations',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: context.primaryTextColor,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -149,9 +150,9 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                 ),
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       'More options',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: primary,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -239,7 +240,7 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                         child: Text(
                           'Ongoing',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             color: viewModel.isOngoingSelected
                                 ? Colors.white
                                 : context.secondaryTextColor,
@@ -266,7 +267,7 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                         child: Text(
                           'Paid Back',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             color: !viewModel.isOngoingSelected
                                 ? Colors.white
                                 : context.secondaryTextColor,
@@ -303,7 +304,7 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                   const SizedBox(height: 16),
                   Text(
                     'No ongoing lock save',
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: context.primaryTextColor,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -312,7 +313,7 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                   const SizedBox(height: 8),
                   Text(
                     'Create your first lock save to get started',
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: context.secondaryTextColor,
                       fontSize: 14,
                     ),
@@ -350,7 +351,7 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
             ),
             child: Text(
               'Earn $earnings',
-              style: const TextStyle(
+              style: GoogleFonts.inter(
                 color: Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -360,7 +361,7 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
           const SizedBox(height: 16),
           Text(
             'Lock $lockAmount',
-            style: const TextStyle(
+            style: GoogleFonts.inter(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -369,7 +370,7 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
           const SizedBox(height: 8),
           Text(
             'For $duration',
-            style: TextStyle(
+            style: GoogleFonts.inter(
               color: Colors.white.withOpacity(0.8),
               fontSize: 14,
               fontWeight: FontWeight.w400,

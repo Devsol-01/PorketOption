@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:mobile_app/ui/common/app_colors.dart';
 import 'package:stacked/stacked.dart';
@@ -28,7 +29,7 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
         ),
         title: Text(
           'Goal Savings',
-          style: TextStyle(
+          style: GoogleFonts.inter(
             color: context.primaryTextColor,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -53,9 +54,9 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       '4.5% per annum',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -64,9 +65,9 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        const Text(
+                        Text(
                           'Goal Savings Balance',
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             color: Colors.white,
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
@@ -81,9 +82,9 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       '\$0',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: Colors.white,
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
@@ -119,7 +120,7 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                   children: [
                     Text(
                       'What is Goal Savings?',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: context.primaryTextColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -128,7 +129,7 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                     const SizedBox(height: 12),
                     Text(
                       'Target Savings is a great way to save towards a specific goal or target.\n \nYou can set up automatic savings to help you reach your goal faster.',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: context.secondaryTextColor,
                         fontSize: 14,
                         height: 1.4,
@@ -159,19 +160,19 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                     ),
                   ],
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       'Create a Goal Save',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: primary,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Icon(
+                    const SizedBox(width: 8),
+                    const Icon(
                       Icons.arrow_forward,
                       color: primary,
                       size: 16,
@@ -207,7 +208,7 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                           child: Text(
                             'Live',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: viewModel.isOngoingSelected
                                   ? Colors.white
                                   : context.secondaryTextColor,
@@ -234,7 +235,7 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                           child: Text(
                             'Completed',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: !viewModel.isOngoingSelected
                                   ? Colors.white
                                   : context.secondaryTextColor,
@@ -271,7 +272,7 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                     const SizedBox(height: 16),
                     Text(
                       'No ongoing goal savings',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: context.primaryTextColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

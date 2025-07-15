@@ -37,12 +37,13 @@ class BottomNavView extends StackedView<BottomNavViewModel> {
           type: BottomNavigationBarType.fixed,
           onTap: viewModel.setIndex,
           backgroundColor: context.cardColor,
-          selectedItemColor: context.navBarSelected,
+          selectedItemColor: Color(0xFF675DFF),
           unselectedItemColor: context.navBarUnselected,
           unselectedLabelStyle: GoogleFonts.inter(
-            color: context.tabSelectedColor,
+            color: context.tabUnselectedColor,
             fontSize: 12,
             fontWeight: FontWeight.w500,
+            fontStyle: FontStyle.normal,
           ),
           items: const [
             BottomNavigationBarItem(
