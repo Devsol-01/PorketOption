@@ -14,6 +14,9 @@ import 'package:mobile_app/ui/views/flexi_save/flexi_save_view.dart';
 import 'package:mobile_app/ui/views/lock_save/lock_save_view.dart';
 import 'package:mobile_app/ui/views/group_save/group_save_view.dart';
 import 'package:mobile_app/ui/bottom_sheets/withdraw_sheet/withdraw_sheet_sheet.dart';
+import 'package:mobile_app/ui/views/onboarding/onboarding_view.dart';
+import 'package:mobile_app/ui/views/email/email_view.dart';
+import 'package:mobile_app/ui/views/verification/verification_view.dart';
 // @stacked-import
 
 @StackedApp(
@@ -28,6 +31,9 @@ import 'package:mobile_app/ui/bottom_sheets/withdraw_sheet/withdraw_sheet_sheet.
     MaterialRoute(page: FlexiSaveView),
     MaterialRoute(page: LockSaveView),
     MaterialRoute(page: GroupSaveView),
+    MaterialRoute(page: OnboardingView),
+    MaterialRoute(page: EmailView),
+    MaterialRoute(page: VerificationView),
 // @stacked-route
   ],
   dependencies: [

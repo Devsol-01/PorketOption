@@ -17,5 +17,4 @@ class DashboardViewModel extends BaseViewModel {
     _bottomSheetService.showCustomSheet(
         variant: BottomSheetType.depositSheet, barrierDismissible: false);
   }
-
 }

@@ -8,14 +8,13 @@ class GoalSaveViewModel extends BaseViewModel {
 
   // Getters for state properties
   bool get isOngoingSelected => _isOngoingSelected;
-  
 
   void setOngoingSelected(bool value) {
     _isOngoingSelected = value;
     notifyListeners(); // Notify UI to rebuild
   }
 
-  void navigateBack(){
+  void navigateBack() {
     _navigationService.back();
   }
 }

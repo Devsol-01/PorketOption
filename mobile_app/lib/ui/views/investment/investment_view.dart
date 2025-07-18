@@ -84,8 +84,8 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                               enableInfiniteScroll: false,
                               viewportFraction: 0.65,
                               padEnds: false,
-                             scrollPhysics: RangeMaintainingScrollPhysics()
-                              ),
+                              scrollPhysics:
+                                  const RangeMaintainingScrollPhysics()),
                           items: [
                             _buildProtocolCard(
                               context,
@@ -120,7 +120,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                           ],
                         ),
 
-                        SizedBox(height: 32),
+                        const SizedBox(height: 32),
 
                         // Active/Matured Toggle
                         _buildToggleSection(context),
@@ -298,7 +298,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Container(
-        height: 240, 
+        height: 240,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.protocolCardBackground,
@@ -320,7 +320,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Icon 
+            // Icon
             Container(
               width: 48,
               height: 48,
@@ -334,9 +334,9 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                 size: 24,
               ),
             ),
-            const SizedBox(height: 12), 
-      
-            // Title 
+            const SizedBox(height: 12),
+
+            // Title
             Text(
               title,
               style: GoogleFonts.inter(
@@ -348,7 +348,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 6), // Reduced from 8
-      
+
             // Subtitle
             Text(
               subtitle,
@@ -361,7 +361,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 12), // Reduced from 16
-      
+
             // APY and Risk Level (keeping original design)
             Row(
               children: [
@@ -386,7 +386,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
               ],
             ),
             const SizedBox(height: 10), // Reduced from 12
-      
+
             // TVL and External Link (keeping original design)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -406,7 +406,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                 ),
               ],
             ),
-      
+
             // Add spacer to fill remaining space and prevent overflow
             const Spacer(),
           ],
@@ -453,7 +453,6 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
       ),
     );
   }
-
 
   @override
   InvestmentViewModel viewModelBuilder(

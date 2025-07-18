@@ -28,8 +28,7 @@ extension ThemeContextExtension on BuildContext {
   // ============================================================================
   // TAB COLORS
   // ============================================================================
-  Color get tabBackground =>
-      isDarkMode ? darkCard : lightTabBackground;
+  Color get tabBackground => isDarkMode ? darkCard : lightTabBackground;
   Color get tabUnselectedColor => tabUnselected;
   Color get tabSelectedColor => tabSelected;
 
@@ -129,23 +128,22 @@ extension ThemeContextExtension on BuildContext {
   // ============================================================================
   // GRADIENTS
   // ============================================================================
-LinearGradient get balanceCardGradient => const LinearGradient(
-  begin: Alignment.topLeft,
-  end: Alignment.bottomRight,
-  colors: [
-    Color(0xFF7B6FFF),      // Slightly different purple (same as chart bars)
-    Color(0xFF6B5FEF),      // Slightly darker purple for the end
-  ],
-);
+  LinearGradient get balanceCardGradient => const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Color(0xFF7B6FFF), // Slightly different purple (same as chart bars)
+          Color(0xFF6B5FEF), // Slightly darker purple for the end
+        ],
+      );
 
-      
   LinearGradient get chartBarGradient => LinearGradient(
         begin: Alignment.bottomCenter,
         end: Alignment.topCenter,
         colors: [
-          Color(0xFF7B6FFF)
+          const Color(0xFF7B6FFF)
               .withOpacity(0.6), // Slightly different purple bottom
-          Color(0xFF7B6FFF), // Solid top
+          const Color(0xFF7B6FFF), // Solid top
         ],
       );
 }

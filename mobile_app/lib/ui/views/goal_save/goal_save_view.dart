@@ -21,12 +21,11 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
         backgroundColor: context.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: context.primaryTextColor,
-          ),
-          onPressed: () => viewModel.navigateBack()
-        ),
+            icon: Icon(
+              Icons.arrow_back,
+              color: context.primaryTextColor,
+            ),
+            onPressed: () => viewModel.navigateBack()),
         title: Text(
           'Goal Savings',
           style: GoogleFonts.inter(
@@ -288,11 +287,7 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(8.0),
         child: FloatingActionButton(
-          onPressed: (){},
-          child: Icon(
-            Icons.add
-          )
-        ),
+            onPressed: () {}, child: const Icon(Icons.add)),
       ),
     );
   }

@@ -5,20 +5,22 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:flutter/material.dart' as _i12;
+import 'package:flutter/material.dart' as _i14;
 import 'package:flutter/material.dart';
 import 'package:mobile_app/ui/views/bottom_nav/bottom_nav_view.dart' as _i4;
 import 'package:mobile_app/ui/views/dashboard/dashboard_view.dart' as _i3;
+import 'package:mobile_app/ui/views/email/email_view.dart' as _i13;
 import 'package:mobile_app/ui/views/flexi_save/flexi_save_view.dart' as _i9;
 import 'package:mobile_app/ui/views/goal_save/goal_save_view.dart' as _i8;
 import 'package:mobile_app/ui/views/group_save/group_save_view.dart' as _i11;
 import 'package:mobile_app/ui/views/investment/investment_view.dart' as _i5;
 import 'package:mobile_app/ui/views/lock_save/lock_save_view.dart' as _i10;
+import 'package:mobile_app/ui/views/onboarding/onboarding_view.dart' as _i12;
 import 'package:mobile_app/ui/views/profile/profile_view.dart' as _i6;
 import 'package:mobile_app/ui/views/saving/saving_view.dart' as _i7;
 import 'package:mobile_app/ui/views/startup/startup_view.dart' as _i2;
 import 'package:stacked/stacked.dart' as _i1;
-import 'package:stacked_services/stacked_services.dart' as _i13;
+import 'package:stacked_services/stacked_services.dart' as _i15;
 
 class Routes {
   static const startupView = '/startup-view';
@@ -41,6 +43,10 @@ class Routes {
 
   static const groupSaveView = '/group-save-view';
 
+  static const onboardingView = '/onboarding-view';
+
+  static const emailView = '/email-view';
+
   static const all = <String>{
     startupView,
     dashboardView,
@@ -52,6 +58,8 @@ class Routes {
     flexiSaveView,
     lockSaveView,
     groupSaveView,
+    onboardingView,
+    emailView,
   };
 }
 
@@ -97,66 +105,86 @@ class StackedRouter extends _i1.RouterBase {
       Routes.groupSaveView,
       page: _i11.GroupSaveView,
     ),
+    _i1.RouteDef(
+      Routes.onboardingView,
+      page: _i12.OnboardingView,
+    ),
+    _i1.RouteDef(
+      Routes.emailView,
+      page: _i13.EmailView,
+    ),
   ];
 
   final _pagesMap = <Type, _i1.StackedRouteFactory>{
     _i2.StartupView: (data) {
-      return _i12.MaterialPageRoute<dynamic>(
+      return _i14.MaterialPageRoute<dynamic>(
         builder: (context) => const _i2.StartupView(),
         settings: data,
       );
     },
     _i3.DashboardView: (data) {
-      return _i12.MaterialPageRoute<dynamic>(
+      return _i14.MaterialPageRoute<dynamic>(
         builder: (context) => const _i3.DashboardView(),
         settings: data,
       );
     },
     _i4.BottomNavView: (data) {
-      return _i12.MaterialPageRoute<dynamic>(
+      return _i14.MaterialPageRoute<dynamic>(
         builder: (context) => const _i4.BottomNavView(),
         settings: data,
       );
     },
     _i5.InvestmentView: (data) {
-      return _i12.MaterialPageRoute<dynamic>(
+      return _i14.MaterialPageRoute<dynamic>(
         builder: (context) => const _i5.InvestmentView(),
         settings: data,
       );
     },
     _i6.ProfileView: (data) {
-      return _i12.MaterialPageRoute<dynamic>(
+      return _i14.MaterialPageRoute<dynamic>(
         builder: (context) => const _i6.ProfileView(),
         settings: data,
       );
     },
     _i7.SavingView: (data) {
-      return _i12.MaterialPageRoute<dynamic>(
+      return _i14.MaterialPageRoute<dynamic>(
         builder: (context) => const _i7.SavingView(),
         settings: data,
       );
     },
     _i8.GoalSaveView: (data) {
-      return _i12.MaterialPageRoute<dynamic>(
+      return _i14.MaterialPageRoute<dynamic>(
         builder: (context) => const _i8.GoalSaveView(),
         settings: data,
       );
     },
     _i9.FlexiSaveView: (data) {
-      return _i12.MaterialPageRoute<dynamic>(
+      return _i14.MaterialPageRoute<dynamic>(
         builder: (context) => const _i9.FlexiSaveView(),
         settings: data,
       );
     },
     _i10.LockSaveView: (data) {
-      return _i12.MaterialPageRoute<dynamic>(
+      return _i14.MaterialPageRoute<dynamic>(
         builder: (context) => const _i10.LockSaveView(),
         settings: data,
       );
     },
     _i11.GroupSaveView: (data) {
-      return _i12.MaterialPageRoute<dynamic>(
+      return _i14.MaterialPageRoute<dynamic>(
         builder: (context) => const _i11.GroupSaveView(),
+        settings: data,
+      );
+    },
+    _i12.OnboardingView: (data) {
+      return _i14.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i12.OnboardingView(),
+        settings: data,
+      );
+    },
+    _i13.EmailView: (data) {
+      return _i14.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i13.EmailView(),
         settings: data,
       );
     },
@@ -169,7 +197,7 @@ class StackedRouter extends _i1.RouterBase {
   Map<Type, _i1.StackedRouteFactory> get pagesMap => _pagesMap;
 }
 
-extension NavigatorStateExtension on _i13.NavigationService {
+extension NavigatorStateExtension on _i15.NavigationService {
   Future<dynamic> navigateToStartupView([
     int? routerId,
     bool preventDuplicates = true,
@@ -310,6 +338,34 @@ extension NavigatorStateExtension on _i13.NavigationService {
         transition: transition);
   }
 
+  Future<dynamic> navigateToOnboardingView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return navigateTo<dynamic>(Routes.onboardingView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
+  Future<dynamic> navigateToEmailView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return navigateTo<dynamic>(Routes.emailView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
   Future<dynamic> replaceWithStartupView([
     int? routerId,
     bool preventDuplicates = true,
@@ -444,6 +500,34 @@ extension NavigatorStateExtension on _i13.NavigationService {
         transition,
   ]) async {
     return replaceWith<dynamic>(Routes.groupSaveView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
+  Future<dynamic> replaceWithOnboardingView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return replaceWith<dynamic>(Routes.onboardingView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
+  Future<dynamic> replaceWithEmailView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return replaceWith<dynamic>(Routes.emailView,
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,

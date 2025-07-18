@@ -94,7 +94,7 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
           const SizedBox(height: 16),
           Row(
             children: [
-               Text(
+              Text(
                 'Group Save Balance',
                 style: GoogleFonts.inter(
                   color: Colors.white,
@@ -155,8 +155,8 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(width: 8),
-          Icon(
+          const SizedBox(width: 8),
+          const Icon(
             Icons.arrow_forward,
             color: primary,
             size: 16,

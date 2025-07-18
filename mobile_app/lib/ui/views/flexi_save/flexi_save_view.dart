@@ -59,68 +59,67 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
                   ),
                   borderRadius: BorderRadius.circular(16.0),
                 ),
-                child:
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Interest rate badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12.0, vertical: 6.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.25),
-                          borderRadius: BorderRadius.circular(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Interest rate badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0, vertical: 6.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.25),
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: const Text(
+                        '\$4.5% per annum',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                         ),
-                        child: Text(
-                          '\$4.5% per annum',
-                          style: const TextStyle(
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Title row with eye icon
+                    Row(
+                      children: [
+                        const Text(
+                          'Flexible Savings Balance',
+                          style: TextStyle(
                             color: Colors.white,
-                            fontSize: 13,
+                            fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Title row with eye icon
-                      Row(
-                        children: [
-                          const Text(
-                            'Flexible Savings Balance',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.visibility_outlined,
-                            color: Colors.white.withOpacity(0.8),
-                            size: 18,
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      // Balance amount
-                      Text(
-                        '\$0',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.w600,
-                          height: 1.0,
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.visibility_outlined,
+                          color: Colors.white.withOpacity(0.8),
+                          size: 18,
                         ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    // Balance amount
+                    const Text(
+                      '\$0',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w600,
+                        height: 1.0,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
               ),
 
-             SizedBox(height: 24),
+              const SizedBox(height: 24),
 
               // AutoSave Card
               Container(
@@ -439,6 +438,4 @@ class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
     BuildContext context,
   ) =>
       FlexiSaveViewModel();
-
 }
-

@@ -22,7 +22,7 @@ class FlexiSaveViewModel extends BaseViewModel {
     notifyListeners(); // Notify UI to rebuild
   }
 
-  void navigateBack(){
+  void navigateBack() {
     _navigationService.back();
   }
 }
