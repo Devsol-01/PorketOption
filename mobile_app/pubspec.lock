@@ -329,7 +329,7 @@ packages:
     source: hosted
     version: "2.3.2"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "2c11f3f94c687ee9bad77c171151672986360b2b001d109814ee7140b2cf261b"
@@ -600,6 +600,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.3"
+  privy_flutter:
+    dependency: "direct main"
+    description:
+      name: privy_flutter
+      sha256: "49f89fc7d3d6042ad6d027ac406b89ded7f38a8e04b2db2c2f784f3553e8173a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.8"
   provider:
     dependency: transitive
     description:
@@ -648,6 +656,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
+  rxdart:
+    dependency: transitive
+    description:
+      name: rxdart
+      sha256: "5c3004a4a8dbb94bd4bf5412a4def4acdaa12e12f269737a5751369e12d1a962"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.28.0"
   shelf:
     dependency: transitive
     description:

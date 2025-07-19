@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:mobile_app/ui/common/app_colors.dart' as AppColors;
 import 'package:stacked/stacked.dart';
@@ -47,7 +48,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                             const SizedBox(height: 30),
                             Text(
                               page['title'],
-                              style: TextStyle(
+                              style: GoogleFonts.dmSans(
                                   fontSize: 26,
                                   fontWeight: FontWeight.bold,
                                   color: context.primaryTextColor),
@@ -56,7 +57,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                             const SizedBox(height: 12),
                             Text(
                               page['description'],
-                              style: const TextStyle(fontSize: 16),
+                              style:  GoogleFonts.dmSans(fontSize: 16),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -90,10 +91,18 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                     onTap: () => viewModel.onNextPressed(),
                     child: Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(16)),
+                      padding: const EdgeInsets.all(16),
+                             decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            gradient: const LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                Color(0xFF675DFF),
+                                Color(0xFF4F46E5),
+                              ],
+                            ),
+                          ),
                       child: Center(
                         child: Text(
                           viewModel.isLastPage ? 'Get Started' : 'Next',

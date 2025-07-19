@@ -16,28 +16,28 @@ class OnboardingViewModel extends BaseViewModel {
       'title': 'Welcome to PorketOption',
       'description':
           'Discover the power of decentralized finance with savings, investments, and portfolio tools — all in one place.',
-      'color': Color(0xFF8B5CF6)
+      'color': const Color(0xFF8B5CF6)
     },
     {
       'icon': Icons.savings,
       'title': 'Smart Savings Plans',
       'description':
           'Choose from Flexible, Goal-based, Locked, or Group savings plans with high APY rates tailored to your goals.',
-      'color': Color(0xFF3B82F6),
+      'color': const Color(0xFF3B82F6),
     },
     {
       'icon': Icons.trending_up,
       'title': 'Web3 Investments',
       'description':
           'Invest in trusted Solana projects like Solend, Marinade, and Raydium — with clear risk insights and full transparency.',
-      'color': Color(0xFF22C55E),
+      'color': const Color(0xFF22C55E),
     },
     {
       'icon': Icons.shield,
       'title': 'Secure & Transparent',
       'description':
           'Enjoy complete control of your assets, secured by blockchain technology and full on-chain transparency.',
-      'color': Color(0xFFF97316),
+      'color': const Color(0xFFF97316),
     },
   ];
 
@@ -50,8 +50,7 @@ class OnboardingViewModel extends BaseViewModel {
 
   void onNextPressed() {
     if (isLastPage) {
-      _navigationService
-          .replaceWithEmailView(); // Replace with your actual home route
+      _navigationService.navigateToEmailView(); // Replace with your actual home route
     } else {
       pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -62,6 +61,6 @@ class OnboardingViewModel extends BaseViewModel {
 
   void onSkip() {
     _navigationService
-        .replaceWithEmailView(); // Replace with your actual home route
+        .navigateToEmailView(); // Replace with your actual home route
   }
 }

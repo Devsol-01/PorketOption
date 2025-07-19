@@ -199,7 +199,7 @@ class StackedRouter extends _i1.RouterBase {
     },
     _i14.VerificationView: (data) {
       return _i15.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i14.VerificationView(),
+        builder: (context) => const _i14.VerificationView(email: '',),
         settings: data,
       );
     },
