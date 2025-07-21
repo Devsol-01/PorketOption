@@ -7,7 +7,7 @@ import 'package:stacked/stacked.dart';
 import 'group_save_viewmodel.dart';
 
 class GroupSaveView extends StackedView<GroupSaveViewModel> {
-  const GroupSaveView({Key? key}) : super(key: key);
+  const GroupSaveView({super.key});
 
   @override
   Widget builder(

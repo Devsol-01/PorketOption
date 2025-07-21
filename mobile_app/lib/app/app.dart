@@ -17,6 +17,7 @@ import 'package:mobile_app/ui/bottom_sheets/withdraw_sheet/withdraw_sheet_sheet.
 import 'package:mobile_app/ui/views/onboarding/onboarding_view.dart';
 import 'package:mobile_app/ui/views/email/email_view.dart';
 import 'package:mobile_app/ui/views/verification/verification_view.dart';
+import 'package:mobile_app/services/privy_service.dart';
 // @stacked-import
 
 @StackedApp(
@@ -40,7 +41,8 @@ import 'package:mobile_app/ui/views/verification/verification_view.dart';
     LazySingleton(classType: BottomSheetService),
     LazySingleton(classType: DialogService),
     LazySingleton(classType: NavigationService),
-    // @stacked-service
+    LazySingleton(classType: PrivyService),
+// @stacked-service
   ],
   bottomsheets: [
     StackedBottomsheet(classType: DepositSheetSheet),

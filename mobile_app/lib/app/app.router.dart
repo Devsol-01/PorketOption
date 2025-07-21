@@ -198,8 +198,10 @@ class StackedRouter extends _i1.RouterBase {
       );
     },
     _i14.VerificationView: (data) {
+      final args = data.getArgs<VerificationViewArguments>(nullOk: false);
       return _i15.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i14.VerificationView(email: '',),
+        builder: (context) =>
+            _i14.VerificationView(key: args.key, email: args.email),
         settings: data,
       );
     },
@@ -210,6 +212,33 @@ class StackedRouter extends _i1.RouterBase {
 
   @override
   Map<Type, _i1.StackedRouteFactory> get pagesMap => _pagesMap;
+}
+
+class VerificationViewArguments {
+  const VerificationViewArguments({
+    this.key,
+    required this.email,
+  });
+
+  final _i15.Key? key;
+
+  final String email;
+
+  @override
+  String toString() {
+    return '{"key": "$key", "email": "$email"}';
+  }
+
+  @override
+  bool operator ==(covariant VerificationViewArguments other) {
+    if (identical(this, other)) return true;
+    return other.key == key && other.email == email;
+  }
+
+  @override
+  int get hashCode {
+    return key.hashCode ^ email.hashCode;
+  }
 }
 
 extension NavigatorStateExtension on _i16.NavigationService {
@@ -381,14 +410,17 @@ extension NavigatorStateExtension on _i16.NavigationService {
         transition: transition);
   }
 
-  Future<dynamic> navigateToVerificationView([
+  Future<dynamic> navigateToVerificationView({
+    _i15.Key? key,
+    required String email,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
     Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
         transition,
-  ]) async {
+  }) async {
     return navigateTo<dynamic>(Routes.verificationView,
+        arguments: VerificationViewArguments(key: key, email: email),
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,
@@ -563,14 +595,17 @@ extension NavigatorStateExtension on _i16.NavigationService {
         transition: transition);
   }
 
-  Future<dynamic> replaceWithVerificationView([
+  Future<dynamic> replaceWithVerificationView({
+    _i15.Key? key,
+    required String email,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
     Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
         transition,
-  ]) async {
+  }) async {
     return replaceWith<dynamic>(Routes.verificationView,
+        arguments: VerificationViewArguments(key: key, email: email),
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,

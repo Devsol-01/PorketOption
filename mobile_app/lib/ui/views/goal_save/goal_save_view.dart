@@ -7,7 +7,7 @@ import 'package:stacked/stacked.dart';
 import 'goal_save_viewmodel.dart';
 
 class GoalSaveView extends StackedView<GoalSaveViewModel> {
-  const GoalSaveView({Key? key}) : super(key: key);
+  const GoalSaveView({super.key});
 
   @override
   Widget builder(

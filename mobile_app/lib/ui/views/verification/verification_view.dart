@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:stacked/stacked.dart';
 
 import 'verification_viewmodel.dart';
 
 class VerificationView extends StackedView<VerificationViewModel> {
   final String email;
-  const VerificationView({Key? key, required this.email}) : super(key: key);
+  
+  const VerificationView({super.key, required this.email});
 
   @override
   Widget builder(
@@ -32,7 +34,10 @@ class VerificationView extends StackedView<VerificationViewModel> {
                     child: Text(
                       'Verify Email',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                   const SizedBox(width: 48),
@@ -53,11 +58,14 @@ class VerificationView extends StackedView<VerificationViewModel> {
               const SizedBox(height: 32),
               const Text(
                 'Verify Your Email',
-                style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Text(
-                'We sent a 6-digit code to ${viewModel.email}. Enter it below.',
+                'We sent a 6-digit code to $email. Enter it below.',
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 16),
               ),
@@ -87,16 +95,20 @@ class VerificationView extends StackedView<VerificationViewModel> {
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
                       ],
-                      onChanged: (value) => viewModel.onDigitChanged(index, value),
+                      onChanged: (value) =>
+                          viewModel.onDigitChanged(index, value),
                       onTap: () => viewModel.controllers[index].selection =
-                          TextSelection.fromPosition(TextPosition(offset: viewModel.controllers[index].text.length)),
+                          TextSelection.fromPosition(TextPosition(
+                              offset:
+                                  viewModel.controllers[index].text.length)),
                     ),
                   );
                 }),
               ),
               const SizedBox(height: 32),
               GestureDetector(
-                onTap: viewModel.remainingTime == 0 ? viewModel.resendCode : null,
+                onTap:
+                    viewModel.remainingTime == 0 ? viewModel.resendCode : null,
                 child: Text(
                   viewModel.remainingTime > 0
                       ? 'Resend code in ${viewModel.remainingTime}s'
@@ -114,7 +126,8 @@ class VerificationView extends StackedView<VerificationViewModel> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: viewModel.isCodeComplete ? viewModel.verifyCode : null,
+                  onPressed:
+                      viewModel.isCodeComplete ? viewModel.verifyCode : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: viewModel.isCodeComplete
                         ? const Color(0xFF675DFF)
@@ -123,9 +136,10 @@ class VerificationView extends StackedView<VerificationViewModel> {
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Verify & Continue',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16,color: context.primaryTextColor,),
+                    
                   ),
                 ),
               ),
@@ -146,10 +160,11 @@ class VerificationView extends StackedView<VerificationViewModel> {
 
   @override
   VerificationViewModel viewModelBuilder(BuildContext context) =>
-      VerificationViewModel(email);
+      VerificationViewModel();
 
   @override
   void onViewModelReady(VerificationViewModel viewModel) {
     viewModel.init();
+    viewModel.setEmail(email); // Pass the email to the viewmodel
   }
 }

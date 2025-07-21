@@ -7,7 +7,7 @@ import 'package:stacked/stacked.dart';
 import 'flexi_save_viewmodel.dart';
 
 class FlexiSaveView extends StackedView<FlexiSaveViewModel> {
-  const FlexiSaveView({Key? key}) : super(key: key);
+  const FlexiSaveView({super.key});
 
   @override
   Widget builder(

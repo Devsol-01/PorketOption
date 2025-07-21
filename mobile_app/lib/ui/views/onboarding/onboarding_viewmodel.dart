@@ -50,7 +50,8 @@ class OnboardingViewModel extends BaseViewModel {
 
   void onNextPressed() {
     if (isLastPage) {
-      _navigationService.navigateToEmailView(); // Replace with your actual home route
+      _navigationService
+          .navigateToEmailView(); // Replace with your actual home route
     } else {
       pageController.nextPage(
         duration: const Duration(milliseconds: 300),

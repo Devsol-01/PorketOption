@@ -136,7 +136,6 @@ extension ThemeContextExtension on BuildContext {
           Color(0xFF6B5FEF), // Slightly darker purple for the end
         ],
       );
-      
 
   LinearGradient get chartBarGradient => LinearGradient(
         begin: Alignment.bottomCenter,

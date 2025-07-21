@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:stacked/stacked.dart';
-import '../../common/app_colors.dart';
-import '../../common/ui_helpers.dart';
 
 import 'email_viewmodel.dart';
 
 class EmailView extends StackedView<EmailViewModel> {
-  const EmailView({Key? key}) : super(key: key);
+  const EmailView({super.key});
 
   @override
   Widget builder(
@@ -15,7 +13,6 @@ class EmailView extends StackedView<EmailViewModel> {
     EmailViewModel viewModel,
     Widget? child,
   ) {
-    final TextEditingController emailController = TextEditingController();
     return Scaffold(
       // Enhanced background with primary color hints
       body: Container(
@@ -83,7 +80,7 @@ class EmailView extends StackedView<EmailViewModel> {
                           // Logo - Enhanced shadows only
                           TweenAnimationBuilder<double>(
                             tween: Tween(begin: 0.8, end: 1.0),
-                            duration: const Duration(milliseconds: 1),
+                            duration: const Duration(microseconds: 3000),
                             curve: Curves.slowMiddle,
                             builder: (context, scaleValue, child) {
                               return AnimatedContainer(
@@ -203,7 +200,11 @@ class EmailView extends StackedView<EmailViewModel> {
                                   ],
                                 ),
                                 child: TextField(
-                                  controller: emailController,
+                                  keyboardType: TextInputType.emailAddress,
+                                  onChanged: (value) {
+                                    print('Email input changed: $value');
+                                    viewModel.updateEmail(value);
+                                  },
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
@@ -224,7 +225,6 @@ class EmailView extends StackedView<EmailViewModel> {
                                       vertical: 20,
                                     ),
                                   ),
-                                  keyboardType: TextInputType.emailAddress,
                                 ),
                               ),
                             ],
@@ -261,10 +261,12 @@ class EmailView extends StackedView<EmailViewModel> {
                               ],
                             ),
                             child: ElevatedButton(
-                              onPressed: () {
+                              onPressed: viewModel.isLoading ? null : () async {
+                                print('Continue with Email button pressed!');
+                                print('Current email: ${viewModel.email}');
                                 // Handle continue with email
-                                print(
-                                    viewModel.navigate);
+                                await viewModel.sendVerificationCode();
+                                print('sendVerificationCode completed');
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
@@ -273,14 +275,37 @@ class EmailView extends StackedView<EmailViewModel> {
                                   borderRadius: BorderRadius.circular(28),
                                 ),
                               ),
-                              child: const Text(
-                                'Continue with Email',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                              child: viewModel.isLoading
+                                  ? const Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          ),
+                                        ),
+                                        SizedBox(width: 12),
+                                        Text(
+                                          'Sending code...',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : const Text(
+                                      'Continue with Email',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                             ),
                           ),
                         ],

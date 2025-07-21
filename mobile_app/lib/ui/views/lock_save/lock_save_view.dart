@@ -7,7 +7,7 @@ import 'package:stacked/stacked.dart';
 import 'lock_save_viewmodel.dart';
 
 class LockSaveView extends StackedView<LockSaveViewModel> {
-  const LockSaveView({Key? key}) : super(key: key);
+  const LockSaveView({super.key});
 
   @override
   Widget builder(

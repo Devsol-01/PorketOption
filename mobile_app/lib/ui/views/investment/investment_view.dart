@@ -8,7 +8,7 @@ import 'package:stacked/stacked.dart';
 import 'investment_viewmodel.dart';
 
 class InvestmentView extends StackedView<InvestmentViewModel> {
-  const InvestmentView({Key? key}) : super(key: key);
+  const InvestmentView({super.key});
 
   @override
   Widget builder(

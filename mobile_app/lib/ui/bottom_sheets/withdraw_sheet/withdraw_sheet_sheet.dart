@@ -10,10 +10,10 @@ class WithdrawSheetSheet extends StackedView<WithdrawSheetSheetModel> {
   final Function(SheetResponse response)? completer;
   final SheetRequest request;
   const WithdrawSheetSheet({
-    Key? key,
+    super.key,
     required this.completer,
     required this.request,
-  }) : super(key: key);
+  });
 
   @override
   Widget builder(

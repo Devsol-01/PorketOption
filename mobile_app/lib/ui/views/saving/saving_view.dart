@@ -7,7 +7,7 @@ import 'package:stacked/stacked.dart';
 import 'saving_viewmodel.dart';
 
 class SavingView extends StackedView<SavingViewModel> {
-  const SavingView({Key? key}) : super(key: key);
+  const SavingView({super.key});
 
   @override
   Widget builder(

@@ -7,7 +7,7 @@ import '../../common/app_colors.dart' as AppColors;
 import 'dashboard_viewmodel.dart';
 
 class DashboardView extends StackedView<DashboardViewModel> {
-  const DashboardView({Key? key}) : super(key: key);
+  const DashboardView({super.key});
 
   @override
   Widget builder(

@@ -57,7 +57,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                             const SizedBox(height: 12),
                             Text(
                               page['description'],
-                              style:  GoogleFonts.dmSans(fontSize: 16),
+                              style: GoogleFonts.dmSans(fontSize: 16),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -92,17 +92,17 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
-                             decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            gradient: const LinearGradient(
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                Color(0xFF675DFF),
-                                Color(0xFF4F46E5),
-                              ],
-                            ),
-                          ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: const LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            Color(0xFF675DFF),
+                            Color(0xFF4F46E5),
+                          ],
+                        ),
+                      ),
                       child: Center(
                         child: Text(
                           viewModel.isLastPage ? 'Get Started' : 'Next',
