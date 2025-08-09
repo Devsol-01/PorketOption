@@ -5,6 +5,9 @@ package_manager = "yarn"
 resolution = true
 skip-lint = false
 
+[programs.devnet]
+contract = "4TJynqBJZExUGUy9rSH5wFgAcSjhdwYjTAUJyt6qvoTh"
+
 [programs.localnet]
 contract = "2AmsYgcLobdupv7Z9idFFaoNATc98Eqn1f7kE4F6RvyK"
 

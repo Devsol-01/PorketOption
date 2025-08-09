@@ -1,7 +1,6 @@
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:mobile_app/app/app.router.dart';
 import 'package:mobile_app/services/privy_service.dart';
-import 'package:privy_flutter/privy_flutter.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -18,9 +17,7 @@ class EmailViewModel extends BaseViewModel {
   bool get isLoading => _isLocalLoading || _privyService.isLoading;
   String? get errorMessage => _privyService.errorMessage;
 
-  @override
   List<ListenableServiceMixin> get listenableServices => [_privyService];
-
 
   void updateEmail(String value) {
     email = value.trim();
@@ -34,7 +31,7 @@ class EmailViewModel extends BaseViewModel {
 
   Future<void> sendVerificationCode() async {
     print('sendVerificationCode called with email: "$email"');
-    
+
     if (email.isEmpty) {
       print('Email is empty, showing error message');
       _showMessage('Please enter your email', isError: true);
@@ -50,18 +47,19 @@ class EmailViewModel extends BaseViewModel {
       print('Calling _privyService.sendEmailCode with email: $email');
       final success = await _privyService.sendEmailCode(email);
       print('_privyService.sendEmailCode returned: $success');
-      
+
       if (success) {
         codeSent = true;
         print('Code sent successfully to $email');
         _showMessage('Verification code sent to $email');
-        
+
         // Navigate to verification page
         print('Navigating to verification page');
         _navigationService.navigateToVerificationView(email: email);
       } else {
         print('Failed to send code. Error: ${_privyService.errorMessage}');
-        _showMessage(_privyService.errorMessage ?? 'Failed to send code', isError: true);
+        _showMessage(_privyService.errorMessage ?? 'Failed to send code',
+            isError: true);
       }
     } finally {
       // Always reset local loading state
@@ -77,7 +75,8 @@ class EmailViewModel extends BaseViewModel {
       return;
     }
 
-    final success = await _privyService.loginWithEmailCode(email, verificationCode);
+    final success =
+        await _privyService.loginWithEmailCode(email, verificationCode);
     if (success) {
       _showMessage('Authentication successful!');
       _navigationService.navigateToDashboardView();

@@ -103,18 +103,19 @@ class EmailView extends StackedView<EmailViewModel> {
                                   boxShadow: [
                                     BoxShadow(
                                       color: const Color(0xFF675DFF)
-                                          .withOpacity(0.25),
+                                          .withValues(alpha: 0.25),
                                       blurRadius: 20,
                                       offset: const Offset(0, 6),
                                     ),
                                     BoxShadow(
                                       color: const Color(0xFF4F46E5)
-                                          .withOpacity(0.15),
+                                          .withValues(alpha: 0.15),
                                       blurRadius: 12,
                                       offset: const Offset(0, 4),
                                     ),
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.3),
                                       blurRadius: 10,
                                       offset: const Offset(0, 5),
                                     ),
@@ -186,14 +187,14 @@ class EmailView extends StackedView<EmailViewModel> {
                                       0xFF1E1E24), // Darker background for contrast
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: const Color(0xFF4F46E5).withOpacity(
-                                        0.15), // More subtle border
+                                    color: const Color(0xFF4F46E5).withValues(
+                                        alpha: 0.15), // More subtle border
                                     width: 1,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
                                       color: const Color(0xFF4F46E5)
-                                          .withOpacity(0.05),
+                                          .withValues(alpha: 0.05),
                                       blurRadius: 10,
                                       offset: const Offset(0, 2),
                                     ),
@@ -261,13 +262,17 @@ class EmailView extends StackedView<EmailViewModel> {
                               ],
                             ),
                             child: ElevatedButton(
-                              onPressed: viewModel.isLoading ? null : () async {
-                                print('Continue with Email button pressed!');
-                                print('Current email: ${viewModel.email}');
-                                // Handle continue with email
-                                await viewModel.sendVerificationCode();
-                                print('sendVerificationCode completed');
-                              },
+                              onPressed: viewModel.isLoading
+                                  ? null
+                                  : () async {
+                                      print(
+                                          'Continue with Email button pressed!');
+                                      print(
+                                          'Current email: ${viewModel.email}');
+                                      // Handle continue with email
+                                      await viewModel.sendVerificationCode();
+                                      print('sendVerificationCode completed');
+                                    },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
                                 shadowColor: Colors.transparent,
@@ -277,14 +282,17 @@ class EmailView extends StackedView<EmailViewModel> {
                               ),
                               child: viewModel.isLoading
                                   ? const Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         SizedBox(
                                           width: 20,
                                           height: 20,
                                           child: CircularProgressIndicator(
                                             strokeWidth: 2,
-                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.white),
                                           ),
                                         ),
                                         SizedBox(width: 12),

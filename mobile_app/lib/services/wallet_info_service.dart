@@ -1,5 +1,6 @@
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:mobile_app/services/privy_service.dart';
+import 'package:mobile_app/extensions/num_extensions.dart';
 
 /// Service to handle wallet information and user data
 class WalletInfoService {
@@ -98,13 +99,13 @@ class WalletInfoService {
     await Future.delayed(const Duration(milliseconds: 500));
 
     // Return mock USDC balance for demonstration
-    return 1000.75; // Mock USDC balance - replace with actual RPC call
+    return 100.75; // Mock USDC balance - replace with actual RPC call
   }
 
   /// Get formatted USDC balance string
   Future<String> getFormattedBalance() async {
     final balance = await getWalletBalance();
-    return '\$${balance.toStringAsFixed(2)} USDC';
+    return '${balance.toCurrency(symbol: ' 24')} USDC';
   }
 
   /// Copy wallet address to clipboard

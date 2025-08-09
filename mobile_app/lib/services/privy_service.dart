@@ -1,5 +1,3 @@
-
-
 // 1. Create a Privy Service (services/privy_service.dart)
 import 'package:privy_flutter/privy_flutter.dart';
 import 'package:stacked/stacked.dart';
@@ -8,7 +6,7 @@ import 'package:mobile_app/config/env_config.dart';
 class PrivyService with ListenableServiceMixin {
   // Private Privy instance
   Privy? _privySdk;
-  
+
   // Reactive properties
   final _isInitialized = ReactiveValue<bool>(false);
   final _isAuthenticated = ReactiveValue<bool>(false);
@@ -46,7 +44,7 @@ class PrivyService with ListenableServiceMixin {
   Future<void> initialize() async {
     try {
       _setLoading(true);
-      
+
       final privyConfig = PrivyConfig(
         appId: EnvConfig.privyAppId,
         appClientId: EnvConfig.privyClientId,
@@ -55,10 +53,10 @@ class PrivyService with ListenableServiceMixin {
 
       _privySdk = Privy.init(config: privyConfig);
       _isInitialized.value = true;
-      
+
       // Check if user is already authenticated
       await _checkAuthenticationStatus();
-      
+
       _setLoading(false);
       _clearError();
     } catch (e) {
@@ -75,7 +73,7 @@ class PrivyService with ListenableServiceMixin {
       _clearError();
 
       final result = await privy.email.sendCode(email);
-      
+
       bool success = false;
       result.fold(
         onSuccess: (_) {
@@ -88,7 +86,7 @@ class PrivyService with ListenableServiceMixin {
           _setLoading(false);
         },
       );
-      
+
       return success;
     } catch (e) {
       _setError('Unexpected error: $e');
@@ -122,7 +120,7 @@ class PrivyService with ListenableServiceMixin {
           _setLoading(false);
         },
       );
-      
+
       return success;
     } catch (e) {
       _setError('Unexpected error: $e');
@@ -158,7 +156,7 @@ class PrivyService with ListenableServiceMixin {
           _setLoading(false);
         },
       );
-      
+
       return wallet;
     } catch (e) {
       _setError('Unexpected error: $e');
@@ -174,11 +172,11 @@ class PrivyService with ListenableServiceMixin {
       _clearError();
 
       await privy.logout();
-      
+
       _currentUser.value = null;
       _isAuthenticated.value = false;
       _setLoading(false);
-      
+
       return true;
     } catch (e) {
       _setError('Logout failed: $e');

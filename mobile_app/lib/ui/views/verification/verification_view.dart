@@ -7,7 +7,7 @@ import 'verification_viewmodel.dart';
 
 class VerificationView extends StackedView<VerificationViewModel> {
   final String email;
-  
+
   const VerificationView({super.key, required this.email});
 
   @override
@@ -138,8 +138,10 @@ class VerificationView extends StackedView<VerificationViewModel> {
                   ),
                   child: Text(
                     'Verify & Continue',
-                    style: TextStyle(fontSize: 16,color: context.primaryTextColor,),
-                    
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: context.primaryTextColor,
+                    ),
                   ),
                 ),
               ),
@@ -165,6 +167,6 @@ class VerificationView extends StackedView<VerificationViewModel> {
   @override
   void onViewModelReady(VerificationViewModel viewModel) {
     viewModel.init();
-    viewModel.setEmail(email); // Pass the email to the viewmodel
+    viewModel.setEmail(email);
   }
 }

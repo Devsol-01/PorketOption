@@ -19,24 +19,23 @@ class VerificationViewModel extends BaseViewModel {
   Timer? _timer;
   int _remainingTime = 59;
   int get remainingTime => _remainingTime;
-  
+
   String _email = '';
   bool _isLocalLoading = false;
-  
+
   // Getters
   bool get isCodeComplete =>
       controllers.every((controller) => controller.text.isNotEmpty);
   bool get isLoading => _isLocalLoading || _privyService.isLoading;
   String? get errorMessage => _privyService.errorMessage;
-  
+
   // Reactive services
-  @override
   List<ListenableServiceMixin> get listenableServices => [_privyService];
 
   void init() {
     _startTimer();
   }
-  
+
   void setEmail(String email) {
     _email = email;
     print('Email set in VerificationViewModel: $_email');
@@ -73,15 +72,15 @@ class VerificationViewModel extends BaseViewModel {
 
   Future<void> resendCode() async {
     print('Resending code to $_email');
-    
+
     if (_email.isEmpty) {
       print('Email is empty, cannot resend code');
       return;
     }
-    
+
     _isLocalLoading = true;
     notifyListeners();
-    
+
     try {
       final success = await _privyService.sendEmailCode(_email);
       if (success) {
@@ -100,29 +99,28 @@ class VerificationViewModel extends BaseViewModel {
     return controllers.map((c) => c.text).join();
   }
 
-
   Future<void> verifyCode() async {
     String code = getVerificationCode();
     print("Verifying code: $code with email: $_email");
-    
+
     if (code.length != 6) {
       print('Code must be 6 digits');
       return;
     }
-    
+
     if (_email.isEmpty) {
       print('Email is empty, cannot verify code');
       return;
     }
-    
+
     _isLocalLoading = true;
     notifyListeners();
-    
+
     try {
       final success = await _privyService.loginWithEmailCode(_email, code);
       if (success) {
         print('Verification successful! Creating Solana wallet...');
-        
+
         // Create Solana wallet for the user
         final wallet = await _privyService.createSolanaWallet();
         if (wallet != null) {
@@ -131,9 +129,9 @@ class VerificationViewModel extends BaseViewModel {
         } else {
           print('Failed to create Solana wallet, but continuing to dashboard');
         }
-        
+
         print('Navigating to dashboard');
-        _navigationService.navigateToBottomNavView();
+        _navigationService.replaceWithBottomNavView();
       } else {
         print('Verification failed. Error: ${_privyService.errorMessage}');
         // You can add error handling here, like showing a snackbar
@@ -143,6 +141,8 @@ class VerificationViewModel extends BaseViewModel {
       notifyListeners();
     }
   }
+
+  bool get hasBackButton => true;
 
   @override
   void dispose() {

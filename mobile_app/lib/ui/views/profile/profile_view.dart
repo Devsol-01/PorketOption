@@ -104,7 +104,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
                 ),
               ),
               Text(
-                'FlowCoin Member',
+                'PorkCoin Member',
                 style: GoogleFonts.inter(
                   color: context.tabSelectedColor,
                   fontSize: 14,
@@ -155,7 +155,7 @@ class ProfileView extends StackedView<ProfileViewModel> {
                 icon: Icons.monetization_on_outlined,
                 iconColor: context.tabSelectedColor,
                 value: '2,847',
-                label: 'FlowCoins',
+                label: 'PorkCoins',
               ),
             ),
           ],

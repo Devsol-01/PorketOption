@@ -1,49 +1,59 @@
+import 'package:flutter/services.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_services/stacked_services.dart';
+import 'package:mobile_app/app/app.locator.dart';
+import 'package:mobile_app/services/wallet_info_service.dart';
 
 class CryptoDepositSheetSheetModel extends BaseViewModel {
-  //   final _navigationService = locator<NavigationService>();
-  // final _snackbarService = locator<SnackbarService>();
+  final _navigationService = locator<NavigationService>();
+  final _snackbarService = locator<SnackbarService>();
+  final _walletInfoService = locator<WalletInfoService>();
 
-  // // Sample wallet address - replace with your actual address
-  // final String walletAddress = '0x742d35Cc6639C0532fEb52F64e8a1e8e5e1D2B7B';
+  bool _isCopied = false;
+  bool get isCopied => _isCopied;
 
-  // bool _isCopied = false;
-  // bool get isCopied => _isCopied;
+  String? get walletAddress => _walletInfoService.primaryWalletAddress;
+  String get displayWalletAddress => _walletInfoService.formattedWalletAddress;
 
-  // /// Copies the wallet address to clipboard
-  // Future<void> copyAddress() async {
-  //   try {
-  //     await Clipboard.setData(ClipboardData(text: walletAddress));
-  //     _isCopied = true;
-  //     notifyListeners();
+  bool get hasWalletAddress =>
+      walletAddress != null && walletAddress!.isNotEmpty;
 
-  //     // Show success message
-  //     _snackbarService.showSnackbar(
-  //       message: 'Address copied to clipboard',
-  //       duration: const Duration(seconds: 2),
-  //     );
+  /// Copies the wallet address to clipboard
+  Future<void> copyAddress() async {
+    if (!hasWalletAddress) {
+      _snackbarService.showSnackbar(
+        message: 'No wallet address available',
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
 
-  //     // Reset copy state after 2 seconds
-  //     Future.delayed(const Duration(seconds: 2), () {
-  //       _isCopied = false;
-  //       notifyListeners();
-  //     });
+    try {
+      await Clipboard.setData(ClipboardData(text: walletAddress!));
+      _isCopied = true;
+      notifyListeners();
 
-  //   } catch (e) {
-  //     _snackbarService.showSnackbar(
-  //       message: 'Failed to copy address',
-  //       duration: const Duration(seconds: 2),
-  //     );
-  //   }
-  // }
+      // Show success message
+      _snackbarService.showSnackbar(
+        message: 'Address copied to clipboard',
+        duration: const Duration(seconds: 2),
+      );
 
-  // /// Navigates back to previous screen
-  // void goBack() {
-  //   _navigationService.back();
-  // }
+      // Reset copy state after 2 seconds
+      Future.delayed(const Duration(seconds: 2), () {
+        _isCopied = false;
+        notifyListeners();
+      });
+    } catch (e) {
+      _snackbarService.showSnackbar(
+        message: 'Failed to copy address',
+        duration: const Duration(seconds: 2),
+      );
+    }
+  }
 
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  // }
+  /// Navigates back to previous screen
+  void goBack() {
+    _navigationService.back();
+  }
 }

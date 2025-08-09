@@ -180,19 +180,19 @@ class SavingView extends StackedView<SavingViewModel> {
             end: Alignment.bottomRight,
             colors: context.isDarkMode
                 ? [
-                    primaryColor.withOpacity(0.3),
+                    primaryColor.withValues(alpha: 0.3),
                     primaryColor.withOpacity(0.1),
                   ]
                 : [
                     primaryColor.withOpacity(0.1),
-                    primaryColor.withOpacity(0.05),
+                    primaryColor.withValues(alpha: 0.05),
                   ],
           ),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: context.isDarkMode
-                ? primaryColor.withOpacity(0.2)
-                : primaryColor.withOpacity(0.1),
+                ? primaryColor.withValues(alpha: 0.2)
+                : primaryColor.withValues(alpha: 0.1),
             width: 2.5,
           ),
           boxShadow: [
@@ -214,7 +214,7 @@ class SavingView extends StackedView<SavingViewModel> {
                 height: 80,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: primaryColor.withOpacity(0.1),
+                  color: primaryColor.withValues(alpha: 0.1),
                 ),
               ),
             ),
@@ -226,7 +226,7 @@ class SavingView extends StackedView<SavingViewModel> {
                 height: 100,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: secondaryColor.withOpacity(0.08),
+                  color: secondaryColor.withValues(alpha: 0.08),
                 ),
               ),
             ),
@@ -242,7 +242,7 @@ class SavingView extends StackedView<SavingViewModel> {
                     height: 50,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: primaryColor.withOpacity(0.2),
+                      color: primaryColor.withValues(alpha: 0.2),
                     ),
                     child: Icon(
                       icon,

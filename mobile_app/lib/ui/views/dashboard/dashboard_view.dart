@@ -10,6 +10,11 @@ class DashboardView extends StackedView<DashboardViewModel> {
   const DashboardView({super.key});
 
   @override
+  void onViewModelReady(DashboardViewModel viewModel) {
+    viewModel.initialize();
+  }
+
+  @override
   Widget builder(
     BuildContext context,
     DashboardViewModel viewModel,
@@ -29,7 +34,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   const SizedBox(height: 30),
 
                   //Balance card
-                  _buildBalanceCard(context),
+                  _buildBalanceCard(context, viewModel),
                   const SizedBox(height: 30),
 
                   //Action Buttons
@@ -113,10 +118,10 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildBalanceCard(BuildContext context) {
+  Widget _buildBalanceCard(BuildContext context, DashboardViewModel viewModel) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
@@ -126,20 +131,22 @@ class DashboardView extends StackedView<DashboardViewModel> {
             Color(0xFF4F8AFF),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header row with title, eye icon, and wallet icon
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'Total Balance',
                 style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: context.walletTextColor),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white.withOpacity(0.8),
+                ),
               ),
               Container(
                 padding: const EdgeInsets.all(10),
@@ -157,16 +164,34 @@ class DashboardView extends StackedView<DashboardViewModel> {
               ),
             ],
           ),
-          Text(
-            '\$24,567.89',
-            style: GoogleFonts.inter(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: -1.0,
-            ),
+          // Balance amount
+          Row(
+            children: [
+              Text(
+                '${viewModel.displayBalance} ',
+                style: GoogleFonts.poppins(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(width: 5),
+              GestureDetector(
+                onTap: () => viewModel.toggleBalanceVisibility(),
+                child: Icon(
+                  viewModel.isBalanceVisible
+                      ? Icons.visibility
+                      : Icons.visibility_off,
+                  color: Colors.white.withOpacity(0.8),
+                  size: 28,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
+
+          const SizedBox(height: 10),
+
+          // Wallet address
           Row(
             children: [
               Text(
@@ -185,7 +210,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '0xCEER...h47B',
+                  viewModel.displayWalletAddress,
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -194,10 +219,23 @@ class DashboardView extends StackedView<DashboardViewModel> {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(
-                Icons.copy,
-                size: 14,
-                color: Colors.white.withOpacity(0.7),
+              GestureDetector(
+                onTap: () {
+                  viewModel.copyWalletAddress();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Wallet address copied!'),
+                      duration: const Duration(seconds: 2),
+                      backgroundColor: const Color.fromARGB(255, 198, 198, 198),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+                child: Icon(
+                  Icons.copy,
+                  size: 17,
+                  color: Colors.white.withOpacity(0.7),
+                ),
               ),
             ],
           ),

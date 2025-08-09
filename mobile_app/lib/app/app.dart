@@ -10,6 +10,7 @@ import 'package:mobile_app/ui/views/saving/saving_view.dart';
 import 'package:mobile_app/ui/bottom_sheets/deposit_sheet/deposit_sheet_sheet.dart';
 import 'package:mobile_app/ui/bottom_sheets/crypto_deposit_sheet/crypto_deposit_sheet_sheet.dart';
 import 'package:mobile_app/ui/views/goal_save/goal_save_view.dart';
+import 'package:mobile_app/ui/views/goal_save/create_goal_view.dart';
 import 'package:mobile_app/ui/views/flexi_save/flexi_save_view.dart';
 import 'package:mobile_app/ui/views/lock_save/lock_save_view.dart';
 import 'package:mobile_app/ui/views/group_save/group_save_view.dart';
@@ -18,6 +19,11 @@ import 'package:mobile_app/ui/views/onboarding/onboarding_view.dart';
 import 'package:mobile_app/ui/views/email/email_view.dart';
 import 'package:mobile_app/ui/views/verification/verification_view.dart';
 import 'package:mobile_app/services/privy_service.dart';
+import 'package:mobile_app/services/wallet_info_service.dart';
+import 'package:mobile_app/ui/views/group_save/create_public_group_save_view.dart';
+import 'package:mobile_app/ui/bottom_sheets/group_save_selection/group_save_selection_sheet.dart';
+import 'package:mobile_app/ui/views/goal_save/goal_save_detail_view.dart';
+import 'package:mobile_app/ui/views/group_save/group_save_detail_view.dart';
 // @stacked-import
 
 @StackedApp(
@@ -29,25 +35,32 @@ import 'package:mobile_app/services/privy_service.dart';
     MaterialRoute(page: ProfileView),
     MaterialRoute(page: SavingView),
     MaterialRoute(page: GoalSaveView),
+    MaterialRoute(page: CreateGoalView),
     MaterialRoute(page: FlexiSaveView),
     MaterialRoute(page: LockSaveView),
     MaterialRoute(page: GroupSaveView),
     MaterialRoute(page: OnboardingView),
     MaterialRoute(page: EmailView),
     MaterialRoute(page: VerificationView),
+    MaterialRoute(page: CreatePublicGroupSaveView),
+    MaterialRoute(page: GoalSaveDetailView),
+    MaterialRoute(page: GroupSaveDetailView),
 // @stacked-route
   ],
   dependencies: [
     LazySingleton(classType: BottomSheetService),
     LazySingleton(classType: DialogService),
     LazySingleton(classType: NavigationService),
+    LazySingleton(classType: SnackbarService),
     LazySingleton(classType: PrivyService),
+    LazySingleton(classType: WalletInfoService),
 // @stacked-service
   ],
   bottomsheets: [
     StackedBottomsheet(classType: DepositSheetSheet),
     StackedBottomsheet(classType: CryptoDepositSheetSheet),
     StackedBottomsheet(classType: WithdrawSheetSheet),
+    StackedBottomsheet(classType: GroupSaveSelectionSheet),
 // @stacked-bottom-sheet
   ],
   dialogs: [

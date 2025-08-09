@@ -24,6 +24,7 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
           icon: Icon(
             Icons.arrow_back,
             color: context.primaryTextColor,
+            size: 24,
           ),
           onPressed: () => viewModel.navigateBack(),
         ),
@@ -35,31 +36,48 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.info_outline,
+              color: context.primaryTextColor,
+              size: 24,
+            ),
+            onPressed: () => print('Info tapped'),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Balance Card
-            _buildBalanceCard(context),
-            const SizedBox(height: 20),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Balance Card
+              _buildBalanceCard(context),
+              const SizedBox(height: 20),
 
-            // Create Group Save Button
-            _buildCreateGroupSaveButton(context, viewModel),
-            const SizedBox(height: 30),
+              // Create Group Save Button
+              _buildCreateGroupSaveButton(context, viewModel),
+              const SizedBox(height: 24),
 
-            // Promoted Savings Groups Section
-            _buildPromotedSavingsSection(context, viewModel),
-            const SizedBox(height: 30),
+              // Promoted Savings Section
+              _buildPromotedSavingsSection(context, viewModel),
+              const SizedBox(height: 24),
 
-            // Live/Complete Toggle
-            _buildLiveCompleteToggle(context, viewModel),
-            const SizedBox(height: 30),
+              // Live/Completed Toggle
+              _buildToggleTabs(context, viewModel),
+              const SizedBox(height: 16),
 
-            // Empty State
-            _buildEmptyState(context),
-          ],
+              // Target List
+              SizedBox(
+                height: 400, // Fixed height for the list
+                child: viewModel.isOngoingSelected
+                    ? _buildLiveTargets(context, viewModel)
+                    : _buildCompletedTargets(context, viewModel),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -126,42 +144,45 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
 
   Widget _buildCreateGroupSaveButton(
       BuildContext context, GroupSaveViewModel viewModel) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20.0),
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(
-          color: context.cardBorder,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: context.cardShadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: viewModel.createGroupSave,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20.0),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: BorderRadius.circular(16.0),
+          border: Border.all(
+            color: context.cardBorder,
+            width: 1,
           ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Create a Group Save',
-            style: GoogleFonts.inter(
-              color: primary,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+          boxShadow: [
+            BoxShadow(
+              color: context.cardShadow,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(width: 8),
-          const Icon(
-            Icons.arrow_forward,
-            color: primary,
-            size: 16,
-          ),
-        ],
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Create a Group Save',
+              style: GoogleFonts.inter(
+                color: primary,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.arrow_forward,
+              color: primary,
+              size: 16,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -212,10 +233,9 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
         const SizedBox(height: 16),
         SizedBox(
           height: 240,
-          child: Expanded(
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
                 GestureDetector(
                   onTap: () => viewModel.joinSavingsGroup('1'),
                   child: _buildSavingsGroupCard(
@@ -263,8 +283,7 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
                     iconBackground: Colors.orange.shade400,
                   ),
                 ),
-              ],
-            ),
+            ],
           ),
         ),
       ],
@@ -368,29 +387,26 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
     );
   }
 
-  Widget _buildLiveCompleteToggle(
-      BuildContext context, GroupSaveViewModel viewModel) {
-    return // Tab Section
-        Container(
-      padding: const EdgeInsets.all(4.0),
+  Widget _buildToggleTabs(BuildContext context, GroupSaveViewModel viewModel) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: context.tabBackground,
-        borderRadius: BorderRadius.circular(12.0),
+        color: const Color(0xFF1A1A2E),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
           Expanded(
             child: GestureDetector(
-              onTap: () {
-                viewModel.setOngoingSelected(true);
-              },
+              onTap: () => viewModel.setOngoingSelected(true),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
                   color: viewModel.isOngoingSelected
-                      ? primary
+                      ? const Color(0xFF6C5CE7)
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   'Live',
@@ -398,7 +414,7 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
                   style: GoogleFonts.inter(
                     color: viewModel.isOngoingSelected
                         ? Colors.white
-                        : context.secondaryTextColor,
+                        : const Color(0xFF8E8E93),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -408,16 +424,14 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () {
-                viewModel.setOngoingSelected(false);
-              },
+              onTap: () => viewModel.setOngoingSelected(false),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
                   color: !viewModel.isOngoingSelected
-                      ? primary
+                      ? const Color(0xFF6C5CE7)
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   'Completed',
@@ -425,7 +439,7 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
                   style: GoogleFonts.inter(
                     color: !viewModel.isOngoingSelected
                         ? Colors.white
-                        : context.secondaryTextColor,
+                        : const Color(0xFF8E8E93),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -438,43 +452,246 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(40),
+  Widget _buildLiveTargets(BuildContext context, GroupSaveViewModel viewModel) {
+    if (viewModel.liveGroups.isEmpty) {
+      return _buildEmptyState('No live targets yet', 'Create your first group save to get started');
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: viewModel.liveGroups.length,
+      itemBuilder: (context, index) {
+        final group = viewModel.liveGroups[index];
+        return _buildGroupCard(context, group, viewModel);
+      },
+    );
+  }
+
+  Widget _buildCompletedTargets(BuildContext context, GroupSaveViewModel viewModel) {
+    if (viewModel.completedGroups.isEmpty) {
+      return _buildEmptyState('No completed targets yet', 'Complete some groups to see them here');
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: viewModel.completedGroups.length,
+      itemBuilder: (context, index) {
+        final group = viewModel.completedGroups[index];
+        return _buildGroupCard(context, group, viewModel);
+      },
+    );
+  }
+
+  Widget _buildGroupCard(BuildContext context, Map<String, dynamic> group, GroupSaveViewModel viewModel) {
+    final currentAmount = (group['currentAmount'] as double?) ?? 0.0;
+    final targetAmount = (group['targetAmount'] as double?) ?? 1.0;
+    final progress = currentAmount / targetAmount;
+    final category = (group['category'] as String?) ?? 'General';
+    final endDate = group['endDate'] as DateTime?;
+    final daysLeft = endDate != null 
+        ? endDate.difference(DateTime.now()).inDays
+        : 30;
+    
+    // Get category icon and color based on group type
+    IconData categoryIcon;
+    Color cardColor;
+    
+    switch (category.toLowerCase()) {
+      case 'education':
+        categoryIcon = Icons.school;
+        cardColor = const Color(0xFF00C851); // Green like "Back to School 2025"
+        break;
+      case 'vacation':
+        categoryIcon = Icons.flight;
+        cardColor = const Color(0xFF6C5CE7); // Purple
+        break;
+      case 'business':
+        categoryIcon = Icons.business;
+        cardColor = const Color(0xFF4A4A4A); // Dark
+        break;
+      case 'emergency':
+        categoryIcon = Icons.medical_services;
+        cardColor = const Color(0xFFFF6B6B); // Red
+        break;
+      default:
+        categoryIcon = Icons.group;
+        cardColor = const Color(0xFF00C851); // Default green
+    }
+    
+    return GestureDetector(
+      onTap: () => viewModel.navigateToGroupDetail(group),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    categoryIcon,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        group['name'] ?? 'Group Save',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Text(
+                            'N${(currentAmount / 1000).toStringAsFixed(0)}K',
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Text(
+                            'N${(targetAmount / 1000).toStringAsFixed(0)}K',
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            '$daysLeft',
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Total Saved',
+                              style: GoogleFonts.inter(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Target Amount',
+                              style: GoogleFonts.inter(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Days Left',
+                              textAlign: TextAlign.end,
+                              style: GoogleFonts.inter(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  '${(progress * 100).toInt()}%',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Progress bar
+            Container(
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: progress > 1.0 ? 1.0 : progress,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(String title, String subtitle) {
+    return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: context.isDarkMode
-                  ? Colors.grey.shade800
-                  : Colors.grey.shade200,
+              color: const Color(0xFF1A1A2E),
               borderRadius: BorderRadius.circular(40),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.group,
               size: 40,
-              color: context.isDarkMode
-                  ? Colors.grey.shade600
-                  : Colors.grey.shade400,
+              color: Color(0xFF8E8E93),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
           Text(
-            'No ongoing group save',
+            title,
             style: GoogleFonts.inter(
-              color: context.primaryTextColor,
+              color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Create your first group save to get started',
+            subtitle,
             style: GoogleFonts.inter(
-              color: context.secondaryTextColor,
+              color: const Color(0xFF8E8E93),
               fontSize: 14,
             ),
             textAlign: TextAlign.center,
