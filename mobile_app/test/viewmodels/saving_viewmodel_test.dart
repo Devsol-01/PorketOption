@@ -4,7 +4,7 @@ import 'package:mobile_app/app/app.locator.dart';
 import '../helpers/test_helpers.dart';
 
 void main() {
-  group('InfoAlertDialogModel Tests -', () {
+  group('SavingViewModel Tests -', () {
     setUp(() => registerServices());
     tearDown(() => locator.reset());
   });

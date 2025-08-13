@@ -9,7 +9,14 @@
 import 'package:stacked_services/src/bottom_sheet/bottom_sheet_service.dart';
 import 'package:stacked_services/src/dialog/dialog_service.dart';
 import 'package:stacked_services/src/navigation/navigation_service.dart';
+import 'package:stacked_services/stacked_services.dart';
 import 'package:stacked_shared/stacked_shared.dart';
+
+import '../services/auth_service.dart';
+import '../services/firebase_auth_service.dart';
+import '../services/firebase_wallet_manager_service.dart';
+import '../services/token_service.dart';
+import '../services/wallet_service.dart';
 
 final locator = StackedLocator.instance;
 
@@ -25,4 +32,10 @@ Future<void> setupLocator({
   locator.registerLazySingleton(() => BottomSheetService());
   locator.registerLazySingleton(() => DialogService());
   locator.registerLazySingleton(() => NavigationService());
+  locator.registerLazySingleton(() => WalletService());
+  locator.registerLazySingleton(() => AuthService());
+  locator.registerLazySingleton(() => TokenService());
+  locator.registerLazySingleton(() => SnackbarService());
+  locator.registerLazySingleton(() => FirebaseWalletManagerService());
+  locator.registerLazySingleton(() => FirebaseAuthService());
 }

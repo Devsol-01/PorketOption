@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "898036346275",
+    "project_id": "porketoption-bbfe7",
+    "storage_bucket": "porketoption-bbfe7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:898036346275:android:ff3ff8140b9c885fb27e16",
+        "android_client_info": {
+          "package_name": "com.example.mobile_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDcPkiEI-SfljVPUQvUjgxwp1hurYHiPo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:898036346275:android:485005019a3ca9d7b27e16",
+        "android_client_info": {
+          "package_name": "com.example.wallet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDcPkiEI-SfljVPUQvUjgxwp1hurYHiPo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,6 +2,11 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:mobile_app/services/wallet_service.dart';
+import 'package:mobile_app/services/auth_service.dart';
+import 'package:mobile_app/services/token_service.dart';
+import 'package:mobile_app/services/firebase_wallet_manager_service.dart';
+import 'package:mobile_app/services/firebase_auth_service.dart';
 // @stacked-import
 
 import 'test_helpers.mocks.dart';
@@ -12,14 +17,25 @@ import 'test_helpers.mocks.dart';
     MockSpec<NavigationService>(onMissingStub: OnMissingStub.returnDefault),
     MockSpec<BottomSheetService>(onMissingStub: OnMissingStub.returnDefault),
     MockSpec<DialogService>(onMissingStub: OnMissingStub.returnDefault),
-    // @stacked-mock-spec
+    MockSpec<WalletService>(onMissingStub: OnMissingStub.returnDefault),
+    MockSpec<AuthService>(onMissingStub: OnMissingStub.returnDefault),
+    MockSpec<TokenService>(onMissingStub: OnMissingStub.returnDefault),
+    MockSpec<FirebaseWalletManagerService>(
+        onMissingStub: OnMissingStub.returnDefault),
+    MockSpec<FirebaseAuthService>(onMissingStub: OnMissingStub.returnDefault),
+// @stacked-mock-spec
   ],
 )
 void registerServices() {
   getAndRegisterNavigationService();
   getAndRegisterBottomSheetService();
   getAndRegisterDialogService();
-  // @stacked-mock-register
+  getAndRegisterWalletService();
+  getAndRegisterAuthService();
+  getAndRegisterTokenService();
+  getAndRegisterFirebaseWalletManagerService();
+  getAndRegisterFirebaseAuthService();
+// @stacked-mock-register
 }
 
 MockNavigationService getAndRegisterNavigationService() {
@@ -76,6 +92,40 @@ MockDialogService getAndRegisterDialogService() {
   return service;
 }
 
+MockWalletService getAndRegisterWalletService() {
+  _removeRegistrationIfExists<WalletService>();
+  final service = MockWalletService();
+  locator.registerSingleton<WalletService>(service);
+  return service;
+}
+
+MockAuthService getAndRegisterAuthService() {
+  _removeRegistrationIfExists<AuthService>();
+  final service = MockAuthService();
+  locator.registerSingleton<AuthService>(service);
+  return service;
+}
+
+MockTokenService getAndRegisterTokenService() {
+  _removeRegistrationIfExists<TokenService>();
+  final service = MockTokenService();
+  locator.registerSingleton<TokenService>(service);
+  return service;
+}
+
+MockFirebaseWalletManagerService getAndRegisterFirebaseWalletManagerService() {
+  _removeRegistrationIfExists<FirebaseWalletManagerService>();
+  final service = MockFirebaseWalletManagerService();
+  locator.registerSingleton<FirebaseWalletManagerService>(service);
+  return service;
+}
+
+MockFirebaseAuthService getAndRegisterFirebaseAuthService() {
+  _removeRegistrationIfExists<FirebaseAuthService>();
+  final service = MockFirebaseAuthService();
+  locator.registerSingleton<FirebaseAuthService>(service);
+  return service;
+}
 // @stacked-mock-create
 
 void _removeRegistrationIfExists<T extends Object>() {
