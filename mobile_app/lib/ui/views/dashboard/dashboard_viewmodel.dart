@@ -46,28 +46,30 @@ class DashboardViewModel extends BaseViewModel {
       // Check if user is authenticated
       if (_firebaseWalletManager.isAuthenticated) {
         print('✅ User is authenticated, loading wallet...');
-        
+
         // First try to get wallet info from WalletService
         _walletInfo = _walletService.walletInfo;
-        
+
         if (_walletInfo != null) {
           print('✅ Wallet found in WalletService: ${_walletInfo!.address}');
           await loadBalance();
         } else {
           print('⚠️ No wallet in WalletService, triggering wallet load...');
-          
+
           // If no wallet in WalletService, trigger the Firebase wallet loading
           await _firebaseWalletManager.initialize();
-          
+
           // Try again after initialization
           _walletInfo = _walletService.walletInfo;
-          
+
           if (_walletInfo != null) {
-            print('✅ Wallet loaded after initialization: ${_walletInfo!.address}');
+            print(
+                '✅ Wallet loaded after initialization: ${_walletInfo!.address}');
             await loadBalance();
           } else {
             print('❌ Still no wallet found after initialization');
-            _showErrorSnackbar('Unable to load wallet. Please try logging in again.');
+            _showErrorSnackbar(
+                'Unable to load wallet. Please try logging in again.');
           }
         }
       } else {
@@ -81,8 +83,6 @@ class DashboardViewModel extends BaseViewModel {
       setBusy(false);
     }
   }
-
-
 
   /// Load wallet balance - Focus on USDC only
   Future<void> loadBalance() async {
@@ -185,13 +185,12 @@ class DashboardViewModel extends BaseViewModel {
       duration: Duration(seconds: 2),
     );
   }
-    Future<void> logout() async {
+
+  Future<void> logout() async {
     setBusy(true);
-    
+
     try {
-       _authService.logout();
-      
-      
+      _authService.logout();
     } catch (e) {
       print('❌ Error during logout: $e');
       _showErrorSnackbar('Error logging out: $e');

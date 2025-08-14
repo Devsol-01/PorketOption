@@ -7,6 +7,7 @@ import 'dart:async' as _i8;
 import 'dart:ui' as _i9;
 
 import 'package:flutter/material.dart' as _i7;
+import 'package:mobile_app/services/api_service.dart' as _i12;
 import 'package:mobile_app/services/auth_service.dart' as _i10;
 import 'package:mobile_app/services/firebase_auth_service.dart' as _i4;
 import 'package:mobile_app/services/firebase_wallet_manager_service.dart'
@@ -1507,6 +1508,16 @@ class MockFirebaseAuthService extends _i1.Mock
       ) as _i8.Future<void>);
 
   @override
+  _i8.Future<void> logout() => (super.noSuchMethod(
+        Invocation.method(
+          #logout,
+          [],
+        ),
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
+
+  @override
   void addListener(_i9.VoidCallback? listener) => super.noSuchMethod(
         Invocation.method(
           #addListener,
@@ -1542,3 +1553,8 @@ class MockFirebaseAuthService extends _i1.Mock
         returnValueForMissingStub: null,
       );
 }
+
+/// A class which mocks [ApiService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockApiService extends _i1.Mock implements _i12.ApiService {}

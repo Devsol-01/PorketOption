@@ -362,7 +362,7 @@ class FirebaseAuthService extends ChangeNotifier {
     }
   }
 
-    Future<void> logout() async {
+  Future<void> logout() async {
     try {
       await _auth.signOut();
       print('✅ User logged out successfully');
@@ -395,8 +395,6 @@ class FirebaseAuthService extends ChangeNotifier {
       return false;
     }
   }
-
-  
 
   Future<void> _processReferral(String userId, String referralCode) async {
     try {
@@ -448,7 +446,6 @@ class FirebaseAuthService extends ChangeNotifier {
 
     return FirebaseAuthException(code: e.code, message: message);
   }
-
 }
 
 /// Custom Firebase Auth Exception

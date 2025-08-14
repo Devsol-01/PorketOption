@@ -7,6 +7,7 @@ import 'package:mobile_app/services/auth_service.dart';
 import 'package:mobile_app/services/token_service.dart';
 import 'package:mobile_app/services/firebase_wallet_manager_service.dart';
 import 'package:mobile_app/services/firebase_auth_service.dart';
+import 'package:mobile_app/services/api_service.dart';
 // @stacked-import
 
 import 'test_helpers.mocks.dart';
@@ -23,6 +24,7 @@ import 'test_helpers.mocks.dart';
     MockSpec<FirebaseWalletManagerService>(
         onMissingStub: OnMissingStub.returnDefault),
     MockSpec<FirebaseAuthService>(onMissingStub: OnMissingStub.returnDefault),
+    MockSpec<ApiService>(onMissingStub: OnMissingStub.returnDefault),
 // @stacked-mock-spec
   ],
 )
@@ -35,6 +37,7 @@ void registerServices() {
   getAndRegisterTokenService();
   getAndRegisterFirebaseWalletManagerService();
   getAndRegisterFirebaseAuthService();
+  getAndRegisterApiService();
 // @stacked-mock-register
 }
 
@@ -124,6 +127,13 @@ MockFirebaseAuthService getAndRegisterFirebaseAuthService() {
   _removeRegistrationIfExists<FirebaseAuthService>();
   final service = MockFirebaseAuthService();
   locator.registerSingleton<FirebaseAuthService>(service);
+  return service;
+}
+
+MockApiService getAndRegisterApiService() {
+  _removeRegistrationIfExists<ApiService>();
+  final service = MockApiService();
+  locator.registerSingleton<ApiService>(service);
   return service;
 }
 // @stacked-mock-create

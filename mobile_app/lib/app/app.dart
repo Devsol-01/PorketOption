@@ -25,6 +25,7 @@ import 'package:mobile_app/services/firebase_wallet_manager_service.dart';
 import 'package:mobile_app/services/firebase_auth_service.dart';
 import 'package:mobile_app/ui/views/auth/auth_view.dart';
 import 'package:mobile_app/ui/views/register/register_view.dart';
+import 'package:mobile_app/services/api_service.dart';
 // @stacked-import
 
 @StackedApp(
@@ -56,6 +57,7 @@ import 'package:mobile_app/ui/views/register/register_view.dart';
     LazySingleton(classType: FirebaseWalletManagerService),
     LazySingleton(classType: FirebaseAuthService),
     LazySingleton(classType: SnackbarService),
+    LazySingleton(classType: ApiService),
 // @stacked-service
   ],
   bottomsheets: [

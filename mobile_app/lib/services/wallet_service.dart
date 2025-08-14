@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:starknet/starknet.dart';
 import 'package:starknet_provider/starknet_provider.dart';
@@ -40,8 +42,8 @@ class WalletService {
     // Initialize Avnu provider for sponsored deployments
     _avnuProvider = AvnuJsonRpcProvider(
       nodeUri: Uri.parse('https://sepolia.api.avnu.fi'),
-      apiKey:
-          '4c75a944-a3ff-4292-bce0-7738608bf9da', // 🔥 Replace with real API key
+      //apiKey: Platform.environment['AVNU_API_KEY'] ?? '',
+      apiKey: '', 
     );
   }
 

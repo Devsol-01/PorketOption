@@ -27,7 +27,8 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildDashboardContent(BuildContext context, DashboardViewModel viewModel) {
+  Widget _buildDashboardContent(
+      BuildContext context, DashboardViewModel viewModel) {
     if (!viewModel.hasWallet) {
       return const Center(
         child: Column(
@@ -172,7 +173,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
           ),
         ),
         const SizedBox(width: 12),
-        
+
         // ETH Balance (Secondary)
         Expanded(
           child: Card(
@@ -221,7 +222,8 @@ class DashboardView extends StackedView<DashboardViewModel> {
           children: [
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: viewModel.isBusy ? null : viewModel.navigateToSendUsdc,
+                onPressed:
+                    viewModel.isBusy ? null : viewModel.navigateToSendUsdc,
                 icon: const Icon(Icons.send),
                 label: const Text('Send USDC'),
                 style: ElevatedButton.styleFrom(
@@ -248,7 +250,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
 
   Widget _buildWalletStatus(DashboardViewModel viewModel) {
     final isDeployed = viewModel.walletInfo?.isDeployed ?? false;
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -264,7 +266,8 @@ class DashboardView extends StackedView<DashboardViewModel> {
                 const SizedBox(width: 8),
                 Text(
                   'Account Status',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -287,8 +290,9 @@ class DashboardView extends StackedView<DashboardViewModel> {
             ],
             const SizedBox(height: 16),
 
-            ElevatedButton(onPressed: ()=> viewModel.logout(), child: Text('Log out'))
-            
+            ElevatedButton(
+                onPressed: () => viewModel.logout(), child: Text('Log out'))
+
             // // Danger Zone
             // ExpansionTile(
             //   title: const Text(
@@ -310,7 +314,8 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  void _showDeleteWalletDialog(BuildContext context, DashboardViewModel viewModel) {
+  void _showDeleteWalletDialog(
+      BuildContext context, DashboardViewModel viewModel) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
