@@ -43,7 +43,7 @@ class WalletService {
     _avnuProvider = AvnuJsonRpcProvider(
       nodeUri: Uri.parse('https://sepolia.api.avnu.fi'),
       //apiKey: Platform.environment['AVNU_API_KEY'] ?? '',
-      apiKey: '', 
+      apiKey: '4c75a944-a3ff-4292-bce0-7738608bf9da', 
     );
   }
 

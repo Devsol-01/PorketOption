@@ -38,5 +38,13 @@ flutter:
   uses-material-design: true
 
   assets:
+  #  - lib/assets/smart.png
+    - lib/assets/Withdrawal Button.png
+    - lib/assets/Deposit Button.png
+    - lib/assets/Save Button.png
+    - lib/assets/flexi.png
+    - lib/assets/goal.png
+    - lib/assets/lock.png
+    - lib/assets/group.png
     - .env
 
