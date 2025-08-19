@@ -7,11 +7,12 @@ pub mod AutomationScheduler {
     use porketoption_contract::interfaces::isavings_vault::{
         ISavingsVaultDispatcher, ISavingsVaultDispatcherTrait,
     };
+    use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use porketoption_contract::structs::autosave_structs::AutoSaveSchedule;
     use starknet::storage::{
         Map, StoragePathEntry, StoragePointerReadAccess, StoragePointerWriteAccess,
     };
-    use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
+    use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address, contract_address_const};
 
     component!(path: ERC20Component, storage: erc20, event: ERC20Event);
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
@@ -34,6 +35,7 @@ pub mod AutomationScheduler {
 
     #[storage]
     pub struct Storage {
+        usdc_token: IERC20Dispatcher,
         savings_vault: ISavingsVaultDispatcher,
         // Automated savings schedules
         schedule_counter: u256,
@@ -117,6 +119,7 @@ pub mod AutomationScheduler {
         ref self: ContractState, savings_vault_address: ContractAddress, owner: ContractAddress,
     ) {
         self.ownable.initializer(owner);
+        self.usdc_token.write(IERC20Dispatcher{contract_address: contract_address_const::<0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080>()});
         self
             .savings_vault
             .write(ISavingsVaultDispatcher { contract_address: savings_vault_address });
@@ -370,7 +373,8 @@ pub mod AutomationScheduler {
 
         fn withdraw_fees(ref self: ContractState, amount: u256) {
             self.ownable.assert_only_owner();
-            self.erc20.transfer(self.ownable.owner(), amount);
+            let usdc = self.usdc_token.read();
+            usdc.transfer(self.ownable.owner(), amount);
         }
     }
 
@@ -392,7 +396,8 @@ pub mod AutomationScheduler {
             let vault = self.savings_vault.read();
 
             // Check user has sufficient USDC balance
-            let user_balance = self.erc20.balance_of(schedule.user);
+            let usdc = self.usdc_token.read();
+            let user_balance = usdc.balance_of(schedule.user);
             if user_balance < schedule.amount {
                 return false;
             }
