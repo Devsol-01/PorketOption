@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:starknet/starknet.dart';
 import 'package:starknet_provider/starknet_provider.dart';
-import 'package:avnu_provider/avnu_provider.dart';
 import 'wallet_service.dart';
 
 class ContractService {
@@ -32,7 +31,6 @@ class ContractService {
   Future<String> _executeWithSponsoredGas({
     required String functionName,
     required List<Felt> calldata,
-    String? sessionKey,
   }) async {
     final account = _walletService.currentAccount;
     if (account == null) {
@@ -88,55 +86,73 @@ class ContractService {
     }
   }
 
-  Future<List<LockSave>> getUserLockSaves(String userAddress) async {
+  /// Execute contract call (unified method for both gas and view calls)
+  Future<List<Felt>?> _executeContractCall(
+    String functionName,
+    List<dynamic> calldata, {
+    required bool requiresGas,
+  }) async {
     try {
-      final userAddressFelt = Felt.fromHexString(userAddress);
-      
-      final calldata = [userAddressFelt];
-      
-      final result = await _executeContractCall(
-        'get_user_lock_saves',
-        calldata,
-        requiresGas: false,
-      );
-      
-      if (result != null) {
-        return _parseLockSaves(result);
+      // Convert calldata to proper Felt format
+      final feltCalldata = calldata.map((item) {
+        if (item is BigInt) {
+          return Felt(item);
+        } else if (item is Felt) {
+          return item;
+        } else if (item is int) {
+          return Felt(BigInt.from(item));
+        } else {
+          return item as Felt;
+        }
+      }).toList();
+
+      if (requiresGas) {
+        // Execute with gas (state-changing function)
+        final account = _walletService.currentAccount;
+        if (account == null) {
+          throw ContractException('No wallet account available');
+        }
+
+        final functionCall = FunctionCall(
+          contractAddress: contractAddress,
+          entryPointSelector: getSelectorByName(functionName),
+          calldata: feltCalldata,
+        );
+
+        final response = await account.execute(functionCalls: [functionCall]);
+        return response.when(
+          result: (result) {
+            print('✅ $functionName executed successfully! TX: ${result.transaction_hash}');
+            return [Felt.fromHexString(result.transaction_hash)];
+          },
+          error: (error) => throw ContractException('Contract execution failed: $error'),
+        );
+      } else {
+        // View call (read-only)
+        return await _callView(
+          functionName: functionName,
+          calldata: feltCalldata,
+        );
       }
-      return [];
     } catch (e) {
-      print('Error getting user lock saves: $e');
-      return [];
+      print('❌ Error executing $functionName: $e');
+      return null;
     }
   }
 
-  Future<LockSave?> getLockSaveDetails(String lockId) async {
-    try {
-      final lockIdBigInt = BigInt.parse(lockId);
-      
-      final calldata = [lockIdBigInt];
-      
-      final result = await _executeContractCall(
-        'get_lock_save',
-        calldata,
-        requiresGas: false,
-      );
-      
-      if (result != null && result.isNotEmpty) {
-        return _parseSingleLockSave(result);
-      }
-      return null;
-    } catch (e) {
-      print('Error getting lock save details: $e');
-      return null;
-    }
+  /// Convert double to wei (BigInt with 6 decimals)
+  BigInt _convertToWei(double amount) {
+    return BigInt.from((amount * pow(10, 6)).round());
+  }
+
+  /// Convert wei (BigInt) back to double
+  double _convertFromWei(BigInt wei) {
+    return wei.toDouble() / pow(10, 6);
   }
 
   // =============================================================================
-  // FLEXI SAVE FUNCTIONS
+  // PORKET SAVE FUNCTIONS (formerly Flexi Save)
   // =============================================================================
-
-  /// Quick save deposit  // Porket Save functions (formerly Flexi Save)
   Future<bool> depositPorket(double amount) async {
     try {
       final amountInWei = _convertToWei(amount);
@@ -253,7 +269,11 @@ class ContractService {
   // LOCK SAVE FUNCTIONS
   // =============================================================================
 
-  /// Create  // Lock Save functions
+  // =============================================================================
+  // LOCK SAVE FUNCTIONS
+  // =============================================================================
+
+  /// Create Lock Save
   Future<String?> createLockSave(double amount, int durationDays, String title) async {
     try {
       final amountInWei = _convertToWei(amount);
@@ -287,7 +307,7 @@ class ContractService {
       functionName: 'confirm_lock_creation',
       calldata: [
         Felt.fromHexString(lockId), // lock_id
-        Felt(interestUpfront ? 1 : 0), // interest_upfront
+        Felt(BigInt.from(interestUpfront ? 1 : 0)), // interest_upfront
       ],
     );
   }
@@ -723,6 +743,24 @@ class ContractService {
     final locks = <LockSaveData>[];
     // TODO: Implement proper array parsing based on contract structure
     return locks;
+  }
+
+  List<LockSaveData> _parseLockSaves(List<Felt> result) {
+    return _parseLockSaveArray(result);
+  }
+
+  LockSaveData? _parseSingleLockSave(List<Felt> result) {
+    if (result.length < 8) return null;
+    
+    return LockSaveData(
+      id: result[0].toBigInt().toString(),
+      title: 'Lock Save', // TODO: Parse actual title from contract
+      amount: _convertFromWei(result[2].toBigInt()),
+      interestRate: result[3].toBigInt().toDouble() / 100, // Convert basis points to percentage
+      maturityDate: DateTime.fromMillisecondsSinceEpoch(result[6].toBigInt().toInt() * 1000),
+      isMatured: result[7].toBigInt() == BigInt.one,
+      status: result[7].toBigInt() == BigInt.one ? 'Matured' : 'Active',
+    );
   }
 
   List<GoalSaveData> _parseGoalSaveArray(List<Felt> result) {

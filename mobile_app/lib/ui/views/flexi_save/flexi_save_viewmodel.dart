@@ -95,13 +95,8 @@ class FlexiSaveViewModel extends BaseViewModel {
 
     setBusy(true);
     try {
-      final txHash = await _contractService.depositFlexi(
-        amount: amount,
-        fundSource: fundSource,
-      );
-      
-      _showSuccessSnackbar('Quick Save successful! TX: ${txHash.substring(0, 10)}...');
-      
+      final success = await _contractService.depositPorket(amount);
+      _showSuccessSnackbar('Quick Save successful!');
       // Refresh balance
       await loadFlexiBalance();
       await loadTransactions();
@@ -126,10 +121,8 @@ class FlexiSaveViewModel extends BaseViewModel {
 
     setBusy(true);
     try {
-      final txHash = await _contractService.withdrawFlexi(amount: amount);
-      
-      _showSuccessSnackbar('Withdrawal successful! TX: ${txHash.substring(0, 10)}...');
-      
+      final success = await _contractService.withdrawPorket(amount);
+      _showSuccessSnackbar('Withdrawal successful!');
       // Refresh balance
       await loadFlexiBalance();
       await loadTransactions();

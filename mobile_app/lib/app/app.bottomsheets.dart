@@ -17,7 +17,6 @@ enum BottomSheetType {
   deposit,
   withdraw,
   groupSaveSelection,
-  groupSaveSelection,
 }
 
 void setupBottomSheetUi() {
@@ -30,8 +29,6 @@ void setupBottomSheetUi() {
         DepositSheet(request: request, completer: completer),
     BottomSheetType.withdraw: (context, request, completer) =>
         WithdrawSheet(request: request, completer: completer),
-    BottomSheetType.groupSaveSelection: (context, request, completer) =>
-        GroupSaveSelectionSheet(request: request, completer: completer),
     BottomSheetType.groupSaveSelection: (context, request, completer) =>
         GroupSaveSelectionSheet(request: request, completer: completer),
   };

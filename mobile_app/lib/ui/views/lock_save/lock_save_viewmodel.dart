@@ -1,16 +1,23 @@
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-//import 'create_lock_view.dart';
+import 'package:mobile_app/services/contract_service.dart';
+import 'package:mobile_app/services/wallet_service.dart';
+import 'package:mobile_app/app/app.locator.dart';
 
 class LockSaveViewModel extends BaseViewModel {
+  // Services
+  final ContractService _contractService = locator<ContractService>();
+  final WalletService _walletService = locator<WalletService>();
+  final NavigationService _navigationService = NavigationService();
+  
   // State properties
   bool _isOngoingSelected = true;
   bool _isBalanceVisible = true;
   double _lockSaveBalance = 0.0;
-  List<Map<String, dynamic>> _ongoingLocks = [];
-  List<Map<String, dynamic>> _completedLocks = [];
-
-  final NavigationService _navigationService = NavigationService();
+  List<LockSaveData> _ongoingLocks = [];
+  List<LockSaveData> _completedLocks = [];
+  List<Map<String, dynamic>> _legacyOngoingLocks = [];
+  List<Map<String, dynamic>> _legacyCompletedLocks = [];
 
   // Lock period configurations with interest rates
   final List<Map<String, dynamic>> _lockPeriods = [
@@ -73,6 +80,13 @@ class LockSaveViewModel extends BaseViewModel {
   ];
 
   LockSaveViewModel() {
+    initialize();
+  }
+  
+  Future<void> initialize() async {
+    await loadLockSaveBalance();
+    await loadUserLocks();
+    // Keep sample data for UI testing until contract is fully deployed
     initializeSampleData();
   }
 
@@ -80,11 +94,15 @@ class LockSaveViewModel extends BaseViewModel {
   bool get isOngoingSelected => _isOngoingSelected;
   bool get isBalanceVisible => _isBalanceVisible;
   double get lockSaveBalance => _lockSaveBalance;
-  List<Map<String, dynamic>> get ongoingLocks => _ongoingLocks;
-  List<Map<String, dynamic>> get completedLocks => _completedLocks;
+  List<LockSaveData> get ongoingLocks => _ongoingLocks;
+  List<LockSaveData> get completedLocks => _completedLocks;
   List<Map<String, dynamic>> get lockPeriods => _lockPeriods;
+  
+  // Legacy getters for UI compatibility
+  List<Map<String, dynamic>> get legacyOngoingLocks => _legacyOngoingLocks;
+  List<Map<String, dynamic>> get legacyCompletedLocks => _legacyCompletedLocks;
 
-  List<Map<String, dynamic>> get currentLocks =>
+  List<dynamic> get currentLocks =>
       _isOngoingSelected ? _ongoingLocks : _completedLocks;
 
   void setOngoingSelected(bool value) {
@@ -114,103 +132,146 @@ class LockSaveViewModel extends BaseViewModel {
     // _navigationService.navigateTo('/create-lock', arguments: period);
   }
 
-  // Create a new safelock
-  void createSafelock(
+  // Load lock save balance from contract
+  Future<void> loadLockSaveBalance() async {
+    try {
+      final totalBalance = await _contractService.getUserTotalBalance();
+      // For now, assume lock save is part of total balance
+      // TODO: Add specific lock save balance query to contract
+      _lockSaveBalance = totalBalance * 0.3; // Placeholder calculation
+      notifyListeners();
+    } catch (e) {
+      print('Error loading lock save balance: $e');
+      _lockSaveBalance = 0.0;
+    }
+  }
+  
+  // Load user locks from contract
+  Future<void> loadUserLocks() async {
+    try {
+      final locks = await _contractService.getUserLocks();
+      _ongoingLocks = locks.where((lock) => !lock.isMatured).toList();
+      _completedLocks = locks.where((lock) => lock.isMatured).toList();
+      notifyListeners();
+    } catch (e) {
+      print('Error loading user locks: $e');
+      _ongoingLocks = [];
+      _completedLocks = [];
+    }
+  }
+
+  // Create a new safelock using contract service
+  Future<void> createSafelock(
     double amount,
     String title,
     int lockDays,
     String fundSource,
     Map<String, dynamic> period,
-  ) {
-    final interestRate = period['interestRate'] / 100;
-    final interestEarned = (amount * interestRate * lockDays) / 365;
-    final maturityDate = DateTime.now().add(Duration(days: lockDays));
+  ) async {
+    if (amount <= 0) {
+      print('Invalid amount');
+      return;
+    }
 
-    final safelock = {
-      'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'title': title,
-      'amount': amount,
-      'interestRate': period['interestRate'],
-      'interestEarned': interestEarned,
-      'lockDays': lockDays,
-      'periodId': period['id'],
-      'periodLabel': period['label'],
-      'fundSource': fundSource,
-      'createdAt': DateTime.now(),
-      'maturityDate':
-          '${maturityDate.day}/${maturityDate.month}/${maturityDate.year}',
-      'status': 'ongoing',
-      'color': period['color'],
-      'totalPayout': amount + interestEarned,
-    };
-
-    _ongoingLocks.add(safelock);
-    _lockSaveBalance += amount;
-    notifyListeners();
+    setBusy(true);
+    try {
+      final lockId = await _contractService.createLockSave(amount, lockDays, title);
+      if (lockId != null) {
+        print('Lock save created successfully with ID: $lockId');
+        // Refresh data
+        await loadLockSaveBalance();
+        await loadUserLocks();
+      } else {
+        print('Failed to create lock save');
+      }
+    } catch (e) {
+      print('Error creating lock save: $e');
+    } finally {
+      setBusy(false);
+    }
   }
 
-  // Calculate interest for preview
-  Map<String, dynamic> calculateLockPreview(
+  // Calculate interest for preview using contract service
+  Future<Map<String, dynamic>> calculateLockPreview(
     double amount,
     int lockDays,
-    double interestRate,
-  ) {
-    final rate = interestRate / 100;
-    final interest = (amount * rate * lockDays) / 365;
-    final maturityDate = DateTime.now().add(Duration(days: lockDays));
+    String periodId,
+  ) async {
+    try {
+      final preview = await _contractService.calculateLockInterest(
+        amount: amount,
+        durationDays: lockDays,
+        periodId: periodId,
+      );
+      
+      return {
+        'interest': preview.interestAmount,
+        'totalPayout': preview.totalPayout,
+        'maturityDate': '${preview.maturityDate.day}/${preview.maturityDate.month}/${preview.maturityDate.year}',
+      };
+    } catch (e) {
+      print('Error calculating lock preview: $e');
+      // Fallback to local calculation
+      final period = _lockPeriods.firstWhere((p) => p['id'] == periodId);
+      final rate = period['interestRate'] / 100;
+      final interest = (amount * rate * lockDays) / 365;
+      final maturityDate = DateTime.now().add(Duration(days: lockDays));
 
-    return {
-      'interest': interest,
-      'totalPayout': amount + interest,
-      'maturityDate':
-          '${maturityDate.day}/${maturityDate.month}/${maturityDate.year}',
-    };
-  }
-
-  // Withdraw from matured lock
-  void withdrawLock(String lockId) {
-    final lockIndex = _ongoingLocks.indexWhere((lock) => lock['id'] == lockId);
-    if (lockIndex != -1) {
-      final lock = _ongoingLocks[lockIndex];
-
-      // Move to completed
-      lock['status'] = 'completed';
-      lock['withdrawnAt'] = DateTime.now();
-      _completedLocks.insert(0, lock);
-      _ongoingLocks.removeAt(lockIndex);
-
-      // Update balance
-      _lockSaveBalance -= lock['amount'];
-
-      notifyListeners();
+      return {
+        'interest': interest,
+        'totalPayout': amount + interest,
+        'maturityDate': '${maturityDate.day}/${maturityDate.month}/${maturityDate.year}',
+      };
     }
   }
 
-  // Break lock early (with penalty)
-  void breakLock(String lockId) {
-    final lockIndex = _ongoingLocks.indexWhere((lock) => lock['id'] == lockId);
-    if (lockIndex != -1) {
-      final lock = _ongoingLocks[lockIndex];
-
-      // Apply penalty (lose interest, keep principal)
-      lock['status'] = 'broken';
-      lock['interestEarned'] = 0.0;
-      lock['brokenAt'] = DateTime.now();
-      _completedLocks.insert(0, lock);
-      _ongoingLocks.removeAt(lockIndex);
-
-      // Update balance
-      _lockSaveBalance -= lock['amount'];
-
-      notifyListeners();
+  // Withdraw from matured lock using contract service
+  Future<void> withdrawLock(String lockId) async {
+    setBusy(true);
+    try {
+      final success = await _contractService.withdrawLockSave(lockId);
+      if (success) {
+        print('Lock withdrawal successful');
+        // Refresh data
+        await loadLockSaveBalance();
+        await loadUserLocks();
+      } else {
+        print('Lock withdrawal failed');
+      }
+    } catch (e) {
+      print('Error withdrawing lock: $e');
+    } finally {
+      setBusy(false);
     }
   }
 
-  // Initialize with sample data
+  // Break lock early (with penalty) using contract service
+  Future<void> breakLock(String lockId) async {
+    setBusy(true);
+    try {
+      final success = await _contractService.breakLockSave(lockId);
+      if (success) {
+        print('Lock break successful (with penalty)');
+        // Refresh data
+        await loadLockSaveBalance();
+        await loadUserLocks();
+      } else {
+        print('Lock break failed');
+      }
+    } catch (e) {
+      print('Error breaking lock: $e');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Initialize with sample data for UI testing
   void initializeSampleData() {
-    _lockSaveBalance = 2500.75;
+    if (_lockSaveBalance == 0.0) {
+      _lockSaveBalance = 2500.75;
+    }
 
-    _ongoingLocks = [
+    _legacyOngoingLocks = [
       {
         'id': '1',
         'title': 'Emergency Fund Lock',
@@ -247,7 +308,7 @@ class LockSaveViewModel extends BaseViewModel {
       },
     ];
 
-    _completedLocks = [
+    _legacyCompletedLocks = [
       {
         'id': '3',
         'title': 'Short Term Lock',
