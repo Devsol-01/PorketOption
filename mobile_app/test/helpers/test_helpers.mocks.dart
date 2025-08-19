@@ -1557,4 +1557,17 @@ class MockFirebaseAuthService extends _i1.Mock
 /// A class which mocks [ApiService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockApiService extends _i1.Mock implements _i12.ApiService {}
+class MockApiService extends _i1.Mock implements _i12.ApiService {
+  @override
+  String get apiKey => (super.noSuchMethod(
+        Invocation.getter(#apiKey),
+        returnValue: _i6.dummyValue<String>(
+          this,
+          Invocation.getter(#apiKey),
+        ),
+        returnValueForMissingStub: _i6.dummyValue<String>(
+          this,
+          Invocation.getter(#apiKey),
+        ),
+      ) as String);
+}

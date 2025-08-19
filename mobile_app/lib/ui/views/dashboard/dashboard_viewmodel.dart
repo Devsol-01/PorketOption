@@ -3,6 +3,7 @@ import 'package:mobile_app/services/firebase_auth_service.dart';
 import 'package:mobile_app/services/firebase_wallet_manager_service.dart';
 import 'package:mobile_app/services/token_service.dart';
 import 'package:mobile_app/services/wallet_service.dart';
+import 'package:mobile_app/services/contract_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -13,6 +14,7 @@ class DashboardViewModel extends BaseViewModel {
   final _authService = locator<FirebaseAuthService>();
 
   late final TokenService _tokenService;
+  late final ContractService _contractService;
 
   WalletInfo? _walletInfo;
   WalletInfo? get walletInfo => _walletInfo;
@@ -42,6 +44,7 @@ class DashboardViewModel extends BaseViewModel {
 
     try {
       _tokenService = TokenService();
+      _contractService = ContractService(_walletService);
 
       // Check if user is authenticated
       if (_firebaseWalletManager.isAuthenticated) {
@@ -94,6 +97,10 @@ class DashboardViewModel extends BaseViewModel {
 
       // Keep ETH balance for deployment checks only (not displayed)
       _balance = await _walletService.getEthBalance(_walletInfo!.address);
+      
+      // Load total savings balance from contract
+      await loadSavingsBalance();
+      
       notifyListeners();
     } catch (e) {
       _showErrorSnackbar('Error loading balance: $e');
@@ -184,6 +191,55 @@ class DashboardViewModel extends BaseViewModel {
       message: message,
       duration: Duration(seconds: 2),
     );
+  }
+
+  // Savings-related properties
+  double _totalSavingsBalance = 0.0;
+  double get totalSavingsBalance => _totalSavingsBalance;
+  
+  UserStats? _userStats;
+  UserStats? get userStats => _userStats;
+  
+  List<TransactionData> _recentTransactions = [];
+  List<TransactionData> get recentTransactions => _recentTransactions;
+
+  /// Load total savings balance from contract
+  Future<void> loadSavingsBalance() async {
+    try {
+      _totalSavingsBalance = await _contractService.getUserTotalBalance();
+    } catch (e) {
+      print('⚠️ Error loading savings balance: $e');
+      // Don't show error to user as this is supplementary data
+    }
+  }
+
+  /// Load user statistics from contract
+  Future<void> loadUserStats() async {
+    try {
+      _userStats = await _contractService.getUserStats();
+      notifyListeners();
+    } catch (e) {
+      print('⚠️ Error loading user stats: $e');
+    }
+  }
+
+  /// Load recent transactions from contract
+  Future<void> loadRecentTransactions() async {
+    try {
+      _recentTransactions = await _contractService.getTransactionHistory(limit: 10);
+      notifyListeners();
+    } catch (e) {
+      print('⚠️ Error loading recent transactions: $e');
+    }
+  }
+
+  /// Refresh all dashboard data
+  Future<void> refreshDashboard() async {
+    await Future.wait([
+      loadBalance(),
+      loadUserStats(),
+      loadRecentTransactions(),
+    ]);
   }
 
   Future<void> logout() async {

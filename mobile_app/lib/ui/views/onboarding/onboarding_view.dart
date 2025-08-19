@@ -12,7 +12,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
     OnboardingViewModel viewModel,
     Widget? child,
   ) {
-        return Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
@@ -24,7 +24,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const SizedBox(width: 50), // Spacer
-                  
+
                   // Page indicators
                   Row(
                     children: List.generate(
@@ -42,7 +42,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                       ),
                     ),
                   ),
-                  
+
                   // Skip button
                   TextButton(
                     onPressed: viewModel.onGetStarted,
@@ -58,7 +58,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                 ],
               ),
             ),
-            
+
             // Main content area with PageView
             Expanded(
               child: PageView.builder(
@@ -71,7 +71,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                 },
               ),
             ),
-            
+
             // Bottom navigation section
             Padding(
               padding: const EdgeInsets.all(24.0),
@@ -93,23 +93,26 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                     )
                   else
                     const SizedBox(width: 80),
-                  
+
                   // Next/Get Started button
                   ElevatedButton(
-                    onPressed: viewModel.currentIndex == viewModel.onboardingItems.length - 1
+                    onPressed: viewModel.currentIndex ==
+                            viewModel.onboardingItems.length - 1
                         ? viewModel.onGetStarted
                         : viewModel.nextPage,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2563EB),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: 0,
                     ),
                     child: Text(
-                      viewModel.currentIndex == viewModel.onboardingItems.length - 1
+                      viewModel.currentIndex ==
+                              viewModel.onboardingItems.length - 1
                           ? 'Get Started'
                           : 'Next',
                       style: const TextStyle(
@@ -152,14 +155,14 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
               painter: _DecorativeLinesPainter(),
             ),
           ),
-          
+
           // Main content
           Padding(
             padding: const EdgeInsets.all(32.0),
             child: Column(
               children: [
                 const SizedBox(height: 40),
-                
+
                 // Icon section
                 Container(
                   width: 120,
@@ -179,9 +182,9 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                     child: _buildIcon(item),
                   ),
                 ),
-                
+
                 const SizedBox(height: 48),
-                
+
                 // Title section
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,7 +202,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                         ),
                       ),
                     ),
-                    
+
                     // Black subtitle part
                     Align(
                       alignment: Alignment.centerLeft,
@@ -215,9 +218,9 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Description
                 Text(
                   item.description,
@@ -228,7 +231,7 @@ class OnboardingView extends StackedView<OnboardingViewModel> {
                     height: 1.6,
                   ),
                 ),
-                
+
                 const Spacer(),
               ],
             ),
@@ -336,7 +339,7 @@ class _DecorativeLinesPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final path = Path();
-    
+
     // Create flowing curved lines similar to your design
     for (int i = 0; i < 3; i++) {
       path.moveTo(0, size.height * (0.2 + i * 0.3));

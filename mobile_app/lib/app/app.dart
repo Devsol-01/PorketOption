@@ -26,6 +26,13 @@ import 'package:mobile_app/services/firebase_auth_service.dart';
 import 'package:mobile_app/ui/views/auth/auth_view.dart';
 import 'package:mobile_app/ui/views/register/register_view.dart';
 import 'package:mobile_app/services/api_service.dart';
+import 'package:mobile_app/ui/views/porket_save/porket_save_view.dart';
+import 'package:mobile_app/ui/views/goal_save/create_goal/create_goal_view.dart';
+import 'package:mobile_app/ui/views/lock_save/create_lock/create_lock_view.dart';
+import 'package:mobile_app/ui/views/create_public_group_save/create_public_group_save_view.dart';
+import 'package:mobile_app/ui/views/create_private_group_save/create_private_group_save_view.dart';
+import 'package:mobile_app/ui/views/group_save_details/group_save_details_view.dart';
+import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dart';
 // @stacked-import
 
 @StackedApp(
@@ -45,6 +52,13 @@ import 'package:mobile_app/services/api_service.dart';
     MaterialRoute(page: VerificationView),
     MaterialRoute(page: AuthView),
     MaterialRoute(page: RegisterView),
+    MaterialRoute(page: PorketSaveView),
+    MaterialRoute(page: CreateGoalView),
+    MaterialRoute(page: CreateLockView),
+    MaterialRoute(page: CreatePublicGroupSaveView),
+    MaterialRoute(page: CreatePrivateGroupSaveView),
+    MaterialRoute(page: GroupSaveDetailsView),
+    MaterialRoute(page: GoalSaveDetailsView),
 // @stacked-route
   ],
   dependencies: [
@@ -64,6 +78,7 @@ import 'package:mobile_app/services/api_service.dart';
     StackedBottomsheet(classType: CryptoDepositSheet),
     StackedBottomsheet(classType: DepositSheet),
     StackedBottomsheet(classType: WithdrawSheet),
+    StackedBottomsheet(classType: GroupSaveSelectionSheet),
     StackedBottomsheet(classType: GroupSaveSelectionSheet),
 // @stacked-bottom-sheet
   ],

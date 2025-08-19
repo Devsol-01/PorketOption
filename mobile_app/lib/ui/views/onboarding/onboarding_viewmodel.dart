@@ -22,27 +22,33 @@ class OnboardingViewModel extends BaseViewModel {
 
   PageController get pageController => _pageController;
   int get currentIndex => _currentIndex;
-  
+
   List<OnboardingItem> get onboardingItems => [
-    OnboardingItem(
-      title: 'Smart',
-      subtitle: 'Savings\nPlan',
-      description: 'Choose from Flexible, Goal-based, Locked or Group saving Plan with high AYP rate tailored to your Goals',
-      iconPath: 'lib/assets/smart.png', // Replace with your actual icon path
-    ),
-    OnboardingItem(
-      title: 'Secure &',
-      subtitle: 'Transparent',
-      description: 'Enjoy complete control of your asset controls by blockchain technology and full-on-chain transparency',
-      iconPath: 'lib/assets/smart.png', // Replace with your actual icon path
-    ),
-    OnboardingItem(
-      title: 'Web3',
-      subtitle: 'Investment',
-      description: 'Enjoy complete control of your asset controls by blockchain technology and full-on-chain transparency',
-      iconPath: 'lib/assets/smart.png', // Replace with your actual icon path
-    ),
-  ];
+        OnboardingItem(
+          title: 'Smart',
+          subtitle: 'Savings\nPlan',
+          description:
+              'Choose from Flexible, Goal-based, Locked or Group saving Plan with high AYP rate tailored to your Goals',
+          iconPath:
+              'lib/assets/smart.png', // Replace with your actual icon path
+        ),
+        OnboardingItem(
+          title: 'Secure &',
+          subtitle: 'Transparent',
+          description:
+              'Enjoy complete control of your asset controls by blockchain technology and full-on-chain transparency',
+          iconPath:
+              'lib/assets/smart.png', // Replace with your actual icon path
+        ),
+        OnboardingItem(
+          title: 'Web3',
+          subtitle: 'Investment',
+          description:
+              'Enjoy complete control of your asset controls by blockchain technology and full-on-chain transparency',
+          iconPath:
+              'lib/assets/smart.png', // Replace with your actual icon path
+        ),
+      ];
 
   void updateIndex(int index) {
     _currentIndex = index;
