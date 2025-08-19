@@ -3,6 +3,7 @@ pub mod SavingsVault {
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::security::pausable::PausableComponent;
     use openzeppelin::token::erc20::{DefaultConfig, ERC20Component};
+    use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use openzeppelin::upgrades::UpgradeableComponent;
     use porketoption_contract::interfaces::isavings_vault::ISavingsVault;
     use porketoption_contract::structs::save_structs::{GoalSave, GroupSave, LockSave};
@@ -40,6 +41,7 @@ pub mod SavingsVault {
 
     #[storage]
     struct Storage {
+        usdc_token: IERC20Dispatcher,
         //user savings data
         flexi_balances: Map<ContractAddress, u256>,
         user_total_deposits: Map<ContractAddress, u256>,
@@ -223,7 +225,7 @@ pub mod SavingsVault {
         goal_rate: u256,
         group_rate: u256,
     ) {
-        self.erc20.initializer("USDC", "USDC");
+        self.usdc_token.write(IERC20Dispatcher{contract_address: contract_address_const::<0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080>()});
         self.ownable.initializer(owner);
         self.flexi_save_rate.write(flexi_rate);
         self.goal_save_rate.write(goal_rate);
@@ -249,7 +251,8 @@ pub mod SavingsVault {
 
             assert(amount >= self.minimum_deposit.read(), 'Amount too low');
 
-            self.erc20.transfer_from(caller, get_contract_address(), amount);
+            let usdc = self.usdc_token.read();
+            usdc.transfer_from(caller, get_contract_address(), amount);
 
             let caller_balance = self.flexi_balances.entry(caller).read();
             self.flexi_balances.entry(caller).write(caller_balance + amount);
@@ -272,6 +275,7 @@ pub mod SavingsVault {
             // Calculate withdrawal fee
             let fee = (amount * self.withdrawal_fee.read()) / 10000;
             let net_amount = amount - fee;
+            let usdc = self.usdc_token.read();
 
             // Update balances
             self.flexi_balances.entry(caller).write(balance - amount);
@@ -281,9 +285,9 @@ pub mod SavingsVault {
                 .write(self.user_total_deposits.entry(caller).read() - amount);
 
             // Transfer to user
-            self.erc20.transfer(caller, net_amount);
+            usdc.transfer(caller, net_amount);
             // Transfer fee to platform
-            self.erc20.transfer(self.ownable.owner(), fee);
+            usdc.transfer(self.ownable.owner(), fee);
 
             self
                 .emit(
@@ -306,8 +310,9 @@ pub mod SavingsVault {
             assert(duration >= 10 && duration <= 365, 'Invalid duration');
 
             let interest_rate = self._get_lock_save_rate(duration);
+            let usdc = self.usdc_token.read();
 
-            self.erc20.transfer_from(caller, get_contract_address(), amount);
+            usdc.transfer_from(caller, get_contract_address(), amount);
 
             let id = self.lock_save_counter.read() + 1;
             self.lock_save_counter.write(id);
@@ -446,7 +451,9 @@ pub mod SavingsVault {
             assert(!goal_save.is_completed, 'Goal already completed');
             assert(amount > self.minimum_deposit.read(), 'Amount too low');
 
-            self.erc20.transfer_from(caller, get_contract_address(), amount);
+            let usdc = self.usdc_token.read();
+
+            usdc.transfer_from(caller, get_contract_address(), amount);
 
             goal_save.current_amount += amount;
 
@@ -549,8 +556,10 @@ pub mod SavingsVault {
             assert(!group_save.is_completed, 'Group already completed');
             assert(self.group_members.entry((group_id, caller)).read(), 'Not a member');
             assert(amount >= self.minimum_deposit.read(), 'Amount too small');
+            
+            let usdc = self.usdc_token.read();
 
-            self.erc20.transfer_from(caller, starknet::get_contract_address(), amount);
+            usdc.transfer_from(caller, starknet::get_contract_address(), amount);
 
             // Update group progress
             group_save.current_amount += amount;
@@ -686,7 +695,8 @@ pub mod SavingsVault {
 
         fn emergency_withdraw(ref self: ContractState, amount: u256) {
             self.ownable.assert_only_owner();
-            self.erc20.transfer(self.ownable.owner(), amount);
+            let usdc = self.usdc_token.read();
+            usdc.transfer(self.ownable.owner(), amount);
         }
     }
 
