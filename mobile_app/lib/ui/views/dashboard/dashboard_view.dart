@@ -215,12 +215,18 @@ class DashboardView extends StackedView<DashboardViewModel> {
             child: Row(
               children: [
                 viewModel.isBusy
-                    ? Container(
+                    ? SizedBox(
                         width: 120,
                         height: 24,
-                        child: LinearProgressIndicator(
-                          backgroundColor: Colors.white.withOpacity(0.3),
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        child: Center(
+                          child: Text(
+                            'Loading...',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                          ),
                         ),
                       )
                     : AnimatedSwitcher(
@@ -248,6 +254,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
       ),
     );
   }
+
 
   Widget _buildAction(BuildContext context, DashboardViewModel viewModel) {
     return Row(

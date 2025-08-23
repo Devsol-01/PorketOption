@@ -27,8 +27,10 @@ class LockInterestPreview {
 class ContractService {
   static const String _contractAddress =
       '0x059558cebd77449b35e278dd418afdb03a56b486f2abdbabbea184c3257478be';
-  static const String _fallbackRpcUrl = 'https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_8/7K9h7cc7AAZGmkzEiK8RQ4dJebVx_2go';
-  static const String _usdcAddress = '0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080';
+  static const String _fallbackRpcUrl =
+      'https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_8/7K9h7cc7AAZGmkzEiK8RQ4dJebVx_2go';
+  static const String _usdcAddress =
+      '0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080';
 
   final WalletService _walletService;
   final MockDataService _mockDataService = MockDataService();
@@ -52,7 +54,8 @@ class ContractService {
       print('🔄 Wallet not loaded, attempting to load from storage...');
       final walletInfo = await _walletService.loadWallet();
       if (walletInfo == null) {
-        throw ContractException('No wallet found in storage. Please create or import a wallet first.');
+        throw ContractException(
+            'No wallet found in storage. Please create or import a wallet first.');
       }
       print('✅ Wallet loaded successfully: ${walletInfo.address}');
     }
@@ -76,15 +79,18 @@ class ContractService {
     print('🚀 Executing $functionName with sponsored gas...');
     print('📋 Contract Address: $targetAddress');
     print('📋 Account Address: ${account.accountAddress.toHexString()}');
-    print('📋 Function Selector: ${getSelectorByName(functionName).toHexString()}');
+    print(
+        '📋 Function Selector: ${getSelectorByName(functionName).toHexString()}');
     print('📋 Calldata (${calldata.length} params):');
     for (int i = 0; i < calldata.length; i++) {
-      print('   [$i]: ${calldata[i].toHexString()} (${calldata[i].toBigInt()})');
+      print(
+          '   [$i]: ${calldata[i].toHexString()} (${calldata[i].toBigInt()})');
     }
 
     // Check if account address is zero
     if (account.accountAddress == Felt.zero) {
-      throw ContractException('Account address is zero - wallet not properly initialized');
+      throw ContractException(
+          'Account address is zero - wallet not properly initialized');
     }
 
     // Enhanced mock mode to bypass SDK null cast issues
@@ -96,11 +102,14 @@ class ContractService {
 
       // Generate realistic transaction hash
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final accountSuffix = account.accountAddress.toHexString().substring(2, 8);
-      final mockTxHash = '0x${timestamp.toRadixString(16)}${accountSuffix}${functionName.hashCode.toRadixString(16).substring(0, 4)}';
+      final accountSuffix =
+          account.accountAddress.toHexString().substring(2, 8);
+      final mockTxHash =
+          '0x${timestamp.toRadixString(16)}${accountSuffix}${functionName.hashCode.toRadixString(16).substring(0, 4)}';
 
       print('✅ Mock $functionName transaction successful: $mockTxHash');
-      print('🔗 Mock transaction would be viewable on: https://sepolia.starkscan.co/tx/$mockTxHash');
+      print(
+          '🔗 Mock transaction would be viewable on: https://sepolia.starkscan.co/tx/$mockTxHash');
       return mockTxHash;
     }
 
@@ -132,10 +141,13 @@ class ContractService {
 
       // Handle specific null cast errors - this is a known Starknet Dart SDK bug
       if (e.toString().contains('Null check operator used on a null value') ||
-          e.toString().contains('type \'Null\' is not a subtype of type \'String\'') ||
+          e
+              .toString()
+              .contains('type \'Null\' is not a subtype of type \'String\'') ||
           e.toString().contains('Null') && e.toString().contains('cast')) {
         print('🔄 Detected null cast error in Starknet SDK');
-        print('📋 This is a known issue with fee estimation in the current SDK version');
+        print(
+            '📋 This is a known issue with fee estimation in the current SDK version');
         print('📋 Account address: ${account.accountAddress.toHexString()}');
 
         // Try alternative RPC provider to bypass SDK fee estimation bug
@@ -169,7 +181,8 @@ class ContractService {
               if (txHash.isEmpty) {
                 throw ContractException('Transaction hash is empty');
               }
-              print('✅ Transaction successful with alternative provider: $txHash');
+              print(
+                  '✅ Transaction successful with alternative provider: $txHash');
               return txHash;
             },
             error: (error) {
@@ -183,9 +196,11 @@ class ContractService {
           // Final fallback: try with mock mode for testing
           print('🔄 Falling back to mock mode for testing...');
           await Future.delayed(Duration(milliseconds: 500));
-          final mockTxHash = '0x${DateTime.now().millisecondsSinceEpoch.toRadixString(16)}${account.accountAddress.toHexString().substring(2, 8)}';
+          final mockTxHash =
+              '0x${DateTime.now().millisecondsSinceEpoch.toRadixString(16)}${account.accountAddress.toHexString().substring(2, 8)}';
           print('✅ Mock transaction hash generated: $mockTxHash');
-          print('⚠️ Note: This is a mock transaction due to SDK fee estimation bug');
+          print(
+              '⚠️ Note: This is a mock transaction due to SDK fee estimation bug');
           return mockTxHash;
         }
       }
@@ -228,7 +243,8 @@ class ContractService {
         throw ContractException('No account available');
       }
 
-      print('✅ Approving USDC spend: $amount from wallet: ${account.accountAddress.toHexString()}');
+      print(
+          '✅ Approving USDC spend: $amount from wallet: ${account.accountAddress.toHexString()}');
 
       // Account is confirmed deployed, proceed with transaction
 
@@ -247,7 +263,8 @@ class ContractService {
 
       // Use the working pattern from ArkStarknet code
       final amountUint256 = Uint256.fromBigInt(rawAmount);
-      print('📊 Uint256 encoding: low=${amountUint256.low.toHexString()}, high=${amountUint256.high.toHexString()}');
+      print(
+          '📊 Uint256 encoding: low=${amountUint256.low.toHexString()}, high=${amountUint256.high.toHexString()}');
 
       // Don't set supportedTxVersion - let account use its default
       // Use exact pattern from working Ark code
@@ -263,7 +280,8 @@ class ContractService {
             ],
           ),
         ],
-        max_fee: Felt.fromIntString('100000000000000'), // Reduce fee to 0.0001 ETH
+        max_fee:
+            Felt.fromIntString('100000000000000'), // Reduce fee to 0.0001 ETH
       );
 
       return response.when(
@@ -313,16 +331,19 @@ class ContractService {
 
     // Validate duration
     if (durationDays <= 0 || durationDays > 3650) {
-      throw ContractException('Invalid duration: must be between 1 and 3650 days');
+      throw ContractException(
+          'Invalid duration: must be between 1 and 3650 days');
     }
 
     try {
       // Use the working pattern from ArkStarknet code
       final amountUint256 = Uint256.fromBigInt(rawAmount);
-      print('📊 Uint256 encoding: low=${amountUint256.low.toHexString()}, high=${amountUint256.high.toHexString()}');
+      print(
+          '📊 Uint256 encoding: low=${amountUint256.low.toHexString()}, high=${amountUint256.high.toHexString()}');
 
       final account = _walletService.currentAccount;
-      if (account == null) throw ContractException('No wallet account available');
+      if (account == null)
+        throw ContractException('No wallet account available');
 
       final response = await account.execute(
         functionCalls: [
@@ -356,10 +377,13 @@ class ContractService {
     } catch (e) {
       if (e.toString().contains('Contract not found')) {
         throw ContractException('Contract not deployed or wrong address');
-      } else if (e.toString().contains('Entry point') || e.toString().contains('selector')) {
-        throw ContractException('Function create_lock_save not found in contract');
+      } else if (e.toString().contains('Entry point') ||
+          e.toString().contains('selector')) {
+        throw ContractException(
+            'Function create_lock_save not found in contract');
       } else if (e.toString().contains('Execution failed')) {
-        throw ContractException('Transaction reverted - check contract state and parameters');
+        throw ContractException(
+            'Transaction reverted - check contract state and parameters');
       }
       rethrow;
     }
@@ -369,7 +393,6 @@ class ContractService {
   Future<String> flexiWithdraw({required double amount}) async {
     return await withdrawFromFlexiSave(amount: amount);
   }
-
 
   /// Withdraw Lock Save
   Future<String> withdrawLockSave({required String lockId}) async {
@@ -414,6 +437,9 @@ class ContractService {
     print('🎯 Creating goal save: $title');
 
     if (_useMockMode) {
+      // Add 5 second delay specifically for Lock Save creation
+      await Future.delayed(Duration(milliseconds: 5000));
+
       return await _mockDataService.createGoalSave(
         title: title,
         category: category,
@@ -447,11 +473,11 @@ class ContractService {
   /// Get Public Groups
   Future<List<Map<String, dynamic>>> getPublicGroups() async {
     print('🌐 Getting public groups...');
-    
+
     if (_useMockMode) {
       return await _mockDataService.getPublicGroups();
     }
-    
+
     // Real implementation would fetch from contract
     return [];
   }
@@ -462,7 +488,7 @@ class ContractService {
       // Mock: Always return sufficient allowance
       return 999999.0;
     }
-    
+
     await _ensureWalletLoaded();
     final account = _walletService.currentAccount;
     if (account == null) throw ContractException('No wallet account available');
@@ -498,11 +524,11 @@ class ContractService {
   /// Get Flexi Balance
   Future<double> getFlexiBalance() async {
     print('📊 Getting flexi balance...');
-    
+
     if (_useMockMode) {
       return await _mockDataService.getBalance('flexi');
     }
-    
+
     // Real implementation would call contract here
     return 2500.0;
   }
@@ -510,11 +536,11 @@ class ContractService {
   /// Get Transaction History
   Future<List<Map<String, dynamic>>> getTransactionHistory() async {
     print('📋 Getting transaction history...');
-    
+
     if (_useMockMode) {
       return await _mockDataService.getTransactions();
     }
-    
+
     // Real implementation would fetch from contract events
     return [];
   }
@@ -534,11 +560,11 @@ class ContractService {
   /// Get User Goals
   Future<List<Map<String, dynamic>>> getUserGoals() async {
     print('🎯 Getting user goals...');
-    
+
     if (_useMockMode) {
       return await _mockDataService.getGoalSaves();
     }
-    
+
     // Real implementation would fetch from contract
     return [];
   }
@@ -546,11 +572,11 @@ class ContractService {
   /// Get User Groups
   Future<List<Map<String, dynamic>>> getUserGroups() async {
     print('👥 Getting user groups...');
-    
+
     if (_useMockMode) {
       return await _mockDataService.getUserGroups();
     }
-    
+
     // Real implementation would fetch from contract
     return [];
   }
@@ -558,11 +584,11 @@ class ContractService {
   /// Get User Locks
   Future<List<Map<String, dynamic>>> getUserLocks() async {
     print('🔒 Getting user locks...');
-    
+
     if (_useMockMode) {
       return await _mockDataService.getLockSaves();
     }
-    
+
     // Real implementation would fetch from contract
     return [];
   }
@@ -570,7 +596,7 @@ class ContractService {
   /// Get Lock Save
   Future<Map<String, dynamic>?> getLockSave([int? lockId]) async {
     print('🔍 Getting lock save ${lockId ?? 'all'}...');
-    
+
     // Mock implementation
     await Future.delayed(Duration(milliseconds: 500));
     return {
@@ -615,12 +641,13 @@ class ContractService {
     required String title,
     String? fundSource,
   }) async {
-    print('🔒 Creating lock save with approval: $amount for $durationDays days');
+    print(
+        '🔒 Creating lock save with approval: $amount for $durationDays days');
 
     if (_useMockMode) {
       // Add 5 second delay specifically for Lock Save creation
       await Future.delayed(Duration(milliseconds: 5000));
-      
+
       // Mock implementation - actually create the lock save
       return await _mockDataService.createLockSave(
         amount: amount,
@@ -644,7 +671,8 @@ class ContractService {
       // Check flexi balance
       final flexiBalance = await getFlexiBalance();
       if (flexiBalance < amount) {
-        throw ContractException('Insufficient flexi balance. Required: $amount, Available: $flexiBalance');
+        throw ContractException(
+            'Insufficient flexi balance. Required: $amount, Available: $flexiBalance');
       }
 
       final rawAmount = _convertToRawUsdcAmount(amount);
@@ -731,7 +759,8 @@ class ContractService {
     required String frequency,
     required String fundSource,
   }) async {
-    print('⚡ Setting up auto save: enabled=$enabled, amount=$amount, frequency=$frequency');
+    print(
+        '⚡ Setting up auto save: enabled=$enabled, amount=$amount, frequency=$frequency');
 
     if (_useMockMode) {
       await _mockDataService.updateAutoSave(
@@ -752,15 +781,18 @@ class ContractService {
     required double amount,
     String? fundSource,
   }) async {
-    return await depositToFlexiSave(amount: amount, fundSource: fundSource ?? 'Porket Wallet');
+    return await depositToFlexiSave(
+        amount: amount, fundSource: fundSource ?? 'Porket Wallet');
   }
 
   /// Deposit to Flexi Save
-  Future<String> depositToFlexiSave({required double amount, String? fundSource}) async {
+  Future<String> depositToFlexiSave(
+      {required double amount, String? fundSource}) async {
     print('💰 Depositing to flexi save: $amount');
 
     if (_useMockMode) {
-      return await _mockDataService.depositToFlexi(amount, fundSource ?? 'Porket Wallet');
+      return await _mockDataService.depositToFlexi(
+          amount, fundSource ?? 'Porket Wallet');
     }
 
     // Real implementation would call contract
@@ -803,7 +835,7 @@ class ContractService {
   /// Get Lock Save Rate
   Future<double> getLockSaveRate({required int durationDays}) async {
     print('📊 Getting lock save rate for $durationDays days...');
-    
+
     if (durationDays <= 30) return 0.04; // 4%
     if (durationDays <= 60) return 0.06; // 6%
     if (durationDays <= 90) return 0.08; // 8%

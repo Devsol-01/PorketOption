@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stacked/stacked.dart';
+import 'package:mobile_app/app/app.locator.dart';
 
 import 'goal_save_viewmodel.dart';
 import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
@@ -537,7 +538,7 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                       const SizedBox(width: 35),
                       _buildPlainStat(
                         label: "Target",
-                        value: "\$${targetAmount.toStringAsFixed(0)}K",
+                        value: "\$${targetAmount.toStringAsFixed(0)}",
                       ),
                       const SizedBox(
                         width: 35,
@@ -646,5 +647,10 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
   GoalSaveViewModel viewModelBuilder(
     BuildContext context,
   ) =>
-      GoalSaveViewModel();
+      locator<GoalSaveViewModel>();
+
+  @override
+  void onViewModelReady(GoalSaveViewModel viewModel) {
+    viewModel.initialize();
+  }
 }

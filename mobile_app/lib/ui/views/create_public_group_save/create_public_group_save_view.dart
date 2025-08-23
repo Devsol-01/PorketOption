@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:stacked/stacked.dart';
+import 'package:mobile_app/app/app.locator.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 
 import 'create_public_group_save_viewmodel.dart';
 
@@ -762,6 +766,10 @@ class CreatePublicGroupSaveView
   @override
   CreatePublicGroupSaveViewModel viewModelBuilder(
     BuildContext context,
-  ) =>
-      CreatePublicGroupSaveViewModel();
+  ) {
+    final viewModel = CreatePublicGroupSaveViewModel();
+    final dashboardViewModel = locator<DashboardViewModel>();
+    viewModel.setDashboardViewModel(dashboardViewModel);
+    return viewModel;
+  }
 }

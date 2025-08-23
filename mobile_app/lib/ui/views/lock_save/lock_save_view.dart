@@ -123,9 +123,22 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
             const SizedBox(height: 40),
 
             // Lock Savings Section
-            viewModel.currentLocks.isEmpty
-                ? _buildEmptyState()
-                : _buildLocksList(viewModel),
+            Builder(
+              builder: (context) {
+                print(
+                    '🔍 UI Debug: currentLocks.length = ${viewModel.currentLocks.length}');
+                print(
+                    '🔍 UI Debug: isOngoingSelected = ${viewModel.isOngoingSelected}');
+                for (int i = 0; i < viewModel.currentLocks.length; i++) {
+                  final lock = viewModel.currentLocks[i];
+                  print(
+                      '🔍 UI Debug: Lock $i: ${lock['title']} - ${lock['amount']} - ${lock['status']}');
+                }
+                return viewModel.currentLocks.isEmpty
+                    ? _buildEmptyState()
+                    : _buildLocksList(viewModel);
+              },
+            ),
 
             const SizedBox(height: 20),
           ],
@@ -423,8 +436,11 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                                 ),
                               ),
                             );
-                            // Refresh locks when returning from create lock page
-                            await viewModel.initialize();
+                            // Force refresh locks when returning from create lock page
+                            print('🔄 Refreshing locks after creation...');
+                            await viewModel.loadUserLocks();
+                            print(
+                                '🔄 Locks refreshed: ${viewModel.currentLocks.length} locks');
                           },
                         ))
                     .toList(),
@@ -558,16 +574,6 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      isMatured ? 'Matured' : '$daysLeft days left',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isMatured ? Colors.green : Colors.grey[600],
-                        fontWeight:
-                            isMatured ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
                   ],

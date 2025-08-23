@@ -3,12 +3,16 @@ import 'package:mobile_app/app/app.locator.dart';
 import 'package:mobile_app/app/app.router.dart';
 import 'package:mobile_app/extensions/num_extensions.dart';
 import 'package:mobile_app/services/contract_service.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class CreatePublicGroupSaveViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final ContractService _contractService = locator<ContractService>();
+  final SnackbarService _snackbarService = locator<SnackbarService>();
+  
+  DashboardViewModel? _dashboardViewModel;
 
   // Controllers
   final TextEditingController purposeController = TextEditingController();
@@ -123,9 +127,12 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
     }
   }
 
+  void setDashboardViewModel(DashboardViewModel dashboardViewModel) {
+    _dashboardViewModel = dashboardViewModel;
+  }
+
   void navigateBack() {
-    // Navigate specifically to GroupSaveView instead of just going back
-    _navigationService.clearStackAndShow(Routes.groupSaveView);
+    _navigationService.back();
   }
 
   void selectCategory(String category) {
@@ -253,29 +260,86 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
   Future<void> createGoal() async {
     if (!canCreateGoal) return;
 
+    final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
+    final contributionAmount = calculatedContributionAmount;
+    
+    if (targetAmount <= 0) {
+      _showErrorSnackbar('Please enter a valid target amount');
+      return;
+    }
+    
+    // Check if dashboard has sufficient balance for initial contribution
+    if (_dashboardViewModel != null) {
+      if (_dashboardViewModel!.dashboardBalance < contributionAmount) {
+        _showErrorSnackbar('Insufficient balance in dashboard for initial contribution');
+        return;
+      }
+    }
+
     setBusy(true);
     try {
-      final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
-      final contributionAmount = calculatedContributionAmount;
+      print('👥 Creating public group with contract...');
+      
+      // Transfer initial contribution from dashboard to group save
+      bool transferSuccess = false;
+      if (_dashboardViewModel != null) {
+        transferSuccess = _dashboardViewModel!.transferToGroupSave(contributionAmount);
+      }
+      
+      if (transferSuccess) {
+        // Simulate contract interaction delay
+        await Future.delayed(Duration(milliseconds: 1500));
+        
+        final groupId = await _contractService.createGroupSave(
+          title: purposeController.text,
+          description: descriptionController.text,
+          category: _selectedCategory,
+          targetAmount: targetAmount,
+          contributionType: _selectedFrequency,
+          contributionAmount: contributionAmount,
+          isPublic: true,
+          endTime: _endDate!,
+        );
 
-      final groupId = await _contractService.createGroupSave(
-        title: purposeController.text,
-        description: descriptionController.text,
-        category: _selectedCategory,
-        targetAmount: targetAmount,
-        contributionType: _selectedFrequency,
-        contributionAmount: contributionAmount,
-        isPublic: true,
-        endTime: _endDate!,
-      );
-
-      print('👥 Public group created successfully with ID: $groupId');
-      _navigationService.back();
+        if (groupId.isNotEmpty) {
+          print('👥 Public group created successfully with ID: $groupId');
+          _showSuccessSnackbar('👥 Group Save created successfully! \$${contributionAmount.toStringAsFixed(2)} transferred as initial contribution');
+          _navigationService.back();
+        } else {
+          _showErrorSnackbar('Failed to create group save');
+          // Rollback the transfer on error
+          if (_dashboardViewModel != null) {
+            _dashboardViewModel!.transferFromGroupSave(contributionAmount);
+          }
+        }
+      } else {
+        _showErrorSnackbar('Transfer failed. Please try again.');
+      }
     } catch (e) {
       print('❌ Error creating public group: $e');
+      _showErrorSnackbar('Error creating group: $e');
+      
+      // Rollback the transfer on error
+      if (_dashboardViewModel != null) {
+        _dashboardViewModel!.transferFromGroupSave(contributionAmount);
+      }
     } finally {
       setBusy(false);
     }
+  }
+
+  void _showSuccessSnackbar(String message) {
+    _snackbarService.showSnackbar(
+      message: message,
+      duration: Duration(seconds: 3),
+    );
+  }
+
+  void _showErrorSnackbar(String message) {
+    _snackbarService.showSnackbar(
+      message: message,
+      duration: Duration(seconds: 4),
+    );
   }
 
   @override

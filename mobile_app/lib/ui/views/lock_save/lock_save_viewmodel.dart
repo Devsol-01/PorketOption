@@ -9,7 +9,7 @@ class LockSaveViewModel extends BaseViewModel {
   final ContractService _contractService = locator<ContractService>();
   final NavigationService _navigationService = NavigationService();
   final SnackbarService _snackbarService = locator<SnackbarService>();
-  
+
   // Reference to dashboard viewmodel for balance updates
   DashboardViewModel? _dashboardViewModel;
 
@@ -142,6 +142,8 @@ class LockSaveViewModel extends BaseViewModel {
     // _navigationService.navigateTo('/create-lock', arguments: period);
   }
 
+  /// Refresh lock saves (pull-to-refresh)
+
   // Load lock save balance from contract
   Future<void> loadLockSaveBalance() async {
     try {
@@ -172,11 +174,14 @@ class LockSaveViewModel extends BaseViewModel {
 
       print(
           '🔒 Filtered: ${_ongoingLocks.length} ongoing, ${_completedLocks.length} completed');
+
+      // Force UI update
       notifyListeners();
     } catch (e) {
       print('❌ Error loading user locks: $e');
       _ongoingLocks = [];
       _completedLocks = [];
+      notifyListeners();
     }
   }
 
@@ -190,7 +195,7 @@ class LockSaveViewModel extends BaseViewModel {
       _showErrorSnackbar('Please enter a valid amount');
       return;
     }
-    
+
     // Check if dashboard has sufficient balance
     if (_dashboardViewModel != null) {
       if (_dashboardViewModel!.dashboardBalance < amount) {
@@ -206,7 +211,7 @@ class LockSaveViewModel extends BaseViewModel {
       if (_dashboardViewModel != null) {
         transferSuccess = _dashboardViewModel!.transferToLockSave(amount);
       }
-      
+
       if (transferSuccess) {
         // Simulate contract interaction
         await Future.delayed(Duration(milliseconds: 1500));
@@ -216,13 +221,14 @@ class LockSaveViewModel extends BaseViewModel {
           durationDays: lockDays,
           fundSource: 'Porket Wallet',
         );
-        
+
         if (lockId.isNotEmpty) {
           // Refresh data
           await loadLockSaveBalance();
           await loadUserLocks();
-          
-          _showSuccessSnackbar('🔒 Lock save created successfully! \$${amount.toStringAsFixed(2)} locked for $lockDays days');
+
+          _showSuccessSnackbar(
+              '🔒 Lock save created successfully! \$${amount.toStringAsFixed(2)} locked for $lockDays days');
         } else {
           _showErrorSnackbar('Failed to create lock save');
           // Rollback the transfer on error
@@ -236,7 +242,7 @@ class LockSaveViewModel extends BaseViewModel {
     } catch (e) {
       print('Error creating lock save: $e');
       _showErrorSnackbar('Error creating lock save: $e');
-      
+
       // Rollback the transfer on error
       if (_dashboardViewModel != null) {
         _dashboardViewModel!.transferFromFlexiSave(amount);

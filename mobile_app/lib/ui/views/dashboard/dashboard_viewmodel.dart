@@ -34,6 +34,10 @@ class DashboardViewModel extends BaseViewModel {
   double get usdcBalance => _usdcBalance;
   double get dashboardBalance => _dashboardBalance;
   String get formattedBalance => formatBalance(_balance);
+  String get formattedDashboardBalance =>
+      '\$${_dashboardBalance.toStringAsFixed(2)}';
+  String get formattedTotalSavingsBalance =>
+      '\$${_totalSavingsBalance.toStringAsFixed(2)}';
 
   /// Format balance for display (in ETH by default)
   String formatBalance(BigInt balance, {int decimals = 18}) {
@@ -89,7 +93,7 @@ class DashboardViewModel extends BaseViewModel {
         _showErrorSnackbar('User not authenticated. Please log in.');
       }
     } catch (e) {
-      print('❌ Error in HoneViewModel initialize: $e');
+      print('❌ Error in DashboardViewModel initialize: $e');
       _showErrorSnackbar('Error loading wallet: $e');
     } finally {
       setBusy(false);
@@ -213,16 +217,19 @@ class DashboardViewModel extends BaseViewModel {
   double _lockSaveBalance = 0.0;
   double _goalSaveBalance = 0.0;
   double _groupSaveBalance = 0.0;
-  
+
   double get totalSavingsBalance => _totalSavingsBalance;
   double get flexiSaveBalance => _flexiSaveBalance;
   double get lockSaveBalance => _lockSaveBalance;
   double get goalSaveBalance => _goalSaveBalance;
   double get groupSaveBalance => _groupSaveBalance;
-  
+
   // Calculate total savings as sum of all individual balances
   void _updateTotalSavingsBalance() {
-    _totalSavingsBalance = _flexiSaveBalance + _lockSaveBalance + _goalSaveBalance + _groupSaveBalance;
+    _totalSavingsBalance = _flexiSaveBalance +
+        _lockSaveBalance +
+        _goalSaveBalance +
+        _groupSaveBalance;
     notifyListeners();
   }
 
@@ -276,13 +283,39 @@ class DashboardViewModel extends BaseViewModel {
       final userLocks = await _contractService.getLockSave();
       print('✅ User locks retrieved: $userLocks');
 
-      // Initialize individual balances (mock data for now)
-      _flexiSaveBalance = 0.0;
-      _lockSaveBalance = 0.0;
-      _goalSaveBalance = 0.0;
-      _groupSaveBalance = 0.0;
+      // Calculate actual balances from contract data
+      _flexiSaveBalance = flexiBalance;
+
+      // Handle locks (List<Map<String, dynamic>>)
+      if (userLocks is List) {
+        _lockSaveBalance = (userLocks as List).fold(0.0,
+            (sum, lock) => sum + ((lock as Map)['amount'] as double? ?? 0.0));
+      } else {
+        _lockSaveBalance = 0.0;
+      }
+
+      // Handle goals (List<Map<String, dynamic>>)
+      if (userGoals is List) {
+        _goalSaveBalance = (userGoals as List).fold(
+            0.0,
+            (sum, goal) =>
+                sum + ((goal as Map)['currentAmount'] as double? ?? 0.0));
+      } else {
+        _goalSaveBalance = 0.0;
+      }
+
+      // Handle groups (List<Map<String, dynamic>>)
+      if (userGroups is List) {
+        _groupSaveBalance = (userGroups as List).fold(
+            0.0,
+            (sum, group) =>
+                sum + ((group as Map)['currentAmount'] as double? ?? 0.0));
+      } else {
+        _groupSaveBalance = 0.0;
+      }
+
       _updateTotalSavingsBalance();
-      
+
       print('🎉 All contract read functions working correctly!');
     } catch (e) {
       print('❌ Contract test failed: $e');
@@ -348,19 +381,20 @@ class DashboardViewModel extends BaseViewModel {
   }
 
   // Balance transfer methods for unified balance system
-  
+
   /// Transfer money from dashboard to flexi save
   bool transferToFlexiSave(double amount) {
     if (_dashboardBalance >= amount) {
       _dashboardBalance -= amount;
       _flexiSaveBalance += amount;
-      _usdcBalance = _dashboardBalance;
+      _usdcBalance = _dashboardBalance; // Keep USDC balance in sync
       _updateTotalSavingsBalance();
+      notifyListeners(); // Trigger UI update
       return true;
     }
     return false;
   }
-  
+
   /// Transfer money from flexi save back to dashboard
   bool transferFromFlexiSave(double amount) {
     if (_flexiSaveBalance >= amount) {
@@ -368,11 +402,12 @@ class DashboardViewModel extends BaseViewModel {
       _dashboardBalance += amount;
       _usdcBalance = _dashboardBalance;
       _updateTotalSavingsBalance();
+      notifyListeners(); // Trigger UI update
       return true;
     }
     return false;
   }
-  
+
   /// Transfer money from dashboard to lock save
   bool transferToLockSave(double amount) {
     if (_dashboardBalance >= amount) {
@@ -380,11 +415,16 @@ class DashboardViewModel extends BaseViewModel {
       _lockSaveBalance += amount;
       _usdcBalance = _dashboardBalance;
       _updateTotalSavingsBalance();
+      print(
+          '💰 Dashboard balance updated: \$${_dashboardBalance} (reduced by \$${amount})');
+      notifyListeners(); // Trigger UI update
       return true;
     }
+    print(
+        '❌ Insufficient dashboard balance: \$${_dashboardBalance} < \$${amount}');
     return false;
   }
-  
+
   /// Transfer money from dashboard to goal save
   bool transferToGoalSave(double amount) {
     if (_dashboardBalance >= amount) {
@@ -392,11 +432,12 @@ class DashboardViewModel extends BaseViewModel {
       _goalSaveBalance += amount;
       _usdcBalance = _dashboardBalance;
       _updateTotalSavingsBalance();
+      notifyListeners(); // Trigger UI update
       return true;
     }
     return false;
   }
-  
+
   /// Transfer money from goal save back to dashboard
   bool transferFromGoalSave(double amount) {
     if (_goalSaveBalance >= amount) {
@@ -404,11 +445,46 @@ class DashboardViewModel extends BaseViewModel {
       _dashboardBalance += amount;
       _usdcBalance = _dashboardBalance;
       _updateTotalSavingsBalance();
+      notifyListeners(); // Trigger UI update
       return true;
     }
     return false;
   }
-  
+
+  /// Deposit to savings - reduces dashboard balance
+  Future<void> depositToSavings(double amount) async {
+    if (amount <= 0 || amount > _dashboardBalance) return;
+
+    setBusy(true);
+    try {
+      _dashboardBalance -= amount;
+      _usdcBalance = _dashboardBalance; // Keep in sync
+      notifyListeners();
+
+      // 3 second loading for demo
+      await Future.delayed(Duration(seconds: 3));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /// Withdraw from savings - increases dashboard balance
+  Future<void> withdrawFromSavings(double amount) async {
+    if (amount <= 0) return;
+
+    setBusy(true);
+    try {
+      _dashboardBalance += amount;
+      _usdcBalance = _dashboardBalance; // Keep in sync
+      notifyListeners();
+
+      // Quick operation for demo
+      await Future.delayed(Duration(milliseconds: 500));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   /// Transfer money from dashboard to group save
   bool transferToGroupSave(double amount) {
     if (_dashboardBalance >= amount) {
@@ -416,11 +492,12 @@ class DashboardViewModel extends BaseViewModel {
       _groupSaveBalance += amount;
       _usdcBalance = _dashboardBalance;
       _updateTotalSavingsBalance();
+      notifyListeners(); // Trigger UI update
       return true;
     }
     return false;
   }
-  
+
   /// Transfer money from group save back to dashboard
   bool transferFromGroupSave(double amount) {
     if (_groupSaveBalance >= amount) {
@@ -428,35 +505,40 @@ class DashboardViewModel extends BaseViewModel {
       _dashboardBalance += amount;
       _usdcBalance = _dashboardBalance;
       _updateTotalSavingsBalance();
+      notifyListeners(); // Trigger UI update
       return true;
     }
     return false;
   }
 
   // Formatted getters for display
-  String get formattedDashboardBalance => '\$${_dashboardBalance.toStringAsFixed(2)}';
-  String get formattedTotalSavingsBalance => '\$${_totalSavingsBalance.toStringAsFixed(2)}';
-  String get formattedFlexiSaveBalance => '\$${_flexiSaveBalance.toStringAsFixed(2)}';
-  String get formattedLockSaveBalance => '\$${_lockSaveBalance.toStringAsFixed(2)}';
-  String get formattedGoalSaveBalance => '\$${_goalSaveBalance.toStringAsFixed(2)}';
-  String get formattedGroupSaveBalance => '\$${_groupSaveBalance.toStringAsFixed(2)}';
-  
+  String get formattedFlexiSaveBalance =>
+      '\$${_flexiSaveBalance.toStringAsFixed(2)}';
+  String get formattedLockSaveBalance =>
+      '\$${_lockSaveBalance.toStringAsFixed(2)}';
+  String get formattedGoalSaveBalance =>
+      '\$${_goalSaveBalance.toStringAsFixed(2)}';
+  String get formattedGroupSaveBalance =>
+      '\$${_groupSaveBalance.toStringAsFixed(2)}';
+
   // Portfolio value calculation (dashboard + savings)
   double get totalPortfolioValue => _dashboardBalance + _totalSavingsBalance;
-  String get formattedPortfolioValue => '\$${totalPortfolioValue.toStringAsFixed(2)}';
-  
+  String get formattedPortfolioValue =>
+      '\$${totalPortfolioValue.toStringAsFixed(2)}';
+
   // Loading states for refresh
   bool _isRefreshing = false;
   bool get isRefreshing => _isRefreshing;
-  
+
   /// Refresh dashboard with animation
   Future<void> refreshDashboardWithAnimation() async {
     _isRefreshing = true;
     notifyListeners();
-    
-    await Future.delayed(Duration(milliseconds: 1500)); // Realistic loading time
+
+    await Future.delayed(
+        Duration(milliseconds: 1500)); // Realistic loading time
     await refreshDashboard();
-    
+
     _isRefreshing = false;
     notifyListeners();
   }

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:mobile_app/services/contract_service.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 import 'package:mobile_app/app/app.locator.dart';
 
 class CreateLockViewModel extends BaseViewModel {
   final NavigationService _navigationService = NavigationService();
   final ContractService _contractService = locator<ContractService>();
+  final DashboardViewModel _dashboardViewModel = locator<DashboardViewModel>();
 
   final TextEditingController amountController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
@@ -45,6 +47,11 @@ class CreateLockViewModel extends BaseViewModel {
 
   void setFundSource(String source) {
     _selectedFundSource = source;
+    notifyListeners();
+  }
+
+  void setDays(int days) {
+    _selectedDays = days;
     notifyListeners();
   }
 
@@ -159,6 +166,23 @@ class CreateLockViewModel extends BaseViewModel {
       final title = titleController.text;
       final duration = _selectedDays;
 
+      // Check dashboard balance first
+      if (_dashboardViewModel.dashboardBalance < amount) {
+        print(
+            '❌ Insufficient dashboard balance: ${_dashboardViewModel.dashboardBalance} < $amount');
+        return;
+      }
+
+      // Transfer from dashboard first
+      bool transferSuccess = _dashboardViewModel.transferToLockSave(amount);
+      if (!transferSuccess) {
+        print('❌ Transfer from dashboard failed');
+        return;
+      }
+
+      print(
+          '✅ Dashboard balance updated to: ${_dashboardViewModel.dashboardBalance}');
+
       // Use enhanced lock save with automatic approval
       print('🔒 Creating lock save with approval...');
       final txHash = await _contractService.createLockSaveWithApproval(
@@ -169,11 +193,14 @@ class CreateLockViewModel extends BaseViewModel {
       );
 
       print('✅ Lock created successfully with hash: $txHash');
-      
+
       // Navigate back to trigger refresh
       _navigationService.back();
     } catch (e) {
       print('❌ Error creating lock: $e');
+      // Rollback on error
+      final amount = double.tryParse(amountController.text) ?? 0.0;
+      _dashboardViewModel.withdrawFromSavings(amount);
     } finally {
       setBusy(false);
     }

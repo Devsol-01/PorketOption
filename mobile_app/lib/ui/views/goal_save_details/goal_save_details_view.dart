@@ -228,24 +228,23 @@ class GoalSaveDetailsView extends StackedView<GoalSaveDetailsViewModel> {
       children: [
         Expanded(
           child: GestureDetector(
-            onTap: () => viewModel.showTopUpDialog(),
+            onTap: () => viewModel.showTopUpDialog(context, goal),
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
                 color: const Color(0xFF8A38F5),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: 
-                  Center(
-                    child: Text(
-                      'Top Up ⚡️',
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+              child: Center(
+                child: Text(
+                  'Top Up ⚡️',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
+                ),
+              ),
             ),
           ),
         ),

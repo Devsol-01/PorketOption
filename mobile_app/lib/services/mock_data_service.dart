@@ -30,7 +30,7 @@ class MockDataService {
   // Initialize with default data
   Future<void> initialize() async {
     await _loadAllData();
-    if (_balances == null) {
+    if (_balances == null || _lockSaves == null || _goalSaves == null) {
       await _initializeDefaultData();
     }
   }
@@ -46,11 +46,21 @@ class MockDataService {
       final autoSaveJson = await _storage.read(key: _autoSaveKey);
 
       _balances = balancesJson != null ? jsonDecode(balancesJson) : null;
-      _transactions = transactionsJson != null ? List<Map<String, dynamic>>.from(jsonDecode(transactionsJson)) : null;
-      _lockSaves = lockSavesJson != null ? List<Map<String, dynamic>>.from(jsonDecode(lockSavesJson)) : null;
-      _goalSaves = goalSavesJson != null ? List<Map<String, dynamic>>.from(jsonDecode(goalSavesJson)) : null;
-      _groupSaves = groupSavesJson != null ? List<Map<String, dynamic>>.from(jsonDecode(groupSavesJson)) : null;
-      _userGroups = userGroupsJson != null ? List<String>.from(jsonDecode(userGroupsJson)) : null;
+      _transactions = transactionsJson != null
+          ? List<Map<String, dynamic>>.from(jsonDecode(transactionsJson))
+          : null;
+      _lockSaves = lockSavesJson != null
+          ? List<Map<String, dynamic>>.from(jsonDecode(lockSavesJson))
+          : null;
+      _goalSaves = goalSavesJson != null
+          ? List<Map<String, dynamic>>.from(jsonDecode(goalSavesJson))
+          : null;
+      _groupSaves = groupSavesJson != null
+          ? List<Map<String, dynamic>>.from(jsonDecode(groupSavesJson))
+          : null;
+      _userGroups = userGroupsJson != null
+          ? List<String>.from(jsonDecode(userGroupsJson))
+          : null;
       _autoSave = autoSaveJson != null ? jsonDecode(autoSaveJson) : null;
     } catch (e) {
       print('Error loading mock data: $e');
@@ -95,8 +105,10 @@ class MockDataService {
         'title': 'Vacation Fund',
         'duration': 90,
         'interestRate': 0.078,
-        'createdDate': DateTime.now().subtract(Duration(days: 5)).toIso8601String(),
-        'maturityDate': DateTime.now().add(Duration(days: 85)).toIso8601String(),
+        'createdDate':
+            DateTime.now().subtract(Duration(days: 5)).toIso8601String(),
+        'maturityDate':
+            DateTime.now().add(Duration(days: 85)).toIso8601String(),
         'status': 'active',
         'projectedReturn': 5000.0 * 0.078 * (90 / 365),
       },
@@ -106,8 +118,10 @@ class MockDataService {
         'title': 'Emergency Fund',
         'duration': 180,
         'interestRate': 0.091,
-        'createdDate': DateTime.now().subtract(Duration(days: 30)).toIso8601String(),
-        'maturityDate': DateTime.now().add(Duration(days: 150)).toIso8601String(),
+        'createdDate':
+            DateTime.now().subtract(Duration(days: 30)).toIso8601String(),
+        'maturityDate':
+            DateTime.now().add(Duration(days: 150)).toIso8601String(),
         'status': 'active',
         'projectedReturn': 3750.0 * 0.091 * (180 / 365),
       },
@@ -122,7 +136,8 @@ class MockDataService {
         'currentAmount': 3200.0,
         'frequency': 'monthly',
         'contributionAmount': 800.0,
-        'startDate': DateTime.now().subtract(Duration(days: 120)).toIso8601String(),
+        'startDate':
+            DateTime.now().subtract(Duration(days: 120)).toIso8601String(),
         'endDate': DateTime.now().add(Duration(days: 600)).toIso8601String(),
         'status': 'active',
         'progress': 0.128, // 3200 / 25000
@@ -139,7 +154,8 @@ class MockDataService {
         'currentAmount': 45600.0,
         'memberCount': 12,
         'isPublic': true,
-        'createdDate': DateTime.now().subtract(Duration(days: 60)).toIso8601String(),
+        'createdDate':
+            DateTime.now().subtract(Duration(days: 60)).toIso8601String(),
         'endDate': DateTime.now().add(Duration(days: 300)).toIso8601String(),
         'status': 'active',
         'progress': 0.456,
@@ -155,7 +171,8 @@ class MockDataService {
         'currentAmount': 28900.0,
         'memberCount': 25,
         'isPublic': true,
-        'createdDate': DateTime.now().subtract(Duration(days: 90)).toIso8601String(),
+        'createdDate':
+            DateTime.now().subtract(Duration(days: 90)).toIso8601String(),
         'endDate': DateTime.now().add(Duration(days: 270)).toIso8601String(),
         'status': 'active',
         'progress': 0.578,
@@ -180,7 +197,8 @@ class MockDataService {
   Future<void> _saveAllData() async {
     try {
       await _storage.write(key: _balancesKey, value: jsonEncode(_balances));
-      await _storage.write(key: _transactionsKey, value: jsonEncode(_transactions));
+      await _storage.write(
+          key: _transactionsKey, value: jsonEncode(_transactions));
       await _storage.write(key: _lockSavesKey, value: jsonEncode(_lockSaves));
       await _storage.write(key: _goalSavesKey, value: jsonEncode(_goalSaves));
       await _storage.write(key: _groupSavesKey, value: jsonEncode(_groupSaves));
@@ -202,15 +220,17 @@ class MockDataService {
     return (_balances![plan] ?? 0.0).toDouble();
   }
 
-  Future<void> updateBalance(String plan, double amount, {bool isDebit = false}) async {
+  Future<void> updateBalance(String plan, double amount,
+      {bool isDebit = false}) async {
     await initialize();
     final currentBalance = (_balances![plan] ?? 0.0).toDouble();
-    _balances![plan] = isDebit ? currentBalance - amount : currentBalance + amount;
-    
+    _balances![plan] =
+        isDebit ? currentBalance - amount : currentBalance + amount;
+
     // Also update USDC balance
     final currentUsdc = (_balances!['usdc'] ?? 0.0).toDouble();
     _balances!['usdc'] = isDebit ? currentUsdc + amount : currentUsdc - amount;
-    
+
     await _saveAllData();
   }
 
@@ -228,7 +248,7 @@ class MockDataService {
     Map<String, dynamic>? details,
   }) async {
     await initialize();
-    
+
     final transaction = {
       'id': DateTime.now().millisecondsSinceEpoch.toString(),
       'type': type,
@@ -239,7 +259,7 @@ class MockDataService {
       'hash': _generateMockHash(),
       if (details != null) 'details': details,
     };
-    
+
     _transactions!.insert(0, transaction);
     await _saveAllData();
     return transaction['hash'] as String;
@@ -248,6 +268,10 @@ class MockDataService {
   // Lock Save operations
   Future<List<Map<String, dynamic>>> getLockSaves() async {
     await initialize();
+    print('🔍 GETTING LOCKS: Found ${_lockSaves!.length} locks in storage');
+    for (var lock in _lockSaves!) {
+      print('🔍 Lock: ${lock['id']} - ${lock['title']} - \$${lock['amount']}');
+    }
     return List<Map<String, dynamic>>.from(_lockSaves!);
   }
 
@@ -257,10 +281,10 @@ class MockDataService {
     required int durationDays,
   }) async {
     await initialize();
-    
+
     final interestRate = _calculateInterestRate(durationDays);
     final projectedReturn = amount * interestRate * (durationDays / 365);
-    
+
     final lockSave = {
       'id': DateTime.now().millisecondsSinceEpoch.toString(),
       'amount': amount,
@@ -268,18 +292,21 @@ class MockDataService {
       'duration': durationDays,
       'interestRate': interestRate,
       'createdDate': DateTime.now().toIso8601String(),
-      'maturityDate': DateTime.now().add(Duration(days: durationDays)).toIso8601String(),
+      'maturityDate':
+          DateTime.now().add(Duration(days: durationDays)).toIso8601String(),
       'status': 'active',
       'projectedReturn': projectedReturn,
     };
-    
+
     _lockSaves!.add(lockSave);
-    
+
     // Update balances - save to storage
     await updateBalance('lock', amount);
     await _saveAllData();
-    print('🔒 LOCK SAVE CREATED: ${lockSave['id']} - ${lockSave['title']} - \$${lockSave['amount']}');
-    
+    print(
+        '🔒 LOCK SAVE CREATED: ${lockSave['id']} - ${lockSave['title']} - \$${lockSave['amount']}');
+    print('🔒 TOTAL LOCKS NOW: ${_lockSaves!.length}');
+
     // Add transaction
     await addTransaction(
       type: 'lock_create',
@@ -287,7 +314,7 @@ class MockDataService {
       plan: 'lock',
       details: {'duration': durationDays, 'title': title},
     );
-    
+
     return _generateMockHash();
   }
 
@@ -315,7 +342,7 @@ class MockDataService {
     required DateTime endDate,
   }) async {
     await initialize();
-    
+
     final goalSave = {
       'id': DateTime.now().millisecondsSinceEpoch.toString(),
       'title': title,
@@ -330,7 +357,7 @@ class MockDataService {
       'progress': 0.0,
       'interestRate': 12.0, // Default interest rate for goal saves
     };
-    
+
     _goalSaves!.add(goalSave);
     await _saveAllData();
     return _generateMockHash();
@@ -338,23 +365,23 @@ class MockDataService {
 
   Future<String> contributeToGoal(String goalId, double amount) async {
     await initialize();
-    
+
     final goalIndex = _goalSaves!.indexWhere((g) => g['id'] == goalId);
     if (goalIndex != -1) {
       final goal = _goalSaves![goalIndex];
       final newAmount = (goal['currentAmount'] as double) + amount;
       final progress = newAmount / (goal['targetAmount'] as double);
-      
+
       _goalSaves![goalIndex] = {
         ...goal,
         'currentAmount': newAmount,
         'progress': progress.clamp(0.0, 1.0),
         'status': progress >= 1.0 ? 'completed' : 'active',
       };
-      
+
       // Update balances
       await updateBalance('goal', amount);
-      
+
       // Add transaction
       await addTransaction(
         type: 'goal_contribute',
@@ -363,7 +390,7 @@ class MockDataService {
         details: {'goalId': goalId, 'goalTitle': goal['title']},
       );
     }
-    
+
     return _generateMockHash();
   }
 
@@ -385,19 +412,20 @@ class MockDataService {
 
   Future<String> joinGroup(String groupId) async {
     await initialize();
-    
+
     if (!_userGroups!.contains(groupId)) {
       _userGroups!.add(groupId);
-      
+
       // Update group member count
       final groupIndex = _groupSaves!.indexWhere((g) => g['id'] == groupId);
       if (groupIndex != -1) {
-        _groupSaves![groupIndex]['memberCount'] = (_groupSaves![groupIndex]['memberCount'] as int) + 1;
+        _groupSaves![groupIndex]['memberCount'] =
+            (_groupSaves![groupIndex]['memberCount'] as int) + 1;
       }
-      
+
       await _saveAllData();
     }
-    
+
     return _generateMockHash();
   }
 
@@ -414,7 +442,7 @@ class MockDataService {
     String? groupCode,
   }) async {
     await initialize();
-    
+
     final groupSave = {
       'id': DateTime.now().millisecondsSinceEpoch.toString(),
       'title': title,
@@ -426,7 +454,8 @@ class MockDataService {
       'contributionType': contributionType,
       'contributionAmount': contributionAmount ?? 0.0,
       'startDate': (startDate ?? DateTime.now()).toIso8601String(),
-      'endDate': (endDate ?? DateTime.now().add(Duration(days: 365))).toIso8601String(),
+      'endDate': (endDate ?? DateTime.now().add(Duration(days: 365)))
+          .toIso8601String(),
       'isPublic': isPublic,
       'groupCode': groupCode,
       'status': 'active',
@@ -434,24 +463,24 @@ class MockDataService {
       'memberCount': 1,
       'interestRate': 8.0,
     };
-    
+
     _groupSaves!.add(groupSave);
     _userGroups!.add(groupSave['id'] as String);
-    
+
     await _saveAllData();
     return _generateMockHash();
   }
 
   Future<String> contributeToGroup(String groupId, double amount) async {
     await initialize();
-    
+
     final groupIndex = _groupSaves!.indexWhere((g) => g['id'] == groupId);
     if (groupIndex != -1) {
       final group = _groupSaves![groupIndex];
       final newAmount = (group['currentAmount'] as double) + amount;
       final userContribution = (group['userContribution'] as double) + amount;
       final progress = newAmount / (group['targetAmount'] as double);
-      
+
       _groupSaves![groupIndex] = {
         ...group,
         'currentAmount': newAmount,
@@ -459,10 +488,10 @@ class MockDataService {
         'progress': progress.clamp(0.0, 1.0),
         'status': progress >= 1.0 ? 'completed' : 'active',
       };
-      
+
       // Update balances
       await updateBalance('group', amount);
-      
+
       // Add transaction
       await addTransaction(
         type: 'group_contribute',
@@ -471,7 +500,7 @@ class MockDataService {
         details: {'groupId': groupId, 'groupTitle': group['title']},
       );
     }
-    
+
     return _generateMockHash();
   }
 
@@ -488,7 +517,7 @@ class MockDataService {
     required String fundSource,
   }) async {
     await initialize();
-    
+
     _autoSave = {
       'enabled': enabled,
       'amount': amount,
@@ -496,7 +525,7 @@ class MockDataService {
       'fundSource': fundSource,
       'nextExecution': enabled ? _calculateNextExecution(frequency) : null,
     };
-    
+
     await _saveAllData();
   }
 
@@ -517,10 +546,10 @@ class MockDataService {
   // Flexi Save operations
   Future<String> depositToFlexi(double amount, String fundSource) async {
     await initialize();
-    
+
     // Update balance
     await updateBalance('flexi', amount);
-    
+
     // Add transaction
     await addTransaction(
       type: 'deposit',
@@ -528,37 +557,37 @@ class MockDataService {
       plan: 'flexi',
       details: {'fundSource': fundSource},
     );
-    
+
     return _generateMockHash();
   }
 
   Future<String> withdrawFromFlexi(double amount) async {
     await initialize();
-    
+
     final currentBalance = await getBalance('flexi');
     if (currentBalance < amount) {
       throw Exception('Insufficient balance');
     }
-    
+
     // Update balance
     await updateBalance('flexi', amount, isDebit: true);
-    
+
     // Add transaction
     await addTransaction(
       type: 'withdrawal',
       amount: amount,
       plan: 'flexi',
     );
-    
+
     return _generateMockHash();
   }
-
 
   // Utility methods
   String _generateMockHash() {
     final random = Random();
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final randomPart = random.nextInt(0xFFFFFF).toRadixString(16).padLeft(6, '0');
+    final randomPart =
+        random.nextInt(0xFFFFFF).toRadixString(16).padLeft(6, '0');
     return '0x${timestamp.toRadixString(16)}${randomPart}';
   }
 

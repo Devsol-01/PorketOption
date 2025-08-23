@@ -722,7 +722,6 @@ extension NavigatorStateExtension on _i24.NavigationService {
         transition: transition);
   }
 
-
   Future<dynamic> replaceWithStartupView([
     int? routerId,
     bool preventDuplicates = true,
@@ -1026,5 +1025,4 @@ extension NavigatorStateExtension on _i24.NavigationService {
         parameters: parameters,
         transition: transition);
   }
-
 }

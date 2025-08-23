@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stacked/stacked.dart';
-import 'package:flutter/services.dart';
-
 import 'create_lock_viewmodel.dart';
 
 class CreateLockView extends StackedView<CreateLockViewModel> {

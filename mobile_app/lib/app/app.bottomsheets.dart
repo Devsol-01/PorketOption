@@ -7,20 +7,20 @@
 import 'package:stacked_services/stacked_services.dart';
 
 import 'app.locator.dart';
-import '../ui/bottom_sheets/crypto_deposit/crypto_deposit_sheet.dart';
-import '../ui/bottom_sheets/deposit/deposit_sheet.dart';
-import '../ui/bottom_sheets/group_save_selection/group_save_selection_sheet.dart';
-import '../ui/bottom_sheets/withdraw/withdraw_sheet.dart';
-import '../ui/bottom_sheets/send/send_sheet.dart';
-import '../ui/bottom_sheets/crypto_send/crypto_send_sheet.dart';
-import '../ui/bottom_sheets/fiat_send_selection/fiat_send_selection_sheet.dart';
-import '../ui/bottom_sheets/ngn_send/ngn_send_sheet.dart';
-import '../ui/bottom_sheets/crypto_method_selection/crypto_method_selection_sheet.dart';
-import '../ui/bottom_sheets/fiat_method_selection/fiat_method_selection_sheet.dart';
-import '../ui/bottom_sheets/card_deposit/card_deposit_sheet.dart';
 import '../ui/bottom_sheets/bank_transfer/bank_transfer_sheet.dart';
-import '../ui/bottom_sheets/virtual_account/virtual_account_sheet.dart';
+import '../ui/bottom_sheets/card_deposit/card_deposit_sheet.dart';
 import '../ui/bottom_sheets/chain_selection/chain_selection_sheet.dart';
+import '../ui/bottom_sheets/crypto_deposit/crypto_deposit_sheet.dart';
+import '../ui/bottom_sheets/crypto_method_selection/crypto_method_selection_sheet.dart';
+import '../ui/bottom_sheets/crypto_send/crypto_send_sheet.dart';
+import '../ui/bottom_sheets/deposit/deposit_sheet.dart';
+import '../ui/bottom_sheets/fiat_method_selection/fiat_method_selection_sheet.dart';
+import '../ui/bottom_sheets/fiat_send_selection/fiat_send_selection_sheet.dart';
+import '../ui/bottom_sheets/group_save_selection/group_save_selection_sheet.dart';
+import '../ui/bottom_sheets/ngn_send/ngn_send_sheet.dart';
+import '../ui/bottom_sheets/send/send_sheet.dart';
+import '../ui/bottom_sheets/virtual_account/virtual_account_sheet.dart';
+import '../ui/bottom_sheets/withdraw/withdraw_sheet.dart';
 
 enum BottomSheetType {
   cryptoDeposit,
@@ -32,11 +32,11 @@ enum BottomSheetType {
   fiatSendSelection,
   ngnSend,
   cryptoMethodSelection,
+  chainSelection,
   fiatMethodSelection,
   cardDeposit,
   bankTransfer,
   virtualAccount,
-  chainSelection,
 }
 
 void setupBottomSheetUi() {
@@ -61,6 +61,8 @@ void setupBottomSheetUi() {
         NgnSendSheet(request: request, completer: completer),
     BottomSheetType.cryptoMethodSelection: (context, request, completer) =>
         CryptoMethodSelectionSheet(request: request, completer: completer),
+    BottomSheetType.chainSelection: (context, request, completer) =>
+        ChainSelectionSheet(request: request, completer: completer),
     BottomSheetType.fiatMethodSelection: (context, request, completer) =>
         FiatMethodSelectionSheet(request: request, completer: completer),
     BottomSheetType.cardDeposit: (context, request, completer) =>
@@ -69,8 +71,6 @@ void setupBottomSheetUi() {
         BankTransferSheet(request: request, completer: completer),
     BottomSheetType.virtualAccount: (context, request, completer) =>
         VirtualAccountSheet(request: request, completer: completer),
-    BottomSheetType.chainSelection: (context, request, completer) =>
-        ChainSelectionSheet(request: request, completer: completer),
   };
 
   bottomsheetService.setCustomSheetBuilders(builders);

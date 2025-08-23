@@ -28,9 +28,7 @@ class GoalSaveViewModel extends BaseViewModel {
   List<Map<String, dynamic>> get currentGoals =>
       _isLiveSelected ? _liveGoals : _completedGoals;
 
-  GoalSaveViewModel() {
-    initialize();
-  }
+  GoalSaveViewModel();
 
   // Navigate to Create Goal page
   void navigateToCreateGoal() async {

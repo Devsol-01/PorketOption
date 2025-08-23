@@ -87,17 +87,17 @@ class SavingView extends StackedView<SavingViewModel> {
       width: double.infinity,
       height: 150,
       padding: const EdgeInsets.all(16),
-  decoration: BoxDecoration(
-    gradient: LinearGradient(
-      begin: Alignment(-0.5, -1.0),
-      end: Alignment(0.5, 1.0),
-      colors: [
-        Color(0xFF0000A5).withOpacity(0.7),
-        Color(0xFF1D84F3).withOpacity(0.7),
-      ],
-    ),
-    borderRadius: BorderRadius.circular(30),
-  ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(-0.5, -1.0),
+          end: Alignment(0.5, 1.0),
+          colors: [
+            Color(0xFF0000A5).withOpacity(0.7),
+            Color(0xFF1D84F3).withOpacity(0.7),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(30),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

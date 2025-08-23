@@ -3,6 +3,8 @@ import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:stacked/stacked.dart';
+import 'package:mobile_app/app/app.locator.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 
 import 'create_goal_viewmodel.dart';
 
@@ -743,6 +745,10 @@ class CreateGoalView extends StackedView<CreateGoalViewModel> {
   @override
   CreateGoalViewModel viewModelBuilder(
     BuildContext context,
-  ) =>
-      CreateGoalViewModel();
+  ) {
+    final viewModel = CreateGoalViewModel();
+    final dashboardViewModel = locator<DashboardViewModel>();
+    viewModel.setDashboardViewModel(dashboardViewModel);
+    return viewModel;
+  }
 }
