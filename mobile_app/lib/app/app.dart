@@ -5,7 +5,6 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:mobile_app/ui/views/bottom_nav/bottom_nav_view.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_view.dart';
 import 'package:mobile_app/ui/views/email/email_view.dart';
-import 'package:mobile_app/ui/views/flexi_save/flexi_save_view.dart';
 import 'package:mobile_app/ui/views/goal_save/goal_save_view.dart';
 import 'package:mobile_app/ui/views/group_save/group_save_view.dart';
 import 'package:mobile_app/ui/views/investment/investment_view.dart';
@@ -26,6 +25,7 @@ import 'package:mobile_app/services/firebase_auth_service.dart';
 import 'package:mobile_app/ui/views/auth/auth_view.dart';
 import 'package:mobile_app/ui/views/register/register_view.dart';
 import 'package:mobile_app/services/api_service.dart';
+import 'package:mobile_app/services/contract_service.dart';
 import 'package:mobile_app/ui/views/porket_save/porket_save_view.dart';
 import 'package:mobile_app/ui/views/goal_save/create_goal/create_goal_view.dart';
 import 'package:mobile_app/ui/views/lock_save/create_lock/create_lock_view.dart';
@@ -33,6 +33,8 @@ import 'package:mobile_app/ui/views/create_public_group_save/create_public_group
 import 'package:mobile_app/ui/views/create_private_group_save/create_private_group_save_view.dart';
 import 'package:mobile_app/ui/views/group_save_details/group_save_details_view.dart';
 import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dart';
+import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 // @stacked-import
 
 @StackedApp(
@@ -41,7 +43,6 @@ import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dar
     MaterialRoute(page: BottomNavView),
     MaterialRoute(page: DashboardView),
     MaterialRoute(page: EmailView),
-    MaterialRoute(page: FlexiSaveView),
     MaterialRoute(page: GoalSaveView),
     MaterialRoute(page: GroupSaveView),
     MaterialRoute(page: InvestmentView),
@@ -59,6 +60,7 @@ import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dar
     MaterialRoute(page: CreatePrivateGroupSaveView),
     MaterialRoute(page: GroupSaveDetailsView),
     MaterialRoute(page: GoalSaveDetailsView),
+    MaterialRoute(page: GoalSaveDetailsView),
 // @stacked-route
   ],
   dependencies: [
@@ -72,6 +74,8 @@ import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dar
     LazySingleton(classType: FirebaseAuthService),
     LazySingleton(classType: SnackbarService),
     LazySingleton(classType: ApiService),
+    LazySingleton(classType: ContractService),
+    LazySingleton(classType: DashboardViewModel),
 // @stacked-service
   ],
   bottomsheets: [

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:stacked/stacked.dart';
 
 import 'create_private_group_save_viewmodel.dart';
@@ -211,9 +209,9 @@ class CreatePrivateGroupSaveView
                           ],
                         ),
                         child: ElevatedButton(
-                          onPressed: viewModel.canCreateGoal
+                          onPressed: viewModel.isBusy ? null : (viewModel.canCreateGoal
                               ? viewModel.createGoal
-                              : null,
+                              : null),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
@@ -221,14 +219,37 @@ class CreatePrivateGroupSaveView
                               borderRadius: BorderRadius.circular(28),
                             ),
                           ),
-                          child: const Text(
-                            'Create Goal Save',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          child: viewModel.isBusy
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    const Text(
+                                      'Creating...',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : const Text(
+                                  'Create Goal Save',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                         ),
                       ),
 

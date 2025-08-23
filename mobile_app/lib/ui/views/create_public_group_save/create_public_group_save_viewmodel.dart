@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:mobile_app/app/app.router.dart';
 import 'package:mobile_app/extensions/num_extensions.dart';
+import 'package:mobile_app/services/contract_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class CreatePublicGroupSaveViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
+  final ContractService _contractService = locator<ContractService>();
 
   // Controllers
   final TextEditingController purposeController = TextEditingController();
@@ -29,6 +31,9 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
   // Terms acceptance
   bool _isTermsAccepted = false;
 
+  // Calculated contribution amount
+  double _calculatedContributionAmount = 0.0;
+
   // Getters
   String get selectedCategory => _selectedCategory;
   String get selectedFrequency => _selectedFrequency;
@@ -39,6 +44,7 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
   String get selectedDayOfWeek => _selectedDayOfWeek;
   int get selectedDayOfMonth => _selectedDayOfMonth;
   bool get isTermsAccepted => _isTermsAccepted;
+  double get calculatedContributionAmount => _calculatedContributionAmount;
 
   bool get canCreateGoal {
     bool hasBasicInfo = purposeController.text.isNotEmpty &&
@@ -60,29 +66,45 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
     return hasBasicInfo && hasFrequencyRequirements;
   }
 
-  // Calculate the required contribution amount based on target and duration
-  double get calculatedContributionAmount {
-    final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
-    if (targetAmount <= 0 || _startDate == null || _endDate == null) return 0.0;
-
-    final duration = _endDate!.difference(_startDate!).inDays;
-    if (duration <= 0) return 0.0;
-
-    switch (_selectedFrequency) {
-      case 'Daily':
-        return targetAmount / duration;
-      case 'Weekly':
-        final weeks = (duration / 7).ceil();
-        return targetAmount / weeks;
-      case 'Monthly':
-        final months = (duration / 30).ceil();
-        return targetAmount / months;
-      case 'Manual':
-        // For manual, we'll use the total duration as the number of contributions
-        return targetAmount / duration;
-      default:
-        return 0.0;
+  void updateCalculatedContribution() {
+    if (_selectedFrequency.isEmpty || _startDate == null || _endDate == null) {
+      _calculatedContributionAmount = 0.0;
+      notifyListeners();
+      return;
     }
+
+    final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
+    if (targetAmount <= 0) {
+      _calculatedContributionAmount = 0.0;
+      notifyListeners();
+      return;
+    }
+
+    final daysDifference = _endDate!.difference(_startDate!).inDays;
+    if (daysDifference <= 0) {
+      _calculatedContributionAmount = 0.0;
+      notifyListeners();
+      return;
+    }
+
+    double totalContributions = 0;
+    switch (_selectedFrequency.toLowerCase()) {
+      case 'daily':
+        totalContributions = daysDifference.toDouble();
+        break;
+      case 'weekly':
+        totalContributions = (daysDifference / 7).ceil().toDouble();
+        break;
+      case 'monthly':
+        totalContributions = (daysDifference / 30).ceil().toDouble();
+        break;
+      default:
+        totalContributions = 1; // Manual
+    }
+
+    _calculatedContributionAmount =
+        totalContributions > 0 ? targetAmount / totalContributions : 0.0;
+    notifyListeners();
   }
 
   // Get the contribution frequency text for display
@@ -228,17 +250,32 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
     }
   }
 
-  void createGoal() {
+  Future<void> createGoal() async {
     if (!canCreateGoal) return;
 
-    // Create goal data
+    setBusy(true);
+    try {
+      final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
+      final contributionAmount = calculatedContributionAmount;
 
-    // TODO: Save goal to local storage or backend
-    // For now, we'll navigate back and the goal will be added to the list
-    // when the Goal Save page is refreshed
+      final groupId = await _contractService.createGroupSave(
+        title: purposeController.text,
+        description: descriptionController.text,
+        category: _selectedCategory,
+        targetAmount: targetAmount,
+        contributionType: _selectedFrequency,
+        contributionAmount: contributionAmount,
+        isPublic: true,
+        endTime: _endDate!,
+      );
 
-    // Navigate back to Goal Save page
-    _navigationService.back();
+      print('👥 Public group created successfully with ID: $groupId');
+      _navigationService.back();
+    } catch (e) {
+      print('❌ Error creating public group: $e');
+    } finally {
+      setBusy(false);
+    }
   }
 
   @override
@@ -249,6 +286,7 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
     contributionController.dispose();
     super.dispose();
   }
+
 
   // Initialize listeners when the view is ready
   void initializeListeners() {

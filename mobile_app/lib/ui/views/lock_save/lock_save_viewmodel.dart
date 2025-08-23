@@ -1,21 +1,24 @@
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:mobile_app/services/contract_service.dart';
-import 'package:mobile_app/services/wallet_service.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 import 'package:mobile_app/app/app.locator.dart';
 
 class LockSaveViewModel extends BaseViewModel {
   // Services
   final ContractService _contractService = locator<ContractService>();
-  final WalletService _walletService = locator<WalletService>();
   final NavigationService _navigationService = NavigationService();
+  final SnackbarService _snackbarService = locator<SnackbarService>();
   
+  // Reference to dashboard viewmodel for balance updates
+  DashboardViewModel? _dashboardViewModel;
+
   // State properties
   bool _isOngoingSelected = true;
   bool _isBalanceVisible = true;
   double _lockSaveBalance = 0.0;
-  List<LockSaveData> _ongoingLocks = [];
-  List<LockSaveData> _completedLocks = [];
+  List<Map<String, dynamic>> _ongoingLocks = [];
+  List<Map<String, dynamic>> _completedLocks = [];
   List<Map<String, dynamic>> _legacyOngoingLocks = [];
   List<Map<String, dynamic>> _legacyCompletedLocks = [];
 
@@ -82,22 +85,29 @@ class LockSaveViewModel extends BaseViewModel {
   LockSaveViewModel() {
     initialize();
   }
-  
+
   Future<void> initialize() async {
     await loadLockSaveBalance();
     await loadUserLocks();
-    // Keep sample data for UI testing until contract is fully deployed
-    initializeSampleData();
+    print(
+        '🔒 Lock Save Debug: Loaded ${_ongoingLocks.length} ongoing locks, ${_completedLocks.length} completed locks');
+
+    // Always show real data, don't fall back to sample data
+    // Sample data is only for legacy UI components if needed
+    if (_ongoingLocks.isEmpty && _completedLocks.isEmpty) {
+      print(
+          '🔒 No real lock saves found, but not using sample data - showing empty state');
+    }
   }
 
   // Getters
   bool get isOngoingSelected => _isOngoingSelected;
   bool get isBalanceVisible => _isBalanceVisible;
   double get lockSaveBalance => _lockSaveBalance;
-  List<LockSaveData> get ongoingLocks => _ongoingLocks;
-  List<LockSaveData> get completedLocks => _completedLocks;
+  List<Map<String, dynamic>> get ongoingLocks => _ongoingLocks;
+  List<Map<String, dynamic>> get completedLocks => _completedLocks;
   List<Map<String, dynamic>> get lockPeriods => _lockPeriods;
-  
+
   // Legacy getters for UI compatibility
   List<Map<String, dynamic>> get legacyOngoingLocks => _legacyOngoingLocks;
   List<Map<String, dynamic>> get legacyCompletedLocks => _legacyCompletedLocks;
@@ -135,57 +145,102 @@ class LockSaveViewModel extends BaseViewModel {
   // Load lock save balance from contract
   Future<void> loadLockSaveBalance() async {
     try {
-      final totalBalance = await _contractService.getUserTotalBalance();
-      // For now, assume lock save is part of total balance
-      // TODO: Add specific lock save balance query to contract
-      _lockSaveBalance = totalBalance * 0.3; // Placeholder calculation
+      final locks = await _contractService.getUserLocks();
+      _lockSaveBalance =
+          locks.fold(0.0, (sum, lock) => sum + (lock['amount'] ?? 0.0));
       notifyListeners();
     } catch (e) {
       print('Error loading lock save balance: $e');
       _lockSaveBalance = 0.0;
     }
   }
-  
+
   // Load user locks from contract
   Future<void> loadUserLocks() async {
     try {
       final locks = await _contractService.getUserLocks();
-      _ongoingLocks = locks.where((lock) => !lock.isMatured).toList();
-      _completedLocks = locks.where((lock) => lock.isMatured).toList();
+      print('🔒 Raw locks from contract: ${locks.length} total');
+      for (var lock in locks) {
+        print(
+            '🔒 Lock: ${lock['id']} - ${lock['title']} - ${lock['status']} - \$${lock['amount']}');
+      }
+
+      _ongoingLocks =
+          locks.where((lock) => lock['status'] == 'active').toList();
+      _completedLocks =
+          locks.where((lock) => lock['status'] == 'matured').toList();
+
+      print(
+          '🔒 Filtered: ${_ongoingLocks.length} ongoing, ${_completedLocks.length} completed');
       notifyListeners();
     } catch (e) {
-      print('Error loading user locks: $e');
+      print('❌ Error loading user locks: $e');
       _ongoingLocks = [];
       _completedLocks = [];
     }
   }
 
   // Create a new safelock using contract service
-  Future<void> createSafelock(
+  Future<void> createLockSave(
     double amount,
     String title,
     int lockDays,
-    String fundSource,
-    Map<String, dynamic> period,
   ) async {
     if (amount <= 0) {
-      print('Invalid amount');
+      _showErrorSnackbar('Please enter a valid amount');
       return;
+    }
+    
+    // Check if dashboard has sufficient balance
+    if (_dashboardViewModel != null) {
+      if (_dashboardViewModel!.dashboardBalance < amount) {
+        _showErrorSnackbar('Insufficient balance in dashboard');
+        return;
+      }
     }
 
     setBusy(true);
     try {
-      final lockId = await _contractService.createLockSave(amount, lockDays, title);
-      if (lockId != null) {
-        print('Lock save created successfully with ID: $lockId');
-        // Refresh data
-        await loadLockSaveBalance();
-        await loadUserLocks();
+      // Transfer from dashboard to lock save
+      bool transferSuccess = false;
+      if (_dashboardViewModel != null) {
+        transferSuccess = _dashboardViewModel!.transferToLockSave(amount);
+      }
+      
+      if (transferSuccess) {
+        // Simulate contract interaction
+        await Future.delayed(Duration(milliseconds: 1500));
+        final lockId = await _contractService.createLockSave(
+          amount: amount,
+          title: title,
+          durationDays: lockDays,
+          fundSource: 'Porket Wallet',
+        );
+        
+        if (lockId.isNotEmpty) {
+          // Refresh data
+          await loadLockSaveBalance();
+          await loadUserLocks();
+          
+          _showSuccessSnackbar('🔒 Lock save created successfully! \$${amount.toStringAsFixed(2)} locked for $lockDays days');
+        } else {
+          _showErrorSnackbar('Failed to create lock save');
+          // Rollback the transfer on error
+          if (_dashboardViewModel != null) {
+            _dashboardViewModel!.transferFromFlexiSave(amount);
+          }
+        }
       } else {
-        print('Failed to create lock save');
+        _showErrorSnackbar('Transfer failed. Please try again.');
       }
     } catch (e) {
       print('Error creating lock save: $e');
+      _showErrorSnackbar('Error creating lock save: $e');
+      
+      // Rollback the transfer on error
+      if (_dashboardViewModel != null) {
+        _dashboardViewModel!.transferFromFlexiSave(amount);
+      }
     } finally {
       setBusy(false);
     }
@@ -201,13 +256,13 @@ class LockSaveViewModel extends BaseViewModel {
       final preview = await _contractService.calculateLockInterest(
         amount: amount,
         durationDays: lockDays,
-        periodId: periodId,
       );
-      
+
       return {
         'interest': preview.interestAmount,
         'totalPayout': preview.totalPayout,
-        'maturityDate': '${preview.maturityDate.day}/${preview.maturityDate.month}/${preview.maturityDate.year}',
+        'maturityDate':
+            '${preview.maturityDate.day}/${preview.maturityDate.month}/${preview.maturityDate.year}',
       };
     } catch (e) {
       print('Error calculating lock preview: $e');
@@ -220,7 +275,8 @@ class LockSaveViewModel extends BaseViewModel {
       return {
         'interest': interest,
         'totalPayout': amount + interest,
-        'maturityDate': '${maturityDate.day}/${maturityDate.month}/${maturityDate.year}',
+        'maturityDate':
+            '${maturityDate.day}/${maturityDate.month}/${maturityDate.year}',
       };
     }
   }
@@ -229,8 +285,8 @@ class LockSaveViewModel extends BaseViewModel {
   Future<void> withdrawLock(String lockId) async {
     setBusy(true);
     try {
-      final success = await _contractService.withdrawLockSave(lockId);
-      if (success) {
+      final txHash = await _contractService.withdrawLockSave(lockId: lockId);
+      if (txHash.isNotEmpty) {
         print('Lock withdrawal successful');
         // Refresh data
         await loadLockSaveBalance();
@@ -249,8 +305,8 @@ class LockSaveViewModel extends BaseViewModel {
   Future<void> breakLock(String lockId) async {
     setBusy(true);
     try {
-      final success = await _contractService.breakLockSave(lockId);
-      if (success) {
+      final txHash = await _contractService.breakLockSave(lockId: lockId);
+      if (txHash.isNotEmpty) {
         print('Lock break successful (with penalty)');
         // Refresh data
         await loadLockSaveBalance();
@@ -265,8 +321,12 @@ class LockSaveViewModel extends BaseViewModel {
     }
   }
 
-  // Initialize with sample data for UI testing
+  // Initialize with sample data for UI testing - DISABLED
   void initializeSampleData() {
+    // DON'T USE SAMPLE DATA - it interferes with real data display
+    print('🔒 Sample data initialization SKIPPED - using real data only');
+    return;
+
     if (_lockSaveBalance == 0.0) {
       _lockSaveBalance = 2500.75;
     }
@@ -330,5 +390,25 @@ class LockSaveViewModel extends BaseViewModel {
     ];
 
     notifyListeners();
+  }
+
+  // Set dashboard viewmodel reference for balance transfers
+  void setDashboardViewModel(DashboardViewModel? dashboardViewModel) {
+    _dashboardViewModel = dashboardViewModel;
+  }
+
+  // Helper methods for snackbars
+  void _showSuccessSnackbar(String message) {
+    _snackbarService.showSnackbar(
+      message: message,
+      duration: Duration(seconds: 3),
+    );
+  }
+
+  void _showErrorSnackbar(String message) {
+    _snackbarService.showSnackbar(
+      message: message,
+      duration: Duration(seconds: 4),
+    );
   }
 }

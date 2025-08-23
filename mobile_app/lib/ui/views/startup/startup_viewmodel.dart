@@ -11,24 +11,24 @@ class StartupViewModel extends BaseViewModel {
   // Place anything here that needs to happen before we get into the application
   Future runStartupLogic() async {
     await Future.delayed(const Duration(seconds: 2));
-    _navigationService.navigateToGroupSaveView();
+    //_navigationService.navigateToGroupSaveView();
 
-    // try {
-    //   // Initialize Firebase Wallet Manager
-    //   await _firebaseWalletManager.initialize();
+    try {
+      // Initialize Firebase Wallet Manager
+      await _firebaseWalletManager.initialize();
 
-    //   // Check if user is already authenticated
-    //   if (_firebaseWalletManager.isAuthenticated) {
-    //     // User is already logged in, go to home view with wallet
-    //     _navigationService.navigateToDashboardView();
-    //   } else {
-    //     // User needs to authenticate, go to auth view
-    //     _navigationService.navigateToAuthView();
-    //   }
-    // } catch (e) {
-    //   print('❌ Error during startup: $e');
-    //   // On error, go to auth view
-    //   _navigationService.navigateToAuthView();
-    // }
+      // Check if user is already authenticated
+      if (_firebaseWalletManager.isAuthenticated) {
+        // User is already logged in, go to home view with wallet
+        _navigationService.navigateToBottomNavView();
+      } else {
+        // User needs to authenticate, go to auth view
+        _navigationService.navigateToAuthView();
+      }
+    } catch (e) {
+      print('❌ Error during startup: $e');
+      // On error, go to auth view
+      _navigationService.navigateToAuthView();
+    }
   }
 }

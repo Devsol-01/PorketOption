@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile_app/extensions/theme_context_extension.dart';
-import 'package:mobile_app/ui/common/app_colors.dart';
 import 'package:stacked/stacked.dart';
 import 'package:flutter/services.dart';
 
@@ -362,11 +360,9 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: viewModel.canPreview
-                      ? () => viewModel.showPreview()
-                      : null,
+                  onPressed: viewModel.isBusy ? null : () => viewModel.createLockSave(),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
+                    backgroundColor: viewModel.isBusy ? Colors.grey[400] : Colors.black,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -374,13 +370,35 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                     ),
                     elevation: 0,
                   ),
-                  child: Text(
-                    'Preview SafeLock',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: viewModel.isBusy
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Creating...',
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          'Create SafeLock',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
 
