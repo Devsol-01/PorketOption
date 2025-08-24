@@ -2,8 +2,8 @@
 pub mod SavingsVault {
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::security::pausable::PausableComponent;
-    use openzeppelin::token::erc20::{DefaultConfig, ERC20Component};
     use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
+    use openzeppelin::token::erc20::{DefaultConfig, ERC20Component};
     use openzeppelin::upgrades::UpgradeableComponent;
     use porketoption_contract::interfaces::isavings_vault::ISavingsVault;
     use porketoption_contract::structs::save_structs::{GoalSave, GroupSave, LockSave};
@@ -86,7 +86,7 @@ pub mod SavingsVault {
 
     #[event]
     #[derive(Drop, starknet::Event)]
-    enum Event {
+    pub enum Event {
         // Deposit events
         FlexiDeposit: FlexiDeposit,
         LockSaveCreated: LockSaveCreated,
@@ -114,106 +114,106 @@ pub mod SavingsVault {
     }
 
     #[derive(Drop, starknet::Event)]
-    struct FlexiDeposit {
-        user: ContractAddress,
-        amount: u256,
-        timestamp: u64,
+    pub struct FlexiDeposit {
+        pub user: ContractAddress,
+        pub amount: u256,
+        pub timestamp: u64,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct LockSaveCreated {
-        id: u256,
-        user: ContractAddress,
-        amount: u256,
-        duration: u64,
-        interest_rate: u256,
-        maturity_time: u64,
+    pub struct LockSaveCreated {
+        pub id: u256,
+        pub user: ContractAddress,
+        pub amount: u256,
+        pub duration: u64,
+        pub interest_rate: u256,
+        pub maturity_time: u64,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct LockSaveMatured {
-        id: u256,
-        user: ContractAddress,
-        principal: u256,
-        interest: u256,
+    pub struct LockSaveMatured {
+        pub id: u256,
+        pub user: ContractAddress,
+        pub principal: u256,
+        pub interest: u256,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct GoalSaveCreated {
-        id: u256,
-        user: ContractAddress,
-        title: felt252,
-        target_amount: u256,
+    pub struct GoalSaveCreated {
+        pub id: u256,
+        pub user: ContractAddress,
+        pub title: felt252,
+        pub target_amount: u256,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct GoalContribution {
-        id: u256,
-        user: ContractAddress,
-        amount: u256,
-        current_total: u256,
+    pub struct GoalContribution {
+        pub id: u256,
+        pub user: ContractAddress,
+        pub amount: u256,
+        pub current_total: u256,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct GoalCompleted {
-        id: u256,
-        user: ContractAddress,
-        final_amount: u256,
+    pub struct GoalCompleted {
+        pub id: u256,
+        pub user: ContractAddress,
+        pub final_amount: u256,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct GroupSaveCreated {
-        id: u256,
-        creator: ContractAddress,
-        title: felt252,
-        target_amount: u256,
-        is_public: bool,
+    pub struct GroupSaveCreated {
+        pub id: u256,
+        pub creator: ContractAddress,
+        pub title: felt252,
+        pub target_amount: u256,
+        pub is_public: bool,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct GroupJoined {
-        group_id: u256,
-        user: ContractAddress,
-        member_count: u256,
+    pub struct GroupJoined {
+        pub group_id: u256,
+        pub user: ContractAddress,
+        pub member_count: u256,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct GroupContribution {
-        group_id: u256,
-        user: ContractAddress,
-        amount: u256,
-        group_total: u256,
+    pub struct GroupContribution {
+        pub group_id: u256,
+        pub user: ContractAddress,
+        pub amount: u256,
+        pub group_total: u256,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct Withdrawal {
-        user: ContractAddress,
-        amount: u256,
-        fee: u256,
-        timestamp: u64,
+    pub struct Withdrawal {
+        pub user: ContractAddress,
+        pub amount: u256,
+        pub fee: u256,
+        pub timestamp: u64,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct LockSaveWithdrawal {
-        id: u256,
-        user: ContractAddress,
-        principal: u256,
-        interest: u256,
-        timestamp: u64,
+    pub struct LockSaveWithdrawal {
+        pub id: u256,
+        pub user: ContractAddress,
+        pub principal: u256,
+        pub interest: u256,
+        pub timestamp: u64,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct InterestAccrued {
-        user: ContractAddress,
-        amount: u256,
-        save_type: felt252 // 'flexi', 'goal', 'group'
+    pub struct InterestAccrued {
+        pub user: ContractAddress,
+        pub amount: u256,
+        pub save_type: felt252 // 'flexi', 'goal', 'group'
     }
 
     #[derive(Drop, starknet::Event)]
-    struct InterestPaid {
-        user: ContractAddress,
-        amount: u256,
-        save_type: felt252,
+    pub struct InterestPaid {
+        pub user: ContractAddress,
+        pub amount: u256,
+        pub save_type: felt252,
     }
 
 
@@ -221,11 +221,12 @@ pub mod SavingsVault {
     fn constructor(
         ref self: ContractState,
         owner: ContractAddress,
+        usdc_token: ContractAddress,
         flexi_rate: u256,
         goal_rate: u256,
         group_rate: u256,
     ) {
-        self.usdc_token.write(IERC20Dispatcher{contract_address: contract_address_const::<0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080>()});
+        self.usdc_token.write(IERC20Dispatcher { contract_address: usdc_token });
         self.ownable.initializer(owner);
         self.flexi_save_rate.write(flexi_rate);
         self.goal_save_rate.write(goal_rate);
@@ -556,7 +557,7 @@ pub mod SavingsVault {
             assert(!group_save.is_completed, 'Group already completed');
             assert(self.group_members.entry((group_id, caller)).read(), 'Not a member');
             assert(amount >= self.minimum_deposit.read(), 'Amount too small');
-            
+
             let usdc = self.usdc_token.read();
 
             usdc.transfer_from(caller, starknet::get_contract_address(), amount);
