@@ -13,7 +13,6 @@ class FirebaseWalletManagerService extends ChangeNotifier {
 
   bool _isLoading = false;
   String? _errorMessage;
-  bool _initialized = false;
 
   FirebaseWalletManagerService() {
     // Initialize services from locator

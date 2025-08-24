@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile_app/extensions/theme_context_extension.dart';
-import 'package:mobile_app/ui/common/app_colors.dart' as AppColors;
 import 'package:stacked/stacked.dart';
 
 import 'saving_viewmodel.dart';
@@ -48,20 +46,32 @@ class SavingView extends StackedView<SavingViewModel> {
                 Row(
                   children: [
                     Expanded(
-                      child: Image(
-                        image: AssetImage('lib/assets/flexi.png'),
+                      child: GestureDetector(
+                        onTap: () => viewModel.navigateToPorketSave(),
+                        child: Image(
+                          image: AssetImage('lib/assets/flexi.png'),
+                        ),
                       ),
                     ),
                     SizedBox(width: 16),
-                    Expanded(child: Image.asset('lib/assets/goal.png')),
+                    Expanded(
+                        child: GestureDetector(
+                            onTap: () => viewModel.navigateToGoalSave(),
+                            child: Image.asset('lib/assets/goal.png'))),
                   ],
                 ),
                 const SizedBox(height: 20),
                 Row(
                   children: [
-                    Expanded(child: Image.asset('lib/assets/lock.png')),
+                    Expanded(
+                        child: GestureDetector(
+                            onTap: () => viewModel.navigateToLockSave(),
+                            child: Image.asset('lib/assets/lock.png'))),
                     const SizedBox(width: 16),
-                    Expanded(child: Image.asset('lib/assets/group.png')),
+                    Expanded(
+                        child: GestureDetector(
+                            onTap: () => viewModel.navigateToGroupSave(),
+                            child: Image.asset('lib/assets/group.png'))),
                   ],
                 ),
               ],
@@ -78,16 +88,15 @@ class SavingView extends StackedView<SavingViewModel> {
       height: 150,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
         gradient: LinearGradient(
-          begin: Alignment(-0.6, -1), // simulates ~127.44deg
-          end: Alignment(0.6, 1),
+          begin: Alignment(-0.5, -1.0),
+          end: Alignment(0.5, 1.0),
           colors: [
-            const Color.fromRGBO(0, 76, 232, 0.7), // rgba(0, 76, 232, 0.7)
-            const Color.fromRGBO(29, 132, 243, 0.7), // rgba(29, 132, 243, 0.7)
+            Color(0xFF0000A5).withOpacity(0.7),
+            Color(0xFF1D84F3).withOpacity(0.7),
           ],
-          stops: [0.2832, 0.8873], // 28.32% and 88.73%
         ),
+        borderRadius: BorderRadius.circular(30),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,69 +158,6 @@ class SavingView extends StackedView<SavingViewModel> {
                 fontWeight: FontWeight.w500,
                 color: Colors.white,
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSavingsPlanCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required List<Color> colors,
-    required Color iconColor,
-  }) {
-    return Container(
-      height: 200, // Fixed height to prevent layout issues
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: colors,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Icon(
-              icon,
-              color: iconColor,
-              size: 24,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black.withOpacity(0.6),
-              height: 1.3,
             ),
           ),
         ],

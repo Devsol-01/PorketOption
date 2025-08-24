@@ -14,10 +14,13 @@ import 'package:stacked_shared/stacked_shared.dart';
 
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
+import '../services/contract_service.dart';
 import '../services/firebase_auth_service.dart';
 import '../services/firebase_wallet_manager_service.dart';
 import '../services/token_service.dart';
 import '../services/wallet_service.dart';
+import '../ui/views/dashboard/dashboard_viewmodel.dart';
+import '../ui/views/goal_save/goal_save_viewmodel.dart';
 
 final locator = StackedLocator.instance;
 
@@ -40,4 +43,7 @@ Future<void> setupLocator({
   locator.registerLazySingleton(() => FirebaseAuthService());
   locator.registerLazySingleton(() => SnackbarService());
   locator.registerLazySingleton(() => ApiService());
+   locator.registerLazySingleton(() => ContractService(locator<WalletService>()));
+  locator.registerLazySingleton(() => DashboardViewModel());
+  locator.registerLazySingleton(() => GoalSaveViewModel());
 }

@@ -95,17 +95,17 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
       width: double.infinity,
       height: 150,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF004CE8).withOpacity(0.7),
-            Color(0xFF1D84F3).withOpacity(0.7),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(30),
-      ),
+  decoration: BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment(-0.5, -1.0),
+      end: Alignment(0.5, 1.0),
+      colors: [
+        Color(0xFF0000A5).withOpacity(0.7),
+        Color(0xFF1D84F3).withOpacity(0.7),
+      ],
+    ),
+    borderRadius: BorderRadius.circular(30),
+  ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -266,7 +266,7 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF004CE8),
+                  color: Color(0xFF0000A5)
                 ),
               ),
             ),

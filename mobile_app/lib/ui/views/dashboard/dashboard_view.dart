@@ -28,19 +28,19 @@ class DashboardView extends StackedView<DashboardViewModel> {
                 const SizedBox(height: 24),
 
                 // Balance Card
-                _buildBalanceCard(context),
+                _buildBalanceCard(context, viewModel),
                 const SizedBox(height: 24),
 
                 // Action Buttons
-                _buildAction(context),
+                _buildAction(context, viewModel),
                 const SizedBox(height: 32),
 
                 // Interest Earnings Card - REPLACED SECTION
-                _buildInterestEarningsCard(context),
+                _buildInterestEarningsCard(context, viewModel),
                 const SizedBox(height: 32),
 
                 // Bottom Buttons
-                _buildBottomButtons(context),
+                _buildBottomButtons(context, viewModel),
                 const SizedBox(height: 100), // Space for bottom navigation
               ],
             ),
@@ -128,22 +128,21 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildBalanceCard(BuildContext context) {
+  Widget _buildBalanceCard(BuildContext context, DashboardViewModel viewModel) {
     return Container(
       width: double.infinity,
       height: 150,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
         gradient: LinearGradient(
-          begin: Alignment(-0.6, -1), // simulates ~127.44deg
-          end: Alignment(0.6, 1),
+          begin: Alignment(-0.5, -1.0),
+          end: Alignment(0.5, 1.0),
           colors: [
-            const Color.fromRGBO(0, 76, 232, 0.7), // rgba(0, 76, 232, 0.7)
-            const Color.fromRGBO(29, 132, 243, 0.7), // rgba(29, 132, 243, 0.7)
+            Color(0xFF0000A5).withOpacity(0.7),
+            Color(0xFF1D84F3).withOpacity(0.7),
           ],
-          stops: [0.2832, 0.8873], // 28.32% and 88.73%
         ),
+        borderRadius: BorderRadius.circular(30),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,14 +214,33 @@ class DashboardView extends StackedView<DashboardViewModel> {
             padding: const EdgeInsets.only(left: 20),
             child: Row(
               children: [
-                Text(
-                  '\$1,567.87',
-                  style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                viewModel.isBusy
+                    ? SizedBox(
+                        width: 120,
+                        height: 24,
+                        child: Center(
+                          child: Text(
+                            'Loading...',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                          ),
+                        ),
+                      )
+                    : AnimatedSwitcher(
+                        duration: Duration(milliseconds: 10000),
+                        child: Text(
+                          viewModel.formattedDashboardBalance,
+                          key: ValueKey(viewModel.dashboardBalance),
+                          style: GoogleFonts.poppins(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                 SizedBox(width: 12),
                 Icon(
                   Icons.visibility_outlined,
@@ -237,14 +255,17 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildAction(BuildContext context) {
+
+  Widget _buildAction(BuildContext context, DashboardViewModel viewModel) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _buildActionButton(
           icon: Icons.arrow_upward,
           label: 'Deposit',
-          onTap: () {},
+          onTap: () {
+            viewModel.showDepositSheet();
+          },
         ),
         _buildActionButton(
           icon: Icons.savings_outlined,
@@ -252,9 +273,11 @@ class DashboardView extends StackedView<DashboardViewModel> {
           onTap: () {},
         ),
         _buildActionButton(
-          icon: Icons.send_outlined,
+          icon: Icons.send,
           label: 'send',
-          onTap: () {},
+          onTap: () {
+            viewModel.showSendSheet();
+          },
         ),
       ],
     );
@@ -293,7 +316,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
               ),
               child: Icon(
                 icon,
-                color: Colors.black,
+                color: Color(0xFF000000),
                 size: 24,
               ),
             )),
@@ -310,7 +333,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildInterestEarningsCard(BuildContext context) {
+  Widget _buildInterestEarningsCard(BuildContext context, DashboardViewModel viewModel) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -371,9 +394,9 @@ class DashboardView extends StackedView<DashboardViewModel> {
                     ),
                   ),
                   Text(
-                    '0.6%',
+                    '0.56%',
                     style: GoogleFonts.inter(
-                      fontSize: 20,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.green,
                     ),
@@ -437,7 +460,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
                           return Text(
                             days[value.toInt()],
                             style: GoogleFonts.inter(
-                              color: value.toInt() == 0
+                              color: value.toInt() == 5
                                   ? Colors.green
                                   : Colors.grey[600],
                               fontSize: 12,
@@ -576,83 +599,112 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildBottomButtons(BuildContext context) {
+  Widget _buildBottomButtons(
+      BuildContext context, DashboardViewModel viewModel) {
     return Row(
       children: [
         Expanded(
-          child: Container(
-            width: 171,
-            height: 44,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(46),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color.fromRGBO(29, 132, 243, 0.1),
-                  offset: const Offset(-4, 4),
-                  blurRadius: 20,
-                  spreadRadius: 0,
-                  inset: true,
-                ),
-                BoxShadow(
-                  color: const Color.fromRGBO(29, 132, 243, 0.1),
-                  offset: const Offset(4, 4),
-                  blurRadius: 6,
-                  spreadRadius: 0,
-                  inset: true,
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.emoji_events_outlined,
-                  size: 24,
-                  color: const Color(0xFF004CE8),
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  'Milestone',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF004CE8),
+          child: GestureDetector(
+            onTap: () => viewModel.setOngoingSelected(true),
+            child: Container(
+              width: 171,
+              height: 44,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                  color: viewModel.isOngoingSelected
+                      ? Colors.white
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(46),
+                  border: viewModel.isOngoingSelected
+                      ? null
+                      : Border.all(color: Color(0xFF0000A5), width: 1),
+                  boxShadow: viewModel.isOngoingSelected
+                      ? const [
+                          BoxShadow(
+                            color: const Color.fromRGBO(29, 132, 243, 0.1),
+                            offset: const Offset(-4, 4),
+                            blurRadius: 20,
+                            spreadRadius: 0,
+                            inset: true,
+                          ),
+                          BoxShadow(
+                            color: const Color.fromRGBO(29, 132, 243, 0.1),
+                            offset: const Offset(4, 4),
+                            blurRadius: 6,
+                            spreadRadius: 0,
+                            inset: true,
+                          ),
+                        ]
+                      : null),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.emoji_events_outlined,
+                      size: 24, color: Color(0xFF0000A5)),
+                  const SizedBox(width: 5),
+                  Text(
+                    'Milestone',
+                    style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF0000A5)),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: Container(
-            width: 171,
-            height: 40,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              border: Border.all(
-                color: const Color(0xFF696969), // Primary color/White 20
-                //width: 1.5,
-              ),
-              borderRadius: BorderRadius.circular(46),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.menu),
-                SizedBox(width: 5),
-                Text(
-                  'Transactions',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF696969),
+          child: GestureDetector(
+            onTap: () => viewModel.setOngoingSelected(false),
+            child: Container(
+              width: 171,
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                  color: !viewModel.isOngoingSelected
+                      ? Colors.white
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(46),
+                  border: !viewModel.isOngoingSelected
+                      ? null
+                      : Border.all(color: Color(0xFF0000A5), width: 1),
+                  boxShadow: !viewModel.isOngoingSelected
+                      ? const [
+                          BoxShadow(
+                            color: const Color.fromRGBO(29, 132, 243, 0.1),
+                            offset: const Offset(-4, 4),
+                            blurRadius: 20,
+                            spreadRadius: 0,
+                            inset: true,
+                          ),
+                          BoxShadow(
+                            color: const Color.fromRGBO(29, 132, 243, 0.1),
+                            offset: const Offset(4, 4),
+                            blurRadius: 6,
+                            spreadRadius: 0,
+                            inset: true,
+                          ),
+                        ]
+                      : null),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.menu,
+                    color: Color(0xFF0000A5),
                   ),
-                ),
-              ],
+                  SizedBox(width: 5),
+                  Text(
+                    'Transactions',
+                    style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF0000A5)),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

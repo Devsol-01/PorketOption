@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:mobile_app/app/app.router.dart';
 import 'package:mobile_app/extensions/num_extensions.dart';
+import 'package:mobile_app/services/contract_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class CreatePrivateGroupSaveViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
+  final ContractService _contractService = locator<ContractService>();
 
   // Controllers
   final TextEditingController purposeController = TextEditingController();
@@ -237,18 +239,49 @@ class CreatePrivateGroupSaveViewModel extends BaseViewModel {
     }
   }
 
-  void createGoal() {
+  Future<void> createGoal() async {
     if (!canCreateGoal) return;
 
-    // Create goal data
+    setBusy(true);
+    try {
+      final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
+      final contributionAmount = calculatedContributionAmount;
 
-    // TODO: Save goal to local storage or backend
-    // For now, we'll navigate back and the goal will be added to the list
-    // when the Goal Save page is refreshed
+      // Generate a random group code for private groups
+      final groupCode = _generateGroupCode();
 
-    // Navigate back to Goal Save page
-    _navigationService.back();
+      final groupId = await _contractService.createGroupSave(
+        title: purposeController.text,
+        description: descriptionController.text,
+        category: _selectedCategory,
+        targetAmount: targetAmount,
+        contributionType: _selectedFrequency,
+        contributionAmount: contributionAmount,
+        isPublic: false,
+        endTime: _endDate!,
+      );
+
+      print(
+          '🔒 Private group created successfully with ID: $groupId and code: $groupCode');
+      _navigationService.back();
+    } catch (e) {
+      print('❌ Error creating private group: $e');
+    } finally {
+      setBusy(false);
+    }
   }
+
+  String _generateGroupCode() {
+    // Generate a 6-character alphanumeric code
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final random = DateTime.now().millisecondsSinceEpoch;
+    String code = '';
+    for (int i = 0; i < 6; i++) {
+      code += chars[(random + i) % chars.length];
+    }
+    return code;
+  }
+
 
   // Sample options - replace with your data
   final List<String> _allOptions = [

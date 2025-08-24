@@ -3,9 +3,15 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:mobile_app/extensions/num_extensions.dart';
+import 'package:mobile_app/services/contract_service.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 
 class CreateGoalViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
+  final ContractService _contractService = locator<ContractService>();
+  final SnackbarService _snackbarService = locator<SnackbarService>();
+  
+  DashboardViewModel? _dashboardViewModel;
 
   // Controllers
   final TextEditingController purposeController = TextEditingController();
@@ -97,6 +103,10 @@ class CreateGoalViewModel extends BaseViewModel {
       default:
         return '';
     }
+  }
+
+  void setDashboardViewModel(DashboardViewModel dashboardViewModel) {
+    _dashboardViewModel = dashboardViewModel;
   }
 
   void navigateBack() {
@@ -225,17 +235,90 @@ class CreateGoalViewModel extends BaseViewModel {
     }
   }
 
-  void createGoal() {
+  Future<void> createGoal() async {
     if (!canCreateGoal) return;
 
-    // Create goal data
+    final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
+    final contributionAmount = calculatedContributionAmount;
+    
+    if (targetAmount <= 0) {
+      _showErrorSnackbar('Please enter a valid target amount');
+      return;
+    }
+    
+    // Check if dashboard has sufficient balance for initial contribution
+    if (_dashboardViewModel != null) {
+      if (_dashboardViewModel!.dashboardBalance < contributionAmount) {
+        _showErrorSnackbar('Insufficient balance in dashboard for initial contribution');
+        return;
+      }
+    }
 
-    // TODO: Save goal to local storage or backend
-    // For now, we'll navigate back and the goal will be added to the list
-    // when the Goal Save page is refreshed
+    setBusy(true);
+    try {
+      print('🎯 Creating goal with contract...');
+      
+      // Transfer initial contribution from dashboard to goal save
+      bool transferSuccess = false;
+      if (_dashboardViewModel != null) {
+        transferSuccess = _dashboardViewModel!.transferToGoalSave(contributionAmount);
+      }
+      
+      if (transferSuccess) {
+        // Simulate contract interaction delay
+        await Future.delayed(Duration(milliseconds: 1500));
+        
+        // Create goal on contract
+        final goalId = await _contractService.createGoalSave(
+          title: purposeController.text,
+          category: _selectedCategory,
+          targetAmount: targetAmount,
+          contributionType: _selectedFrequency,
+          contributionAmount: contributionAmount,
+          endTime: _endDate!,
+        );
 
-    // Navigate back to Goal Save page
-    _navigationService.back();
+        if (goalId.isNotEmpty) {
+          print('✅ Goal created successfully! ID: $goalId');
+          _showSuccessSnackbar('🎯 Goal Save created successfully! \$${contributionAmount.toStringAsFixed(2)} transferred as initial contribution');
+          
+          // Navigate back to Goal Save page
+          _navigationService.back();
+        } else {
+          _showErrorSnackbar('Failed to create goal save');
+          // Rollback the transfer on error
+          if (_dashboardViewModel != null) {
+            _dashboardViewModel!.transferFromGoalSave(contributionAmount);
+          }
+        }
+      } else {
+        _showErrorSnackbar('Transfer failed. Please try again.');
+      }
+    } catch (e) {
+      print('❌ Error creating goal: $e');
+      _showErrorSnackbar('Error creating goal: $e');
+      
+      // Rollback the transfer on error
+      if (_dashboardViewModel != null) {
+        _dashboardViewModel!.transferFromGoalSave(contributionAmount);
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  void _showSuccessSnackbar(String message) {
+    _snackbarService.showSnackbar(
+      message: message,
+      duration: Duration(seconds: 3),
+    );
+  }
+
+  void _showErrorSnackbar(String message) {
+    _snackbarService.showSnackbar(
+      message: message,
+      duration: Duration(seconds: 4),
+    );
   }
 
   @override

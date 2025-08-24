@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:starknet/starknet.dart';
 import 'package:starknet_provider/starknet_provider.dart';
 import 'package:avnu_provider/avnu_provider.dart';
-import 'token_service.dart';
+import 'package:mobile_app/services/token_service.dart';
 
 class WalletService {
   static const _storage = FlutterSecureStorage();
@@ -34,9 +34,9 @@ class WalletService {
   );
 
   WalletService() {
-    // Initialize provider (testnet for development)
+    // Initialize provider (mainnet to match Ark)
     _provider = JsonRpcProvider(
-        nodeUri: Uri.parse('https://starknet-sepolia.public.blastapi.io'));
+        nodeUri: Uri.parse('https://starknet-mainnet.public.blastapi.io'));
     _tokenService = TokenService();
 
     // Initialize Avnu provider for sponsored deployments
@@ -186,6 +186,9 @@ class WalletService {
         accountAddress: accountAddress,
         chainId: StarknetChainId.testNet,
       );
+
+      // Set default transaction version to v1 for compatibility
+      _currentAccount!.supportedTxVersion = AccountSupportedTxVersion.v1;
 
       // Create wallet info - initially not deployed
       var walletInfo = WalletInfo(
@@ -440,6 +443,9 @@ class WalletService {
         accountAddress: Felt.fromHexString(address),
         chainId: StarknetChainId.testNet,
       );
+
+      // Set default transaction version to v1 for compatibility
+      _currentAccount!.supportedTxVersion = AccountSupportedTxVersion.v1;
 
       // Check if account is deployed
       final isDeployed = await _checkIfDeployed(address);

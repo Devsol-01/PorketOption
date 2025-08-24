@@ -5,39 +5,38 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:flutter/material.dart' as _i24;
+import 'package:flutter/material.dart' as _i23;
 import 'package:flutter/material.dart';
-import 'package:mobile_app/ui/views/auth/auth_view.dart' as _i15;
+import 'package:mobile_app/ui/views/auth/auth_view.dart' as _i14;
 import 'package:mobile_app/ui/views/bottom_nav/bottom_nav_view.dart' as _i3;
 import 'package:mobile_app/ui/views/create_private_group_save/create_private_group_save_view.dart'
-    as _i21;
-import 'package:mobile_app/ui/views/create_public_group_save/create_public_group_save_view.dart'
     as _i20;
+import 'package:mobile_app/ui/views/create_public_group_save/create_public_group_save_view.dart'
+    as _i19;
 import 'package:mobile_app/ui/views/dashboard/dashboard_view.dart' as _i4;
 import 'package:mobile_app/ui/views/email/email_view.dart' as _i5;
-import 'package:mobile_app/ui/views/flexi_save/flexi_save_view.dart' as _i6;
 import 'package:mobile_app/ui/views/goal_save/create_goal/create_goal_view.dart'
-    as _i18;
-import 'package:mobile_app/ui/views/goal_save/goal_save_view.dart' as _i7;
+    as _i17;
+import 'package:mobile_app/ui/views/goal_save/goal_save_view.dart' as _i6;
 import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dart'
-    as _i23;
-import 'package:mobile_app/ui/views/group_save/group_save_view.dart' as _i8;
-import 'package:mobile_app/ui/views/group_save_details/group_save_details_view.dart'
     as _i22;
-import 'package:mobile_app/ui/views/investment/investment_view.dart' as _i9;
+import 'package:mobile_app/ui/views/group_save/group_save_view.dart' as _i7;
+import 'package:mobile_app/ui/views/group_save_details/group_save_details_view.dart'
+    as _i21;
+import 'package:mobile_app/ui/views/investment/investment_view.dart' as _i8;
 import 'package:mobile_app/ui/views/lock_save/create_lock/create_lock_view.dart'
-    as _i19;
-import 'package:mobile_app/ui/views/lock_save/lock_save_view.dart' as _i10;
-import 'package:mobile_app/ui/views/onboarding/onboarding_view.dart' as _i11;
-import 'package:mobile_app/ui/views/porket_save/porket_save_view.dart' as _i17;
-import 'package:mobile_app/ui/views/profile/profile_view.dart' as _i12;
-import 'package:mobile_app/ui/views/register/register_view.dart' as _i16;
-import 'package:mobile_app/ui/views/saving/saving_view.dart' as _i13;
+    as _i18;
+import 'package:mobile_app/ui/views/lock_save/lock_save_view.dart' as _i9;
+import 'package:mobile_app/ui/views/onboarding/onboarding_view.dart' as _i10;
+import 'package:mobile_app/ui/views/porket_save/porket_save_view.dart' as _i16;
+import 'package:mobile_app/ui/views/profile/profile_view.dart' as _i11;
+import 'package:mobile_app/ui/views/register/register_view.dart' as _i15;
+import 'package:mobile_app/ui/views/saving/saving_view.dart' as _i12;
 import 'package:mobile_app/ui/views/startup/startup_view.dart' as _i2;
 import 'package:mobile_app/ui/views/verification/verification_view.dart'
-    as _i14;
+    as _i13;
 import 'package:stacked/stacked.dart' as _i1;
-import 'package:stacked_services/stacked_services.dart' as _i25;
+import 'package:stacked_services/stacked_services.dart' as _i24;
 
 class Routes {
   static const startupView = '/startup-view';
@@ -47,8 +46,6 @@ class Routes {
   static const dashboardView = '/dashboard-view';
 
   static const emailView = '/email-view';
-
-  static const flexiSaveView = '/flexi-save-view';
 
   static const goalSaveView = '/goal-save-view';
 
@@ -89,7 +86,6 @@ class Routes {
     bottomNavView,
     dashboardView,
     emailView,
-    flexiSaveView,
     goalSaveView,
     groupSaveView,
     investmentView,
@@ -129,211 +125,205 @@ class StackedRouter extends _i1.RouterBase {
       page: _i5.EmailView,
     ),
     _i1.RouteDef(
-      Routes.flexiSaveView,
-      page: _i6.FlexiSaveView,
-    ),
-    _i1.RouteDef(
       Routes.goalSaveView,
-      page: _i7.GoalSaveView,
+      page: _i6.GoalSaveView,
     ),
     _i1.RouteDef(
       Routes.groupSaveView,
-      page: _i8.GroupSaveView,
+      page: _i7.GroupSaveView,
     ),
     _i1.RouteDef(
       Routes.investmentView,
-      page: _i9.InvestmentView,
+      page: _i8.InvestmentView,
     ),
     _i1.RouteDef(
       Routes.lockSaveView,
-      page: _i10.LockSaveView,
+      page: _i9.LockSaveView,
     ),
     _i1.RouteDef(
       Routes.onboardingView,
-      page: _i11.OnboardingView,
+      page: _i10.OnboardingView,
     ),
     _i1.RouteDef(
       Routes.profileView,
-      page: _i12.ProfileView,
+      page: _i11.ProfileView,
     ),
     _i1.RouteDef(
       Routes.savingView,
-      page: _i13.SavingView,
+      page: _i12.SavingView,
     ),
     _i1.RouteDef(
       Routes.verificationView,
-      page: _i14.VerificationView,
+      page: _i13.VerificationView,
     ),
     _i1.RouteDef(
       Routes.authView,
-      page: _i15.AuthView,
+      page: _i14.AuthView,
     ),
     _i1.RouteDef(
       Routes.registerView,
-      page: _i16.RegisterView,
+      page: _i15.RegisterView,
     ),
     _i1.RouteDef(
       Routes.porketSaveView,
-      page: _i17.PorketSaveView,
+      page: _i16.PorketSaveView,
     ),
     _i1.RouteDef(
       Routes.createGoalView,
-      page: _i18.CreateGoalView,
+      page: _i17.CreateGoalView,
     ),
     _i1.RouteDef(
       Routes.createLockView,
-      page: _i19.CreateLockView,
+      page: _i18.CreateLockView,
     ),
     _i1.RouteDef(
       Routes.createPublicGroupSaveView,
-      page: _i20.CreatePublicGroupSaveView,
+      page: _i19.CreatePublicGroupSaveView,
     ),
     _i1.RouteDef(
       Routes.createPrivateGroupSaveView,
-      page: _i21.CreatePrivateGroupSaveView,
+      page: _i20.CreatePrivateGroupSaveView,
     ),
     _i1.RouteDef(
       Routes.groupSaveDetailsView,
-      page: _i22.GroupSaveDetailsView,
+      page: _i21.GroupSaveDetailsView,
     ),
     _i1.RouteDef(
       Routes.goalSaveDetailsView,
-      page: _i23.GoalSaveDetailsView,
+      page: _i22.GoalSaveDetailsView,
     ),
   ];
 
   final _pagesMap = <Type, _i1.StackedRouteFactory>{
     _i2.StartupView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
+      return _i23.MaterialPageRoute<dynamic>(
         builder: (context) => const _i2.StartupView(),
         settings: data,
       );
     },
     _i3.BottomNavView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
+      return _i23.MaterialPageRoute<dynamic>(
         builder: (context) => const _i3.BottomNavView(),
         settings: data,
       );
     },
     _i4.DashboardView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
+      return _i23.MaterialPageRoute<dynamic>(
         builder: (context) => const _i4.DashboardView(),
         settings: data,
       );
     },
     _i5.EmailView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
+      return _i23.MaterialPageRoute<dynamic>(
         builder: (context) => const _i5.EmailView(),
         settings: data,
       );
     },
-    _i6.FlexiSaveView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i6.FlexiSaveView(),
+    _i6.GoalSaveView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i6.GoalSaveView(),
         settings: data,
       );
     },
-    _i7.GoalSaveView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i7.GoalSaveView(),
+    _i7.GroupSaveView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i7.GroupSaveView(),
         settings: data,
       );
     },
-    _i8.GroupSaveView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i8.GroupSaveView(),
+    _i8.InvestmentView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i8.InvestmentView(),
         settings: data,
       );
     },
-    _i9.InvestmentView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i9.InvestmentView(),
+    _i9.LockSaveView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i9.LockSaveView(),
         settings: data,
       );
     },
-    _i10.LockSaveView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i10.LockSaveView(),
+    _i10.OnboardingView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i10.OnboardingView(),
         settings: data,
       );
     },
-    _i11.OnboardingView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i11.OnboardingView(),
+    _i11.ProfileView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i11.ProfileView(),
         settings: data,
       );
     },
-    _i12.ProfileView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i12.ProfileView(),
+    _i12.SavingView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i12.SavingView(),
         settings: data,
       );
     },
-    _i13.SavingView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i13.SavingView(),
+    _i13.VerificationView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i13.VerificationView(),
         settings: data,
       );
     },
-    _i14.VerificationView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i14.VerificationView(),
+    _i14.AuthView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i14.AuthView(),
         settings: data,
       );
     },
-    _i15.AuthView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i15.AuthView(),
+    _i15.RegisterView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i15.RegisterView(),
         settings: data,
       );
     },
-    _i16.RegisterView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i16.RegisterView(),
+    _i16.PorketSaveView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i16.PorketSaveView(),
         settings: data,
       );
     },
-    _i17.PorketSaveView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i17.PorketSaveView(),
+    _i17.CreateGoalView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i17.CreateGoalView(),
         settings: data,
       );
     },
-    _i18.CreateGoalView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i18.CreateGoalView(),
-        settings: data,
-      );
-    },
-    _i19.CreateLockView: (data) {
+    _i18.CreateLockView: (data) {
       final args = data.getArgs<CreateLockViewArguments>(nullOk: false);
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => _i19.CreateLockView(
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => _i18.CreateLockView(
             key: args.key, selectedPeriod: args.selectedPeriod),
         settings: data,
       );
     },
-    _i20.CreatePublicGroupSaveView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i20.CreatePublicGroupSaveView(),
+    _i19.CreatePublicGroupSaveView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i19.CreatePublicGroupSaveView(),
         settings: data,
       );
     },
-    _i21.CreatePrivateGroupSaveView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i21.CreatePrivateGroupSaveView(),
+    _i20.CreatePrivateGroupSaveView: (data) {
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i20.CreatePrivateGroupSaveView(),
         settings: data,
       );
     },
-    _i22.GroupSaveDetailsView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i22.GroupSaveDetailsView(),
+    _i21.GroupSaveDetailsView: (data) {
+      final args = data.getArgs<GroupSaveDetailsViewArguments>(nullOk: false);
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) =>
+            _i21.GroupSaveDetailsView(key: args.key, group: args.group),
         settings: data,
       );
     },
-    _i23.GoalSaveDetailsView: (data) {
-      return _i24.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i23.GoalSaveDetailsView(),
+    _i22.GoalSaveDetailsView: (data) {
+      final args = data.getArgs<GoalSaveDetailsViewArguments>(nullOk: false);
+      return _i23.MaterialPageRoute<dynamic>(
+        builder: (context) =>
+            _i22.GoalSaveDetailsView(key: args.key, goal: args.goal),
         settings: data,
       );
     },
@@ -352,7 +342,7 @@ class CreateLockViewArguments {
     required this.selectedPeriod,
   });
 
-  final _i24.Key? key;
+  final _i23.Key? key;
 
   final Map<String, dynamic> selectedPeriod;
 
@@ -373,7 +363,61 @@ class CreateLockViewArguments {
   }
 }
 
-extension NavigatorStateExtension on _i25.NavigationService {
+class GroupSaveDetailsViewArguments {
+  const GroupSaveDetailsViewArguments({
+    this.key,
+    required this.group,
+  });
+
+  final _i23.Key? key;
+
+  final Map<String, dynamic> group;
+
+  @override
+  String toString() {
+    return '{"key": "$key", "group": "$group"}';
+  }
+
+  @override
+  bool operator ==(covariant GroupSaveDetailsViewArguments other) {
+    if (identical(this, other)) return true;
+    return other.key == key && other.group == group;
+  }
+
+  @override
+  int get hashCode {
+    return key.hashCode ^ group.hashCode;
+  }
+}
+
+class GoalSaveDetailsViewArguments {
+  const GoalSaveDetailsViewArguments({
+    this.key,
+    required this.goal,
+  });
+
+  final _i23.Key? key;
+
+  final Map<String, dynamic> goal;
+
+  @override
+  String toString() {
+    return '{"key": "$key", "goal": "$goal"}';
+  }
+
+  @override
+  bool operator ==(covariant GoalSaveDetailsViewArguments other) {
+    if (identical(this, other)) return true;
+    return other.key == key && other.goal == goal;
+  }
+
+  @override
+  int get hashCode {
+    return key.hashCode ^ goal.hashCode;
+  }
+}
+
+extension NavigatorStateExtension on _i24.NavigationService {
   Future<dynamic> navigateToStartupView([
     int? routerId,
     bool preventDuplicates = true,
@@ -424,20 +468,6 @@ extension NavigatorStateExtension on _i25.NavigationService {
         transition,
   ]) async {
     return navigateTo<dynamic>(Routes.emailView,
-        id: routerId,
-        preventDuplicates: preventDuplicates,
-        parameters: parameters,
-        transition: transition);
-  }
-
-  Future<dynamic> navigateToFlexiSaveView([
-    int? routerId,
-    bool preventDuplicates = true,
-    Map<String, String>? parameters,
-    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
-        transition,
-  ]) async {
-    return navigateTo<dynamic>(Routes.flexiSaveView,
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,
@@ -613,7 +643,7 @@ extension NavigatorStateExtension on _i25.NavigationService {
   }
 
   Future<dynamic> navigateToCreateLockView({
-    _i24.Key? key,
+    _i23.Key? key,
     required Map<String, dynamic> selectedPeriod,
     int? routerId,
     bool preventDuplicates = true,
@@ -658,28 +688,34 @@ extension NavigatorStateExtension on _i25.NavigationService {
         transition: transition);
   }
 
-  Future<dynamic> navigateToGroupSaveDetailsView([
+  Future<dynamic> navigateToGroupSaveDetailsView({
+    _i23.Key? key,
+    required Map<String, dynamic> group,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
     Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
         transition,
-  ]) async {
+  }) async {
     return navigateTo<dynamic>(Routes.groupSaveDetailsView,
+        arguments: GroupSaveDetailsViewArguments(key: key, group: group),
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,
         transition: transition);
   }
 
-  Future<dynamic> navigateToGoalSaveDetailsView([
+  Future<dynamic> navigateToGoalSaveDetailsView({
+    _i23.Key? key,
+    required Map<String, dynamic> goal,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
     Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
         transition,
-  ]) async {
+  }) async {
     return navigateTo<dynamic>(Routes.goalSaveDetailsView,
+        arguments: GoalSaveDetailsViewArguments(key: key, goal: goal),
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,
@@ -736,20 +772,6 @@ extension NavigatorStateExtension on _i25.NavigationService {
         transition,
   ]) async {
     return replaceWith<dynamic>(Routes.emailView,
-        id: routerId,
-        preventDuplicates: preventDuplicates,
-        parameters: parameters,
-        transition: transition);
-  }
-
-  Future<dynamic> replaceWithFlexiSaveView([
-    int? routerId,
-    bool preventDuplicates = true,
-    Map<String, String>? parameters,
-    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
-        transition,
-  ]) async {
-    return replaceWith<dynamic>(Routes.flexiSaveView,
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,
@@ -925,7 +947,7 @@ extension NavigatorStateExtension on _i25.NavigationService {
   }
 
   Future<dynamic> replaceWithCreateLockView({
-    _i24.Key? key,
+    _i23.Key? key,
     required Map<String, dynamic> selectedPeriod,
     int? routerId,
     bool preventDuplicates = true,
@@ -970,28 +992,34 @@ extension NavigatorStateExtension on _i25.NavigationService {
         transition: transition);
   }
 
-  Future<dynamic> replaceWithGroupSaveDetailsView([
+  Future<dynamic> replaceWithGroupSaveDetailsView({
+    _i23.Key? key,
+    required Map<String, dynamic> group,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
     Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
         transition,
-  ]) async {
+  }) async {
     return replaceWith<dynamic>(Routes.groupSaveDetailsView,
+        arguments: GroupSaveDetailsViewArguments(key: key, group: group),
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,
         transition: transition);
   }
 
-  Future<dynamic> replaceWithGoalSaveDetailsView([
+  Future<dynamic> replaceWithGoalSaveDetailsView({
+    _i23.Key? key,
+    required Map<String, dynamic> goal,
     int? routerId,
     bool preventDuplicates = true,
     Map<String, String>? parameters,
     Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
         transition,
-  ]) async {
+  }) async {
     return replaceWith<dynamic>(Routes.goalSaveDetailsView,
+        arguments: GoalSaveDetailsViewArguments(key: key, goal: goal),
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,

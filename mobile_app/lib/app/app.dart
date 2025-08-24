@@ -5,7 +5,6 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:mobile_app/ui/views/bottom_nav/bottom_nav_view.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_view.dart';
 import 'package:mobile_app/ui/views/email/email_view.dart';
-import 'package:mobile_app/ui/views/flexi_save/flexi_save_view.dart';
 import 'package:mobile_app/ui/views/goal_save/goal_save_view.dart';
 import 'package:mobile_app/ui/views/group_save/group_save_view.dart';
 import 'package:mobile_app/ui/views/investment/investment_view.dart';
@@ -18,6 +17,16 @@ import 'package:mobile_app/ui/bottom_sheets/crypto_deposit/crypto_deposit_sheet.
 import 'package:mobile_app/ui/bottom_sheets/deposit/deposit_sheet.dart';
 import 'package:mobile_app/ui/bottom_sheets/withdraw/withdraw_sheet.dart';
 import 'package:mobile_app/ui/bottom_sheets/group_save_selection/group_save_selection_sheet.dart';
+import 'package:mobile_app/ui/bottom_sheets/send/send_sheet.dart';
+import 'package:mobile_app/ui/bottom_sheets/crypto_send/crypto_send_sheet.dart';
+import 'package:mobile_app/ui/bottom_sheets/fiat_send_selection/fiat_send_selection_sheet.dart';
+import 'package:mobile_app/ui/bottom_sheets/ngn_send/ngn_send_sheet.dart';
+import 'package:mobile_app/ui/bottom_sheets/crypto_method_selection/crypto_method_selection_sheet.dart';
+import 'package:mobile_app/ui/bottom_sheets/chain_selection/chain_selection_sheet.dart';
+import 'package:mobile_app/ui/bottom_sheets/fiat_method_selection/fiat_method_selection_sheet.dart';
+import 'package:mobile_app/ui/bottom_sheets/card_deposit/card_deposit_sheet.dart';
+import 'package:mobile_app/ui/bottom_sheets/bank_transfer/bank_transfer_sheet.dart';
+import 'package:mobile_app/ui/bottom_sheets/virtual_account/virtual_account_sheet.dart';
 import 'package:mobile_app/services/wallet_service.dart';
 import 'package:mobile_app/services/auth_service.dart';
 import 'package:mobile_app/services/token_service.dart';
@@ -26,6 +35,7 @@ import 'package:mobile_app/services/firebase_auth_service.dart';
 import 'package:mobile_app/ui/views/auth/auth_view.dart';
 import 'package:mobile_app/ui/views/register/register_view.dart';
 import 'package:mobile_app/services/api_service.dart';
+import 'package:mobile_app/services/contract_service.dart';
 import 'package:mobile_app/ui/views/porket_save/porket_save_view.dart';
 import 'package:mobile_app/ui/views/goal_save/create_goal/create_goal_view.dart';
 import 'package:mobile_app/ui/views/lock_save/create_lock/create_lock_view.dart';
@@ -33,6 +43,9 @@ import 'package:mobile_app/ui/views/create_public_group_save/create_public_group
 import 'package:mobile_app/ui/views/create_private_group_save/create_private_group_save_view.dart';
 import 'package:mobile_app/ui/views/group_save_details/group_save_details_view.dart';
 import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dart';
+import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
+import 'package:mobile_app/ui/views/goal_save/goal_save_viewmodel.dart';
 // @stacked-import
 
 @StackedApp(
@@ -41,7 +54,6 @@ import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dar
     MaterialRoute(page: BottomNavView),
     MaterialRoute(page: DashboardView),
     MaterialRoute(page: EmailView),
-    MaterialRoute(page: FlexiSaveView),
     MaterialRoute(page: GoalSaveView),
     MaterialRoute(page: GroupSaveView),
     MaterialRoute(page: InvestmentView),
@@ -72,6 +84,9 @@ import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dar
     LazySingleton(classType: FirebaseAuthService),
     LazySingleton(classType: SnackbarService),
     LazySingleton(classType: ApiService),
+    LazySingleton(classType: ContractService),
+    LazySingleton(classType: DashboardViewModel),
+    LazySingleton(classType: GoalSaveViewModel),
 // @stacked-service
   ],
   bottomsheets: [
@@ -79,7 +94,16 @@ import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dar
     StackedBottomsheet(classType: DepositSheet),
     StackedBottomsheet(classType: WithdrawSheet),
     StackedBottomsheet(classType: GroupSaveSelectionSheet),
-    StackedBottomsheet(classType: GroupSaveSelectionSheet),
+    StackedBottomsheet(classType: SendSheet),
+    StackedBottomsheet(classType: CryptoSendSheet),
+    StackedBottomsheet(classType: FiatSendSelectionSheet),
+    StackedBottomsheet(classType: NgnSendSheet),
+    StackedBottomsheet(classType: CryptoMethodSelectionSheet),
+    StackedBottomsheet(classType: ChainSelectionSheet),
+    StackedBottomsheet(classType: FiatMethodSelectionSheet),
+    StackedBottomsheet(classType: CardDepositSheet),
+    StackedBottomsheet(classType: BankTransferSheet),
+    StackedBottomsheet(classType: VirtualAccountSheet),
 // @stacked-bottom-sheet
   ],
   dialogs: [

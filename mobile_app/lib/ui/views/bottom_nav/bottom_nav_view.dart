@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:stacked/stacked.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_view.dart';
 import 'package:mobile_app/ui/views/investment/investment_view.dart';
 import 'package:mobile_app/ui/views/profile/profile_view.dart';
 import 'package:mobile_app/ui/views/saving/saving_view.dart';
-import 'package:stacked/stacked.dart';
 
 import 'bottom_nav_viewmodel.dart';
 
@@ -37,7 +36,7 @@ class BottomNavView extends StackedView<BottomNavViewModel> {
           type: BottomNavigationBarType.fixed,
           onTap: viewModel.setIndex,
           backgroundColor: Colors.white,
-          selectedItemColor: Color(0xFF004CE8),
+          selectedItemColor: Color(0xFF0000A5),
           unselectedItemColor: Color(0xFF484C52),
           unselectedLabelStyle: GoogleFonts.inter(
             color: Colors.red,

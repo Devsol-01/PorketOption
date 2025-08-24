@@ -3,6 +3,8 @@ import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/extensions/theme_context_extension.dart';
 import 'package:stacked/stacked.dart';
+import 'package:mobile_app/app/app.locator.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 
 import 'create_goal_viewmodel.dart';
 
@@ -167,46 +169,57 @@ class CreateGoalView extends StackedView<CreateGoalViewModel> {
                       const SizedBox(height: 32),
 
                       // Create Goal Button
-                      Container(
-                        width: 358,
-                        height: 50,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(46),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color.fromRGBO(138, 56, 245, 0.1),
-                              offset: Offset(-4, 4),
-                              blurRadius: 20,
-                              inset:
-                                  true, // requires flutter_inset_box_shadow package
-                            ),
-                            BoxShadow(
-                              color: Color.fromRGBO(138, 56, 245, 0.1),
-                              offset: Offset(4, 4),
-                              blurRadius: 6,
-                              inset: true,
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Optional Trophy Icon
-                            // SizedBox(width: 24, height: 24, child: Icon(Icons.emoji_events, color: Colors.purple)),
-
-                            Text(
-                              "+ Create Goal Save",
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                height: 19 / 16, // line-height / font-size
-                                color: const Color(0xFF8A38F5),
+                      GestureDetector(
+                        onTap: viewModel.isBusy ? null : () => viewModel.createGoal(),
+                        child: Container(
+                          width: 358,
+                          height: 50,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: viewModel.isBusy ? Colors.grey[300] : Colors.white,
+                            borderRadius: BorderRadius.circular(46),
+                            boxShadow: viewModel.isBusy ? [] : const [
+                              BoxShadow(
+                                color: Color.fromRGBO(138, 56, 245, 0.1),
+                                offset: Offset(-4, 4),
+                                blurRadius: 20,
+                                inset:
+                                    true, // requires flutter_inset_box_shadow package
                               ),
-                            ),
-                          ],
+                              BoxShadow(
+                                color: Color.fromRGBO(138, 56, 245, 0.1),
+                                offset: Offset(4, 4),
+                                blurRadius: 6,
+                                inset: true,
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              if (viewModel.isBusy) ...[
+                                SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8A38F5)),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                              ],
+                              Text(
+                                viewModel.isBusy ? "Creating..." : "+ Create Goal Save",
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  height: 19 / 16, // line-height / font-size
+                                  color: viewModel.isBusy ? Colors.grey[600] : const Color(0xFF8A38F5),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
 
@@ -732,6 +745,10 @@ class CreateGoalView extends StackedView<CreateGoalViewModel> {
   @override
   CreateGoalViewModel viewModelBuilder(
     BuildContext context,
-  ) =>
-      CreateGoalViewModel();
+  ) {
+    final viewModel = CreateGoalViewModel();
+    final dashboardViewModel = locator<DashboardViewModel>();
+    viewModel.setDashboardViewModel(dashboardViewModel);
+    return viewModel;
+  }
 }

@@ -2,33 +2,45 @@ import 'package:flutter/services.dart';
 import 'package:stacked/stacked.dart';
 import 'package:mobile_app/services/contract_service.dart';
 import 'package:mobile_app/services/wallet_service.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 import 'package:mobile_app/app/app.locator.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 class PorketSaveViewModel extends BaseViewModel {
   final ContractService _contractService = locator<ContractService>();
   final WalletService _walletService = locator<WalletService>();
+  final SnackbarService _snackbarService = locator<SnackbarService>();
   
+  // Reference to dashboard viewmodel for balance updates
+  DashboardViewModel? _dashboardViewModel;
+
   double _balance = 0.0;
   bool _isBalanceVisible = true;
   bool _isAutoSaveEnabled = false;
   String _walletAddress = '';
-  String _autoSaveAmount = '0';
+  String _autoSaveAmount = '1000';
   String _nextAutoSaveDate = '';
-  List<TransactionData> _transactions = [];
+  List<Map<String, dynamic>> _transactions = [];
   bool _isLoading = false;
 
+  // AutoSave setup variables
+  double _amount = 1000.0;
+  String? _selectedFrequency = 'daily';
+
   // Getters
-  String get balance => _isBalanceVisible ? '₦${_balance.toStringAsFixed(2)}' : '****';
+  String get balance =>
+      _isBalanceVisible ? '${_balance.toStringAsFixed(2)}' : '****';
   double get rawBalance => _balance;
   bool get isBalanceVisible => _isBalanceVisible;
   bool get isAutoSaveEnabled => _isAutoSaveEnabled;
   String get walletAddress => _walletAddress;
   String get autoSaveAmount => _autoSaveAmount;
   String get nextAutoSaveDate => _nextAutoSaveDate;
-  List<TransactionData> get transactions => _transactions;
+  List<Map<String, dynamic>> get transactions => _transactions;
   bool get isLoading => _isLoading;
 
-  void initialize() async {
+  void initialize([DashboardViewModel? dashboardViewModel]) async {
+    _dashboardViewModel = dashboardViewModel;
     await loadBalance();
     await loadWalletInfo();
     await loadTransactions();
@@ -42,15 +54,15 @@ class PorketSaveViewModel extends BaseViewModel {
   Future<void> toggleAutoSave(bool value) async {
     _isAutoSaveEnabled = value;
     notifyListeners();
-    
+
     if (value) {
       // Setup default autosave settings
       try {
         await _contractService.setupAutoSave(
-          enabled: true,
-          frequency: 'daily',
-          amount: 100.0, // Default amount
-          time: '08:00',
+          enabled: value,
+          amount: _amount,
+          frequency: _selectedFrequency ?? 'weekly',
+          fundSource: 'Porket Wallet',
         );
       } catch (e) {
         print('Error setting up autosave: $e');
@@ -76,11 +88,13 @@ class PorketSaveViewModel extends BaseViewModel {
   Future<void> loadBalance() async {
     _isLoading = true;
     notifyListeners();
-    
+
     try {
-      final userAddress = _walletService.currentAccount?.accountAddress.toHexString();
+      final userAddress =
+          _walletService.currentAccount?.accountAddress.toHexString();
       if (userAddress != null) {
-        _balance = await _contractService.getPorketBalance(userAddress);
+        final balance = await _contractService.getFlexiBalance();
+        _balance = balance;
       }
     } catch (e) {
       print('Error loading balance: $e');
@@ -105,7 +119,8 @@ class PorketSaveViewModel extends BaseViewModel {
 
   Future<void> loadTransactions() async {
     try {
-      _transactions = await _contractService.getTransactionHistory(limit: 10);
+      final transactions = await _contractService.getTransactionHistory();
+      _transactions = transactions;
       notifyListeners();
     } catch (e) {
       print('Error loading transactions: $e');
@@ -113,43 +128,84 @@ class PorketSaveViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> quickSave(double amount) async {
+  Future<void> quickSave(double amount, String fundSource) async {
     if (amount <= 0) {
-      print('Invalid amount');
+      _showErrorSnackbar('Please enter a valid amount');
       return;
+    }
+    
+    // Check if dashboard has sufficient balance
+    if (_dashboardViewModel != null) {
+      if (_dashboardViewModel!.dashboardBalance < amount) {
+        _showErrorSnackbar('Insufficient balance in dashboard');
+        return;
+      }
     }
 
     setBusy(true);
     try {
-      final success = await _contractService.depositPorket(amount);
-      if (success) {
+      // Transfer from dashboard to flexi save
+      bool transferSuccess = false;
+      if (_dashboardViewModel != null) {
+        transferSuccess = _dashboardViewModel!.transferToFlexiSave(amount);
+      }
+      
+      if (transferSuccess) {
+        // Simulate contract interaction
+        await Future.delayed(Duration(milliseconds: 1500));
+        await _contractService.flexiDeposit(amount: amount);
+        
         await loadBalance();
         await loadTransactions();
-        print('Quick save successful!');
+        
+        _showSuccessSnackbar('💰 Quick save successful! \$${amount.toStringAsFixed(2)} added to Porket Save');
+      } else {
+        _showErrorSnackbar('Transfer failed. Please try again.');
       }
     } catch (e) {
       print('Quick save failed: $e');
+      _showErrorSnackbar('Quick save failed: $e');
+      
+      // Rollback the transfer on error
+      if (_dashboardViewModel != null) {
+        _dashboardViewModel!.transferFromFlexiSave(amount);
+      }
     } finally {
       setBusy(false);
     }
   }
 
   Future<void> withdraw(double amount) async {
-    if (amount <= 0 || amount > _balance) {
-      print('Invalid withdrawal amount');
+    if (amount <= 0) {
+      _showErrorSnackbar('Please enter a valid amount');
+      return;
+    }
+    
+    if (amount > _balance) {
+      _showErrorSnackbar('Insufficient balance in Porket Save');
       return;
     }
 
     setBusy(true);
     try {
-      final success = await _contractService.withdrawPorket(amount);
-      if (success) {
+      // Simulate contract interaction
+      await Future.delayed(Duration(milliseconds: 1500));
+      final result = await _contractService.flexiWithdraw(amount: amount);
+      
+      if (result.isNotEmpty) {
+        // Transfer from flexi save back to dashboard
+        if (_dashboardViewModel != null) {
+          _dashboardViewModel!.transferFromFlexiSave(amount);
+        }
+        
         await loadBalance();
         await loadTransactions();
-        print('Withdrawal successful!');
+        
+        _showSuccessSnackbar('💸 Withdrawal successful! \$${amount.toStringAsFixed(2)} added to dashboard balance');
       }
     } catch (e) {
       print('Withdrawal failed: $e');
+      _showErrorSnackbar('Withdrawal failed: $e');
     } finally {
       setBusy(false);
     }
@@ -163,11 +219,48 @@ class PorketSaveViewModel extends BaseViewModel {
     // This will be called by the UI to show withdrawal dialog
   }
 
+  Future<void> deposit(double amount, String fundSource) async {
+    if (amount <= 0) {
+      print('Invalid amount');
+      return;
+    }
+
+    setBusy(true);
+    try {
+      final result = await _contractService.flexiDeposit(amount: amount);
+      if (result.isNotEmpty) {
+        await loadBalance();
+        await loadTransactions();
+        print('Deposit successful!');
+      }
+    } catch (e) {
+      print('Deposit failed: $e');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   void onSettings() {
     // Navigate to settings screen
   }
 
   void onCreateGoalSavings() {
-    // Navigate to create goal savings screen
+    // Navigate to create porket savings screen
   }
+
+  // Helper methods for snackbars
+  void _showSuccessSnackbar(String message) {
+    _snackbarService.showSnackbar(
+      message: message,
+      duration: Duration(seconds: 3),
+    );
+  }
+
+  void _showErrorSnackbar(String message) {
+    _snackbarService.showSnackbar(
+      message: message,
+      duration: Duration(seconds: 4),
+    );
+  }
+
 }

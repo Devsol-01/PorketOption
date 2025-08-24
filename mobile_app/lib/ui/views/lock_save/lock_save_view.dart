@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/ui/views/lock_save/create_lock/create_lock_view.dart';
+import 'package:mobile_app/ui/views/lock_save/lock_save_viewmodel.dart';
+import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
+import 'package:mobile_app/app/app.locator.dart';
 import 'package:stacked/stacked.dart';
-import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
-
-import 'lock_save_viewmodel.dart';
 
 class LockSaveView extends StackedView<LockSaveViewModel> {
   const LockSaveView({Key? key}) : super(key: key);
@@ -43,56 +44,63 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color.fromRGBO(255, 195, 111, 0.7), // rgba(255,195,111,0.7)
-                    Color.fromRGBO(255, 229, 193, 0.7), // rgba(255,229,193,0.7)
-                  ],
-                  stops: [0.3285, 1.2219], // stops match Figma percentages
-                ),
+                color: Color(0xFFFFC36F),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Interest Rate
-                  const Text(
-                    '4.5% per annum',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white
+                          .withOpacity(0.2), // subtle transparent white
+                      borderRadius: BorderRadius.circular(20), // pill shape
+                    ),
+                    child: Text(
+                      '4.5% per annum',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
 
                   // Balance Label
-                  const Text(
-                    'Goal saving Balance',
-                    style: TextStyle(
+                  Text(
+                    "Goal Savings Balance",
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                      height: 17 / 14, // lineHeight / fontSize
                       color: Colors.white,
-                      fontSize: 16,
                     ),
                   ),
-                  // const SizedBox(height: 8),
+                  const SizedBox(height: 5),
 
                   // Balance Amount
                   Row(
                     children: [
                       Text(
-                        '\$1000',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
+                        viewModel.isBalanceVisible
+                            ? '\$${viewModel.lockSaveBalance.toStringAsFixed(0)}'
+                            : '****',
+                        style: GoogleFonts.poppins(
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: viewModel.toggleBalanceVisibility,
                         child: Icon(
-                          Icons.visibility,
+                          viewModel.isBalanceVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.white,
                           size: 24,
                         ),
@@ -110,48 +118,26 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
             const SizedBox(height: 24),
 
             //Toggle buttons
-            _buildToggleuttons(context),
+            _buildToggleButtons(context, viewModel),
 
             const SizedBox(height: 40),
 
-            // Flexible Savings Section
-            Column(
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  padding: const EdgeInsets.all(28),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFDBA8), // Figma background
-                    borderRadius: BorderRadius.circular(23.434),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.lock_outline, // Placeholder for piggy bank
-                      size: 24,
-                      color: Colors.black, // matches your vector color
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'No ongoing flexible savings',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Create your first flexible savings to get started',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+            // Lock Savings Section
+            Builder(
+              builder: (context) {
+                print(
+                    '🔍 UI Debug: currentLocks.length = ${viewModel.currentLocks.length}');
+                print(
+                    '🔍 UI Debug: isOngoingSelected = ${viewModel.isOngoingSelected}');
+                for (int i = 0; i < viewModel.currentLocks.length; i++) {
+                  final lock = viewModel.currentLocks[i];
+                  print(
+                      '🔍 UI Debug: Lock $i: ${lock['title']} - ${lock['amount']} - ${lock['status']}');
+                }
+                return viewModel.currentLocks.isEmpty
+                    ? _buildEmptyState()
+                    : _buildLocksList(viewModel);
+              },
             ),
 
             const SizedBox(height: 20),
@@ -255,41 +241,55 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
     );
   }
 
-  Widget _buildToggleuttons(BuildContext context) {
+  Widget _buildToggleButtons(
+      BuildContext context, LockSaveViewModel viewModel) {
     return Row(
       children: [
         Expanded(
             flex: 3,
-            child: Container(
-              width: 171,
-              height: 39,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(46),
-                boxShadow: [
-                  BoxShadow(
-                    offset: const Offset(-4, 4),
-                    blurRadius: 20,
-                    color: const Color.fromRGBO(255, 168, 47, 0.1),
-                    inset: true,
-                  ),
-                  BoxShadow(
-                    offset: const Offset(4, 4),
-                    blurRadius: 6,
-                    color: const Color.fromRGBO(255, 168, 47, 0.1),
-                    inset: true,
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Text(
-                  'Live',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
-                    height: 19 / 16, // line-height ÷ font-size
-                    color: Color(0xFFFFA82F), // Primary orange
+            child: GestureDetector(
+              onTap: () => viewModel.setOngoingSelected(true),
+              child: Container(
+                width: 171,
+                height: 39,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: viewModel.isOngoingSelected
+                      ? Colors.white
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(46),
+                  border: viewModel.isOngoingSelected
+                      ? null
+                      : Border.all(
+                          color: const Color(0xFFFFA82F),
+                          width: 1,
+                        ),
+                  boxShadow: viewModel.isOngoingSelected
+                      ? [
+                          BoxShadow(
+                            offset: const Offset(-4, 4),
+                            blurRadius: 20,
+                            color: const Color.fromRGBO(255, 168, 47, 0.1),
+                            inset: true,
+                          ),
+                          BoxShadow(
+                            offset: const Offset(4, 4),
+                            blurRadius: 6,
+                            color: const Color.fromRGBO(255, 168, 47, 0.1),
+                            inset: true,
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Center(
+                  child: Text(
+                    'Ongoing',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      height: 19 / 16,
+                      color: Color(0xFFFFA82F),
+                    ),
                   ),
                 ),
               ),
@@ -297,27 +297,50 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
         const SizedBox(width: 16),
         Expanded(
           flex: 3,
-          child: Container(
-            width: 171,
-            height: 39,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(46),
-              border: Border.all(
-                color: const Color(0xFFFFA82F), // orange border
-                width: 1,
+          child: GestureDetector(
+            onTap: () => viewModel.setOngoingSelected(false),
+            child: Container(
+              width: 171,
+              height: 39,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                color: !viewModel.isOngoingSelected
+                    ? Colors.white
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(46),
+                border: !viewModel.isOngoingSelected
+                    ? null
+                    : Border.all(
+                        color: const Color(0xFFFFA82F),
+                        width: 1,
+                      ),
+                boxShadow: !viewModel.isOngoingSelected
+                    ? [
+                        BoxShadow(
+                          offset: const Offset(-4, 4),
+                          blurRadius: 20,
+                          color: const Color.fromRGBO(255, 168, 47, 0.1),
+                          inset: true,
+                        ),
+                        BoxShadow(
+                          offset: const Offset(4, 4),
+                          blurRadius: 6,
+                          color: const Color.fromRGBO(255, 168, 47, 0.1),
+                          inset: true,
+                        ),
+                      ]
+                    : null,
               ),
-            ),
-            child: Center(
-              child: Text(
-                'Paid Back',
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                  height: 19 / 16, // line-height ÷ font-size
-                  color: Color(0xFFFFA82F), // orange text
+              child: Center(
+                child: Text(
+                  'Paid Back',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    height: 19 / 16,
+                    color: Color(0xFFFFA82F),
+                  ),
                 ),
               ),
             ),
@@ -402,10 +425,10 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                             size: 16,
                             color: Colors.black,
                           ),
-                          onTap: () {
+                          onTap: () async {
                             Navigator.pop(context);
                             // Navigate to CreateLockView with selected period
-                            Navigator.push(
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => CreateLockView(
@@ -413,6 +436,11 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                                 ),
                               ),
                             );
+                            // Force refresh locks when returning from create lock page
+                            print('🔄 Refreshing locks after creation...');
+                            await viewModel.loadUserLocks();
+                            print(
+                                '🔄 Locks refreshed: ${viewModel.currentLocks.length} locks');
                           },
                         ))
                     .toList(),
@@ -426,9 +454,174 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
     );
   }
 
+  Widget _buildEmptyState() {
+    return Column(
+      children: [
+        Container(
+          width: 80,
+          height: 80,
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: Color(0xFFFFDBA8),
+            borderRadius: BorderRadius.circular(23.434),
+          ),
+          child: Center(
+            child: Icon(
+              Icons.lock_outline,
+              size: 24,
+              color: Colors.black,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'No ongoing Lock savings',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Create your first lock savings to get started',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocksList(LockSaveViewModel viewModel) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: viewModel.currentLocks.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 16),
+      itemBuilder: (context, index) {
+        final lock = viewModel.currentLocks[index];
+        return _buildLockCard(lock, viewModel);
+      },
+    );
+  }
+
+  Widget _buildLockCard(
+      Map<String, dynamic> lock, LockSaveViewModel viewModel) {
+    final amount = (lock['amount'] as double? ?? 0.0);
+    final daysLeft = _calculateDaysLeft(lock['maturityDate'] as String?);
+    final isMatured = daysLeft <= 0;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Icon container
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: Color(lock['color'] as int? ?? 0xFFFFA82F),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.lock,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Lock details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  lock['title'] as String? ?? 'Untitled Lock',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '\$${amount.toStringAsFixed(0)}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Text(
+                      'Locked',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // Progress bar
+                LinearProgressIndicator(
+                  value: isMatured ? 1.0 : 0.7, // Mock progress
+                  backgroundColor: Colors.grey[200],
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Color(0xFFFFA82F),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  int _calculateDaysLeft(String? maturityDateStr) {
+    if (maturityDateStr == null) return 0;
+    try {
+      // Parse date in format 'dd/mm/yyyy'
+      final parts = maturityDateStr.split('/');
+      if (parts.length == 3) {
+        final day = int.parse(parts[0]);
+        final month = int.parse(parts[1]);
+        final year = int.parse(parts[2]);
+        final maturityDate = DateTime(year, month, day);
+        final now = DateTime.now();
+        final difference = maturityDate.difference(now).inDays;
+        return difference > 0 ? difference : 0;
+      }
+      return 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
   @override
   LockSaveViewModel viewModelBuilder(
     BuildContext context,
-  ) =>
-      LockSaveViewModel();
+  ) {
+    final dashboardViewModel = locator<DashboardViewModel>();
+    final viewModel = LockSaveViewModel();
+    viewModel.setDashboardViewModel(dashboardViewModel);
+    return viewModel;
+  }
 }
