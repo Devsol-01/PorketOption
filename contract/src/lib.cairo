@@ -12,3 +12,7 @@ pub mod interfaces {
     pub mod iautomation_scheduler;
     pub mod isavings_vault;
 }
+
+pub mod mocks {
+    pub mod mock_erc20;
+}

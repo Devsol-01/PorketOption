@@ -29,9 +29,9 @@ pub trait IAutomationScheduler<TContractState> {
     fn get_execution_failures(self: @TContractState, schedule_id: u256) -> u64;
     fn get_last_execution(self: @TContractState, schedule_id: u256) -> u64;
     // Admin functions
-fn set_execution_settings(
-    ref self: TContractState, max_gas: u64, execution_fee: u256, max_schedules: u256,
-);
-fn emergency_pause_schedule(ref self: TContractState, schedule_id: u256);
-fn withdraw_fees(ref self: TContractState, amount: u256);
+    fn set_execution_settings(
+        ref self: TContractState, max_gas: u64, execution_fee: u256, max_schedules: u256,
+    );
+    fn emergency_pause_schedule(ref self: TContractState, schedule_id: u256);
+    fn withdraw_fees(ref self: TContractState, amount: u256);
 }

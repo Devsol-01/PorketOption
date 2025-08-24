@@ -2,17 +2,20 @@
 pub mod AutomationScheduler {
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::security::pausable::PausableComponent;
+    use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use openzeppelin::token::erc20::{DefaultConfig, ERC20Component};
     use porketoption_contract::interfaces::iautomation_scheduler::IAutomationScheduler;
     use porketoption_contract::interfaces::isavings_vault::{
         ISavingsVaultDispatcher, ISavingsVaultDispatcherTrait,
     };
-    use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use porketoption_contract::structs::autosave_structs::AutoSaveSchedule;
     use starknet::storage::{
         Map, StoragePathEntry, StoragePointerReadAccess, StoragePointerWriteAccess,
     };
-    use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address, contract_address_const};
+    use starknet::{
+        ContractAddress, contract_address_const, get_block_timestamp, get_caller_address,
+        get_contract_address,
+    };
 
     component!(path: ERC20Component, storage: erc20, event: ERC20Event);
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
@@ -119,7 +122,15 @@ pub mod AutomationScheduler {
         ref self: ContractState, savings_vault_address: ContractAddress, owner: ContractAddress,
     ) {
         self.ownable.initializer(owner);
-        self.usdc_token.write(IERC20Dispatcher{contract_address: contract_address_const::<0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080>()});
+        self
+            .usdc_token
+            .write(
+                IERC20Dispatcher {
+                    contract_address: contract_address_const::<
+                        0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080,
+                    >(),
+                },
+            );
         self
             .savings_vault
             .write(ISavingsVaultDispatcher { contract_address: savings_vault_address });
@@ -353,10 +364,7 @@ pub mod AutomationScheduler {
         }
 
         fn set_execution_settings(
-            ref self: ContractState,
-            max_gas: u64,
-            execution_fee: u256,
-            max_schedules: u256,
+            ref self: ContractState, max_gas: u64, execution_fee: u256, max_schedules: u256,
         ) {
             self.ownable.assert_only_owner();
             self.max_execution_gas.write(max_gas);
