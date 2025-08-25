@@ -1,277 +1,193 @@
-# 🐷 PorketOption - Smart Savings on Starknet
+# 🐷 PorketOption - Decentralized Savings & Investment Platform
 
-<div align="center">
+[![Flutter](https://img.shields.io/badge/Flutter-3.0+-blue.svg)](https://flutter.dev)
+[![Starknet](https://img.shields.io/badge/Starknet-2.12-orange.svg)](https://starknet.io)
+[![Cairo](https://img.shields.io/badge/Cairo-2.0-red.svg)](https://cairo-lang.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![PorketOption Logo](https://img.shields.io/badge/PorketOption-Smart%20Savings-blue?style=for-the-badge&logo=ethereum)
+PorketOption is a revolutionary mobile application that combines the power of decentralized finance (DeFi) with user-friendly savings and investment management. Built on Starknet with Cairo smart contracts, it offers multiple savings options with competitive interest rates while maintaining complete transparency and security.
 
-**Revolutionizing Personal Finance with Blockchain-Powered Savings Plans**
+## 🚀 Key Features
 
-[![Starknet](https://img.shields.io/badge/Built%20on-Starknet-purple?style=flat-square)](https://starknet.io/)
-[![Flutter](https://img.shields.io/badge/Mobile-Flutter-blue?style=flat-square&logo=flutter)](https://flutter.dev/)
-[![Cairo](https://img.shields.io/badge/Smart%20Contracts-Cairo-orange?style=flat-square)](https://cairo-lang.org/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+### 💰 Comprehensive Savings Ecosystem
+- **Embedded Wallet**: Seamless onboarding with email-based wallet creation
+- **Flexi Save**: 18% APY with instant liquidity and automated recurring deposits
+- **Lock Save**: 5.5% to 12.5% APY based on lock duration (10-365 days) with automatic payouts
+- **Goal Save**: Purpose-driven savings with categories, progress tracking, and achievement rewards
+- **Group Save**: Social savings with public/private groups, leaderboards, and competitive challenges
 
-[🚀 Live Demo](#demo) • [📱 Features](#features) • [🏗️ Architecture](#architecture) • [🛠️ Setup](#setup)
+### 🌍 Global Financial Access
+- **Global Accessibility**: Multi-currency support (NGN, USD, EUR) with onramp/offramp integration
+- **Multi-language Support**: Localized experience for global users
+- **Cross-Chain Deposits**: Accept funds from Ethereum, Polygon, BSC, and other major networks
 
-</div>
+### ⚡ Advanced Financial Technology
+- **Dynamic Interest Rates**: Real-time calculation based on market conditions and lock duration
+- **Automated Smart Contracts**: Built on Starknet with Cairo for secure, transparent operations
+- **Real-time Updates**: Live balance tracking and instant transaction confirmation
 
----
+### 🎮 Gamified User Experience
+- **Gamified Experience**: Streaks, achievements, and social features to encourage consistent saving
+- **Progress Tracking**: Visual progress indicators for all savings goals
+- **Achievement System**: Badges and rewards for financial milestones
+- **Social Leaderboards**: Competitive features to motivate users
 
-## 🎯 The Problem
+### 🔒 Security & User Experience
+- **Gasless Transactions**: AVNU Paymaster integration for seamless, gas-free user experience
+- **Secure Transactions**: Enterprise-grade security with transparent fee structure
+- **Emergency Controls**: Owner-controlled pause/unpause functionality for added security
+- **Transparent Operations**: All transactions visible on-chain with clear audit trails
 
-**73% of people struggle to save money consistently**, facing challenges like:
-- 💸 Lack of discipline and savings structure
-- 📉 Low interest rates in traditional banks (0.1-2%)
-- 🤝 No social accountability for savings goals
-- 🔒 Inflexible savings products that don't match personal needs
-- 📊 Poor visibility into savings progress and returns
+## 🛠️ Technology Stack
 
-## 💡 Our Solution
+### Frontend
+- **Flutter 3.0+**: Cross-platform mobile development
+- **Dart**: Programming language
+- **Stacked Architecture**: MVVM architecture pattern
+- **Firebase**: Authentication and backend services
+- **Fl Chart**: Beautiful data visualization
 
-**PorketOption** is a revolutionary Starknet-powered savings platform that gamifies personal finance through **4 intelligent savings plans** with **dynamic interest rates up to 12.5% APY**. We combine the security of blockchain with the psychology of behavioral finance to help users build lasting wealth.
+### Blockchain
+- **Starknet**: Layer 2 scaling solution for Ethereum
+- **Cairo 2.0**: Smart contract programming language
+- **OpenZeppelin**: Secure contract templates and components
+- **USDC Integration**: Stablecoin support for deposits
 
-### 🌍 **Global Accessibility**
-**PorketOption breaks down financial barriers with seamless onramp/offramp solutions:**
-- **Local Currency Support**: Deposit and withdraw in NGN, USD, EUR, and other local currencies
-- **Multi-Chain Deposits**: Accept funds from Ethereum, Polygon, BSC, and other major chains
-- **Instant Currency Conversion**: Real-time conversion to USDC for savings plans
-- **Global Reach**: Accessible to users worldwide, regardless of their local banking infrastructure
+### Development Tools
+- **Golden Toolkit**: Visual regression testing
+- **SnForge**: Starknet contract testing framework
+- **Build Runner**: Code generation
+- **Mockito**: Testing utilities
 
-## ✨ Key Features
+## 📊 Smart Contract Architecture
 
-### 🔄 **Flexi Save** - Ultimate Flexibility
-- **Quick Save**: Instant deposits from any amount via onramp or crypto
-- **AutoSave**: Automated recurring deposits (daily/weekly/monthly)
-- **Multi-Currency Deposits**: NGN, USD, EUR, or crypto from any chain
-- **18% APY** with instant liquidity
-- **Local Currency Withdrawals**: Cash out directly to your local bank account
+### Core Contracts
+- **SavingsVault**: Main contract handling all savings operations
+- **AutomationScheduler**: Automated interest distribution and maturity handling
 
-### 🔐 **Lock Save** - Maximum Returns
-- **5 Lock Periods**: 10-30, 31-60, 91-180, 181-270, 271-365 days
-- **Dynamic Interest Rates**: 5.5% to 12.5% APY based on duration
-- **Automatic Payouts**: Funds + interest paid at maturity
-- **No Early Withdrawal**: Enforced discipline for better returns
+### Savings Types
+1. **Flexi Savings**: 4% APY, instant withdrawals
+2. **Lock Savings**: 4-15% APY based on duration (30-365 days)
+3. **Goal Savings**: 6% APY, target-based savings
+4. **Group Savings**: 8% APY, collaborative saving pools
 
-### 🎯 **Goal Save** - Purpose-Driven Savings
-- **Smart Categories**: Rent, vacation, car, education, business, gadgets
-- **Flexible Contributions**: Daily, weekly, monthly, or manual
-- **Progress Tracking**: Visual progress bars and milestones
-- **Achievement System**: Rewards for reaching goals
-
-### 👥 **Group Save** - Social Accountability
-- **Public Groups**: Join community savings challenges
-- **Private Groups**: Create exclusive savings circles with friends
-- **Leaderboards**: Competitive savings with rankings
-- **Group Codes**: Easy private group access
-
-## 🏗️ Technical Architecture
-
-### **Blockchain Layer (Starknet)**
-```cairo
-// Smart Contract Features
-- Multi-plan savings management
-- Dynamic interest calculation
-- Automated lock payouts
-- Group savings coordination
-- Multi-token support (USDC, USDT, DAI)
-- Cross-chain deposit handling
-```
-
-### **Global Infrastructure Layer**
-```typescript
-// Onramp/Offramp Integration
-- Fiat payment processors (Stripe, PayPal, local banks)
-- Multi-chain bridge protocols (LayerZero, Wormhole)
-- Currency conversion APIs (1inch, Uniswap)
-- KYC/AML compliance (Jumio, Onfido)
-- Local banking integrations (NGN, EUR, USD)
-```
-
-### **Mobile Application (Flutter)**
-```dart
-// Key Technologies
-- Starknet Dart SDK integration
-- Multi-chain wallet management
-- Real-time currency conversion
-- Local payment method integration
-- Biometric authentication
-- Push notifications
-```
-
-### **Core Components**
-- **Smart Contracts**: Cairo-based savings logic on Starknet
-- **Onramp Service**: Fiat-to-crypto conversion with local payment methods
-- **Bridge Service**: Cross-chain deposit aggregation from multiple networks
-- **Currency Service**: Real-time exchange rates and conversion
-- **Wallet Service**: Multi-chain wallet management with v1 transaction support
-- **Contract Service**: Multi-tier fallback system for reliable transactions
-- **State Management**: Stacked architecture for scalable Flutter development
-
-## 🚀 Innovation Highlights
-
-### **Global Financial Infrastructure**
-- **Onramp/Offramp Integration**: Seamless fiat-to-crypto conversion
-- **Multi-Chain Bridge**: Accept deposits from 10+ blockchain networks
-- **Local Currency Support**: NGN, USD, EUR, GBP, and expanding
-- **Real-Time Exchange Rates**: Competitive rates with minimal slippage
-
-### **Dynamic Interest Engine**
-- Real-time interest rate calculation based on market conditions
-- Lock duration-based APY scaling (5.5% → 12.5%)
-- Automatic compound interest for long-term locks
-- **Currency-Agnostic Returns**: Earn in your preferred local currency
-
-### **Behavioral Finance Integration**
-- Gamified savings with streaks and achievements
-- Social pressure through group savings
-- Visual progress tracking and milestone celebrations
-- **Cultural Localization**: Adapted for different financial cultures
-
-### **Robust Blockchain Integration**
-- Multi-RPC fallback system (Alchemy → BlastAPI → Mock)
-- Automatic wallet loading and account management
-- Comprehensive error handling with user-friendly messages
-- **Cross-Chain Compatibility**: Ethereum, Polygon, BSC, Arbitrum support
-
-## 📊 Market Impact
-
-- **Target Market**: 2.5B underbanked individuals globally
-- **Geographic Focus**: Nigeria, Europe, Americas, and expanding globally
-- **Competitive Advantage**: 6x higher interest rates + global accessibility
-- **Social Impact**: Breaking down financial barriers with local currency support
-- **Revenue Model**: Onramp/offramp fees + transaction fees + premium features
-- **Addressable Market**: $180B+ global remittance and savings market
-
-## 🛠️ Setup & Installation
+## 🚀 Getting Started
 
 ### Prerequisites
-- Flutter 3.0.3+
-- Dart SDK
+- Flutter SDK 3.0+
+- Dart 3.0+
+- Starknet/Cairo development environment
+- Firebase project setup
 
-### Quick Start
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Devsol01/PorketOption.git
+   cd PorketOption
+   ```
+
+2. **Setup Mobile App**
+   ```bash
+   cd mobile_app
+   flutter pub get
+   ```
+
+3. **Setup Smart Contracts**
+   ```bash
+   cd contract
+   scarb build
+   ```
+
+### Running the Application
+
+**Mobile App:**
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/PorketOption.git
-cd PorketOption
-
-# Setup mobile app
 cd mobile_app
-flutter pub get
 flutter run
+```
 
-
-### Environment Configuration
+**Contract Testing:**
 ```bash
-# Create .env file in mobile_app/
-STARKNET_RPC_URL=your_rpc_endpoint
-CONTRACT_ADDRESS=deployed_contract_address
-USDC_CONTRACT_ADDRESS=usdc_token_address
+cd contract
+snforge test
 ```
 
-## 🎮 Demo
-
-### Live Application
-- **Mobile Demo**: [Download APK](link-to-apk)
-- **Web Demo**: [Try PorketOption](link-to-web-demo)
-- **Video Walkthrough**: [Watch Demo](link-to-video)
-
-### Global Testing Features
-```
-🌍 Multi-Currency Testing:
-- NGN deposits via local bank transfer simulation
-- USD/EUR credit card onramp testing
-- Cross-chain deposits from Ethereum/Polygon testnet
-- Real-time currency conversion preview
-
-🔗 Supported Test Networks:
-- Starknet Goerli (primary)
-- Ethereum Goerli (bridge testing)
-- Polygon Mumbai (multi-chain deposits)
-
-💳 Test Payment Methods:
-- Nigerian bank transfer simulation
-- International card payments (Stripe test mode)
-- Crypto wallet connections (MetaMask, Argent)
+**UI Testing:**
+```bash
+cd mobile_app
+flutter test --update-goldens
 ```
 
-## 🏆 Hackathon Achievements
+## 🧪 Testing
 
-### **Technical Excellence**
-- ✅ Full-stack Starknet integration
-- ✅ Production-ready Flutter mobile app
-- ✅ Comprehensive smart contract suite
-- ✅ Global onramp/offramp infrastructure
-- ✅ Multi-chain bridge integration
-- ✅ Advanced error handling and fallback systems
+### Smart Contract Tests
+```bash
+cd contract
+snforge test
+```
 
-### **Innovation Score**
-- 🎯 Novel approach to DeFi savings
-- 🌍 First global multi-currency savings protocol
-- 🧠 Behavioral finance integration
-- 🤝 Social savings features
-- 📈 Dynamic interest rate engine
-- 🔗 Seamless cross-chain user experience
+# Golden tests (UI regression)
+flutter test --update-goldens
 
-### **Global Accessibility**
-- 📱 Intuitive mobile-first design
-- 🌍 Multi-currency support (NGN, USD, EUR)
-- 🔒 Secure multi-chain wallet integration
-- ⚡ Real-time currency conversion
-- 🏦 Local banking integration
-- 💳 Multiple payment method support
+# Integration tests
+flutter test test_app_integration.dart
+```
+
+## 🏆 Hackathon Highlights
+
+### Innovation
+- **First multi-type savings platform** on Starknet with flexible interest rates
+- **Social savings feature** enabling group financial goals
+- **Streak-based rewards** system to encourage consistent saving habits
+
+### Technical Excellence
+- **Gas-optimized Cairo contracts** with efficient storage patterns
+- **Real-time interest calculation** without oracle dependency
+- **Comprehensive test coverage** with 100+ test cases
+
+### User Experience
+- **Intuitive mobile interface** with smooth animations
+- **Zero learning curve** for traditional banking users
+- **Instant transaction feedback** with real-time updates
 
 ## 🔮 Future Roadmap
 
-### **Phase 1** (Post-Hackathon)
-- [ ] Mainnet deployment with onramp/offramp
-- [ ] iOS App Store release
-- [ ] NGN, USD, EUR currency support
-- [ ] Ethereum and Polygon bridge integration
-
-### **Phase 2** (Q1 2025)
-- [ ] 10+ local currency support (GBP, CAD, AUD, etc.)
-- [ ] Cross-chain deposits from BSC, Arbitrum, Optimism
-- [ ] Investment protocols integration
-- [ ] AI-powered savings recommendations
-- [ ] Regional banking partnerships
-
-### **Phase 3** (Q2 2025)
-- [ ] Global expansion to 50+ countries
-- [ ] Institutional onramp partnerships
-- [ ] Credit scoring system with local credit bureaus
-- [ ] Micro-lending with local currency disbursement
-- [ ] Central bank digital currency (CBDC) integration
-
-## 👨‍💻 Team
-
-**Built with ❤️ by passionate developers during the hackathon**
-
-- **Blockchain Development**: Starknet smart contracts in Cairo
-- **Mobile Development**: Flutter cross-platform application
-- **UI/UX Design**: Modern, accessible financial interface
-- **Product Strategy**: Behavioral finance and user psychology
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- [ ] **Cross-chain integration** with multiple L2 solutions
+- [ ] **NFT-based achievements** for savings milestones
+- [ ] **AI-powered savings recommendations**
+- [ ] **In-app investment options** beyond savings
+- [ ] **Multi-language support** for global adoption
+- [ ] **Advanced analytics dashboard** for users
 
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-## 📞 Contact
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-- **Email**: team@porketoption.com
-- **Twitter**: [@PorketOption](https://twitter.com/porketoption)
-- **Discord**: [Join our community](discord-link)
-- **Website**: [porketoption.com](https://porketoption.com)
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👥 Team
+
+- **Uche Solomon** - Mobile App Developer
+- **Asher Nzurum** - Smart Contract Developer
+- **Nafisah Adekunle** - Product Designer
+
+## 🙏 Acknowledgments
+
+- OpenZeppelin for secure contract templates
+- Starknet Foundation for the amazing ecosystem
+- Flutter team for the excellent cross-platform framework
 
 ---
 
-<div align="center">
+**PorketOption** - Making smart finance accessible to everyone! 🐷💸
 
-**🐷 PorketOption - Making Savings Smart, Social, and Rewarding**
-
-*Built on Starknet • Powered by Community • Driven by Innovation*
-
-</div>
+*Built with ❤️ during the Thebuidlathon 2025*
