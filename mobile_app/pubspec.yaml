@@ -56,7 +56,22 @@ flutter:
     - lib/assets/Group3.png
     - lib/assets/Group4.png
     - lib/assets/Group5.png
+    - lib/assets/badge.png
+    - lib/assets/badge1.png
+    - lib/assets/badge2.png
+    - lib/assets/badge4.png
+    - lib/assets/badge5.png
+    - lib/assets/badge6.png
+    - lib/assets/badge7.png
+    - lib/assets/badge8.png
+    - lib/assets/onboard1.png
+    - lib/assets/onboard2.png
+    - lib/assets/onboard3.png
+    - lib/assets/line1.png
+    - lib/assets/line2.png
+    - lib/assets/line3.png
+    - lib/assets/logo1.png
+
 
     
     - .env
-

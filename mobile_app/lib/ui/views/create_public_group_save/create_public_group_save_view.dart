@@ -182,29 +182,30 @@ class CreatePublicGroupSaveView
                       Container(
                         width: double.infinity,
                         height: 56,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          gradient: const LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              Color(0xFF675DFF),
-                              Color(0xFF4F46E5),
-                            ],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF675DFF)
-                                  .withValues(alpha: 0.25),
-                              blurRadius: 16,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
+  decoration: BoxDecoration(
+    color: Colors.white, // Light mode background
+    borderRadius: BorderRadius.circular(46),
+    boxShadow: [
+      BoxShadow(
+        color: const Color.fromRGBO(13, 213, 13, 0.1),
+        offset: const Offset(-4, 4),
+        blurRadius: 20,
+        spreadRadius: 0,
+      ),
+      BoxShadow(
+        color: const Color.fromRGBO(13, 213, 13, 0.1),
+        offset: const Offset(4, 4),
+        blurRadius: 6,
+        spreadRadius: 0,
+      ),
+    ],
+  ),
                         child: ElevatedButton(
-                          onPressed: viewModel.isBusy ? null : (viewModel.canCreateGoal
-                              ? viewModel.createGoal
-                              : null),
+                          onPressed: viewModel.isBusy
+                              ? null
+                              : (viewModel.canCreateGoal
+                                  ? viewModel.createGoal
+                                  : null),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
@@ -221,7 +222,9 @@ class CreatePublicGroupSaveView
                                       height: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
                                       ),
                                     ),
                                     const SizedBox(width: 12),
@@ -579,7 +582,7 @@ class CreatePublicGroupSaveView
                   : 'Select preferred time',
               style: TextStyle(
                 color: viewModel.preferredTime != null
-                    ? Colors.white
+                    ? Colors.black
                     : const Color(0xFF9CA3AF),
                 fontSize: 16,
               ),

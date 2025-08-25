@@ -12,7 +12,7 @@ class NumberFormatter extends TextInputFormatter {
 
     // Remove all non-digit characters except decimal point
     String digitsOnly = newValue.text.replaceAll(RegExp(r'[^\d.]'), '');
-    
+
     // Handle decimal point
     List<String> parts = digitsOnly.split('.');
     if (parts.length > 2) {
@@ -20,13 +20,13 @@ class NumberFormatter extends TextInputFormatter {
       digitsOnly = '${parts[0]}.${parts.sublist(1).join('')}';
       parts = digitsOnly.split('.');
     }
-    
+
     // Format the integer part with commas
     String integerPart = parts[0];
     if (integerPart.isNotEmpty) {
       integerPart = _addCommas(integerPart);
     }
-    
+
     // Reconstruct the number
     String formatted = integerPart;
     if (parts.length > 1) {
@@ -37,13 +37,13 @@ class NumberFormatter extends TextInputFormatter {
       }
       formatted += '.$decimalPart';
     }
-    
+
     return TextEditingValue(
       text: formatted,
       selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
-  
+
   String _addCommas(String number) {
     return number.replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
@@ -55,11 +55,11 @@ class NumberFormatter extends TextInputFormatter {
 class CurrencyFormatter {
   static String formatWithCommas(double number) {
     return number.toStringAsFixed(2).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
-  
+
   static double parseFromFormatted(String formatted) {
     // Remove commas and parse
     String cleaned = formatted.replaceAll(',', '');

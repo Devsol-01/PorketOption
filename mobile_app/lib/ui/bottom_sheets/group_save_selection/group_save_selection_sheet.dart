@@ -10,6 +10,7 @@ class GroupSaveSelectionSheet
     extends StackedView<GroupSaveSelectionSheetModel> {
   final Function(SheetResponse response)? completer;
   final SheetRequest request;
+
   const GroupSaveSelectionSheet({
     super.key,
     required this.completer,
@@ -35,8 +36,8 @@ class GroupSaveSelectionSheet
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
             offset: const Offset(0, -4),
           ),
         ],
@@ -46,23 +47,25 @@ class GroupSaveSelectionSheet
         children: [
           // Header
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Create Group Save',
                   style: GoogleFonts.inter(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87,
+                  ),
                 ),
-                GestureDetector(
+                InkWell(
+                  borderRadius: BorderRadius.circular(20),
                   onTap: () => Navigator.pop(context),
-                  child: Icon(
+                  child: const Icon(
                     Icons.close,
-                    size: 20,
-                    color: Colors.black,
+                    size: 22,
+                    color: Colors.black54,
                   ),
                 ),
               ],
@@ -74,10 +77,9 @@ class GroupSaveSelectionSheet
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
             child: Column(
               children: [
-                // Public Group Save Option
                 _buildGroupSaveOption(
                   context: context,
-                  icon: Icons.public,
+                  icon: Icons.groups,
                   iconColor: const Color(0xFF4CAF50),
                   title: 'Public Group Save',
                   subtitle: 'Anyone can join and contribute',
@@ -87,10 +89,7 @@ class GroupSaveSelectionSheet
                     Navigator.pop(context);
                   },
                 ),
-
-                const SizedBox(height: 12),
-
-                // Private Group Save Option
+                const SizedBox(height: 14),
                 _buildGroupSaveOption(
                   context: context,
                   icon: Icons.lock,
@@ -119,31 +118,39 @@ class GroupSaveSelectionSheet
     required String subtitle,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
       onTap: onTap,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Colors.black,
+            color: const Color(0xFFE5E7EB), // soft gray border
             width: 1,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
+                color: iconColor.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
                 color: iconColor,
-                size: 24,
+                size: 22,
               ),
             ),
             const SizedBox(width: 16),
@@ -154,25 +161,26 @@ class GroupSaveSelectionSheet
                   Text(
                     title,
                     style: GoogleFonts.inter(
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black,
+                      color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: Colors.black,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black54,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(
+            const Icon(
               Icons.arrow_forward_ios,
-              color: Colors.black,
+              color: Colors.black38,
               size: 16,
             ),
           ],

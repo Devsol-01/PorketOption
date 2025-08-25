@@ -8,7 +8,7 @@ class FiatSendSelectionSheetModel extends BaseViewModel {
 
   Future<void> onNGNTap(Function(SheetResponse) completer) async {
     completer(SheetResponse(confirmed: true, data: 'ngn'));
-    
+
     // Show NGN send sheet
     final ngnResponse = await _bottomSheetService.showCustomSheet(
       variant: BottomSheetType.ngnSend,

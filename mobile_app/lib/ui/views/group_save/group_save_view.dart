@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stacked/stacked.dart';
+import 'package:mobile_app/utils/format_utils.dart';
 
 import 'group_save_viewmodel.dart';
 
@@ -84,7 +85,8 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
                     children: [
                       Text(
                         viewModel.isBalanceVisible
-                            ? '\$${viewModel.groupSaveBalance.toStringAsFixed(0)}'
+                            ? FormatUtils.formatCurrency(
+                                viewModel.groupSaveBalance)
                             : '****',
                         style: GoogleFonts.poppins(
                           fontSize: 24,
@@ -141,12 +143,12 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0x33FFA82F), // subtle outer shadow
-                  offset: Offset(2, 2),
+                  color: Color.fromRGBO(13, 213, 13, 0.1),
+                  offset: Offset(5, 5),
                   blurRadius: 4,
                 ),
                 BoxShadow(
-                  color: Color(0x22FFA82F),
+                  color: Color.fromRGBO(13, 213, 13, 0.1),
                   offset: Offset(-1, -1),
                   blurRadius: 2,
                   inset: true, // keeps inset effect
@@ -156,7 +158,7 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
             child: Center(
                 child: Icon(
               Icons.add,
-              color: Color(0xFFFFA82F),
+              color: Colors.green,
             )),
           ),
         ),
@@ -399,9 +401,8 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
 
   Widget _buildGroupCard(
       Map<String, dynamic> group, GroupSaveViewModel viewModel) {
-    final progress = (group['progress'] as double? ?? 0.0);
     final currentAmount = (group['currentAmount'] as double? ?? 0.0);
-    final memberCount = (group['memberCount'] as int? ?? 0);
+    final targetAmount = (group['targetAmount'] as double? ?? 0.0);
     final daysLeft = _calculateDaysLeft(group['endDate'] as String?);
 
     return GestureDetector(
@@ -410,109 +411,80 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 12,
+              spreadRadius: 1,
+              offset: const Offset(0, 6),
+            )
           ],
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Icon container
             Container(
-              width: 60,
-              height: 60,
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
-                color: _getCategoryColor(group['category'] as String?),
-                borderRadius: BorderRadius.circular(12),
+                color: _getCategoryColor(group['category'] as String?)
+                    .withOpacity(0.12),
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(
-                _getCategoryIcon(group['category'] as String?),
-                color: Colors.white,
-                size: 24,
+              child: Center(
+                child: Icon(
+                  _getCategoryIcon(group['category'] as String?),
+                  color: _getCategoryColor(group['category'] as String?),
+                  size: 26,
+                ),
               ),
             ),
             const SizedBox(width: 16),
-            // Group details
+
+            // Goal details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Goal title
                   Text(
-                    group['title'] as String? ?? 'Untitled Group',
+                    group['title'] as String? ?? 'Untitled Goal',
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
                       color: Colors.black87,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+
+                  SizedBox(height: 8),
+
+                  // Stats row (clean text only)
                   Row(
                     children: [
-                      Text(
-                        '$memberCount',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black54,
-                        ),
+                      _buildPlainStat(
+                        label: "Members",
+                        //value: FormatUtils.formatCurrency(currentAmount),
+                        value: "${group['memberCount'] ?? 0}",
                       ),
-                      const Text(
-                        ' Members',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
-                        ),
+                      const SizedBox(width: 30),
+                      _buildPlainStat(
+                        label: "Target",
+                        value: FormatUtils.formatCurrency(targetAmount),
                       ),
-                      const Spacer(),
-                      Text(
-                        '$daysLeft Days Left',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                        ),
+                      const SizedBox(
+                        width: 30,
+                      ),
+                      _buildPlainStat(
+                        label: "Days Left",
+                        value: "$daysLeft",
+                        alignRight: false,
+                        highlight: false,
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text(
-                        '\$${currentAmount.toStringAsFixed(0)}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      Text(
-                        ' Total Saved',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        '$daysLeft Days Left',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Progress bar
-                  LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.grey[200],
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.green,
-                    ),
                   ),
                 ],
               ),
@@ -521,6 +493,70 @@ class GroupSaveView extends StackedView<GroupSaveViewModel> {
         ),
       ),
     );
+  }
+
+  Widget _buildPlainStat({
+    required String label,
+    required String value,
+    bool alignRight = false,
+    bool highlight = false,
+  }) {
+    return Column(
+      crossAxisAlignment:
+          alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey.shade600,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: highlight ? Colors.blue.shade600 : Colors.black87,
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _getOrdinalSuffix(int day) {
+    if (day >= 11 && day <= 13) return 'th';
+    switch (day % 10) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    return months[month];
   }
 
   Color _getCategoryColor(String? category) {

@@ -72,7 +72,7 @@ class ChainSelectionSheet extends StackedView<ChainSelectionSheetModel> {
 
                 // Close button
                 GestureDetector(
-                   onTap: () => completer!(SheetResponse(confirmed: false)),
+                  onTap: () => completer!(SheetResponse(confirmed: false)),
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -112,7 +112,8 @@ class ChainSelectionSheet extends StackedView<ChainSelectionSheetModel> {
                     symbol: 'BTC',
                     icon: CryptoFontIcons.btc,
                     iconColor: const Color(0xFFF7931A),
-                    onTap: () => viewModel.onChainSelected('bitcoin', completer!),
+                    onTap: () =>
+                        viewModel.onChainSelected('bitcoin', completer!),
                   ),
                   const SizedBox(height: 14),
                   _buildChainOption(

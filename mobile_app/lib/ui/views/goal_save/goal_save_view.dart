@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stacked/stacked.dart';
 import 'package:mobile_app/app/app.locator.dart';
+import 'package:mobile_app/utils/format_utils.dart';
 
 import 'goal_save_viewmodel.dart';
 import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
@@ -84,7 +85,8 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                     children: [
                       Text(
                         viewModel.isBalanceVisible
-                            ? '\$${viewModel.goalSaveBalance.toStringAsFixed(0)}'
+                            ? FormatUtils.formatCurrency(
+                                viewModel.goalSaveBalance)
                             : '****',
                         style: GoogleFonts.poppins(
                           fontSize: 24,
@@ -173,7 +175,7 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: const Color.fromRGBO(138, 56, 245, 0.3),
+          color: const Color.fromARGB(77, 58, 58, 59),
           width: 1,
         ),
       ),
@@ -183,7 +185,7 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
           Text(
             'What is goal savings?',
             style: GoogleFonts.inter(
-              color: const Color(0xFF8A38F5),
+              color: Colors.black,
               fontSize: 15,
               fontWeight: FontWeight.w500,
             ),
@@ -192,19 +194,19 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
           Text(
             'Goal savings is a great way to save towards towards a specific goal or target.',
             style: TextStyle(
-                color: Color(0xFF8A38F5),
-                fontSize: 13,
-                height: 15 / 12,
-                fontWeight: FontWeight.w400),
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
             'You can set up automatic savings to help you reach your goal faster.',
             style: TextStyle(
-                color: Color(0xFF8A38F5),
-                height: 15 / 12,
-                fontSize: 13,
-                fontWeight: FontWeight.w400),
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
           ),
         ],
       ),
@@ -533,15 +535,15 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                     children: [
                       _buildPlainStat(
                         label: "Saved",
-                        value: "\$${currentAmount.toStringAsFixed(0)}",
+                        value: FormatUtils.formatCurrency(currentAmount),
                       ),
-                      const SizedBox(width: 35),
+                      const SizedBox(width: 30),
                       _buildPlainStat(
                         label: "Target",
-                        value: "\$${targetAmount.toStringAsFixed(0)}",
+                        value: FormatUtils.formatCurrency(targetAmount),
                       ),
                       const SizedBox(
-                        width: 35,
+                        width: 30,
                       ),
                       _buildPlainStat(
                         label: "Days Left",

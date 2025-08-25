@@ -5,6 +5,7 @@ import 'package:mobile_app/services/firebase_wallet_manager_service.dart';
 import 'package:mobile_app/services/token_service.dart';
 import 'package:mobile_app/services/wallet_service.dart';
 import 'package:mobile_app/services/contract_service.dart';
+import 'package:mobile_app/services/mock_data_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -58,6 +59,13 @@ class DashboardViewModel extends BaseViewModel {
     try {
       _tokenService = TokenService();
       _contractService = ContractService(_walletService);
+
+      // Set up balance update callback with mock data service
+      final mockDataService = MockDataService();
+      mockDataService.setBalanceUpdateCallback(() {
+        print('🔄 Balance update notification received from MockDataService');
+        refreshSavingsBalances();
+      });
 
       // Check if user is authenticated
       if (_firebaseWalletManager.isAuthenticated) {
@@ -123,6 +131,11 @@ class DashboardViewModel extends BaseViewModel {
   void setOngoingSelected(bool value) {
     _isOngoingSelected = value;
     notifyListeners(); // Notify UI to rebuild
+    
+    // Load transactions when Transactions tab is selected
+    if (!value) {
+      loadRecentTransactions();
+    }
   }
 
   Future<void> loadUsdcBalance() async {
@@ -148,8 +161,25 @@ class DashboardViewModel extends BaseViewModel {
       return;
     }
 
-    // For now, show a placeholder message since we need to add routing
-    _showInfoSnackbar('Send USDC feature coming soon!');
+    // Show the crypto send sheet
+    _bottomSheetService.showCustomSheet(
+      variant: BottomSheetType.cryptoSend,
+      title: 'Send Crypto',
+    ).then((response) {
+      if (response?.confirmed == true && response?.data != null) {
+        // Handle the confirmed response
+        final address = response!.data!['address'];
+        // Call the method to send crypto
+        processCryptoSend(address);
+      }
+    });
+  }
+
+  Future<void> processCryptoSend(String address) async {
+    // Implement the logic to send crypto
+    // This is where you would interact with the contract service to send the crypto
+    // For now, just show a success message
+    _showSuccessSnackbar('Crypto sent to $address successfully!');
   }
 
   /// Deploy account (needed for sending transactions)
@@ -341,6 +371,11 @@ class DashboardViewModel extends BaseViewModel {
   /// Load recent transactions from contract
   Future<void> loadRecentTransactions() async {
     try {
+      if (_contractService == null) {
+        print(
+            '⚠️ Contract service not initialized yet, skipping transaction load');
+        return;
+      }
       _recentTransactions = await _contractService.getTransactionHistory();
       notifyListeners();
     } catch (e) {
@@ -355,6 +390,58 @@ class DashboardViewModel extends BaseViewModel {
       loadUserStats(),
       loadRecentTransactions(),
     ]);
+  }
+
+  /// Refresh only savings balances from contract service
+  Future<void> refreshSavingsBalances() async {
+    try {
+      if (_contractService == null) {
+        print(
+            '⚠️ Contract service not initialized yet, skipping savings refresh');
+        return;
+      }
+      final flexiBalance = await _contractService.getFlexiBalance();
+      final userGoals = await _contractService.getUserGoals();
+      final userGroups = await _contractService.getUserGroups();
+      final userLocks = await _contractService.getLockSave();
+
+      // Update individual balances
+      _flexiSaveBalance = flexiBalance;
+
+      // Handle locks
+      if (userLocks is List) {
+        _lockSaveBalance = (userLocks as List).fold(0.0,
+            (sum, lock) => sum + ((lock as Map)['amount'] as double? ?? 0.0));
+      } else {
+        _lockSaveBalance = 0.0;
+      }
+
+      // Handle goals
+      if (userGoals is List) {
+        _goalSaveBalance = (userGoals as List).fold(
+            0.0,
+            (sum, goal) =>
+                sum + ((goal as Map)['currentAmount'] as double? ?? 0.0));
+      } else {
+        _goalSaveBalance = 0.0;
+      }
+
+      // Handle groups
+      if (userGroups is List) {
+        _groupSaveBalance = (userGroups as List).fold(
+            0.0,
+            (sum, group) =>
+                sum + ((group as Map)['currentAmount'] as double? ?? 0.0));
+      } else {
+        _groupSaveBalance = 0.0;
+      }
+
+      _updateTotalSavingsBalance();
+      notifyListeners();
+      print('✅ Savings balances refreshed from contract service');
+    } catch (e) {
+      print('❌ Error refreshing savings balances: $e');
+    }
   }
 
   Future<void> logout() async {
@@ -422,6 +509,19 @@ class DashboardViewModel extends BaseViewModel {
     }
     print(
         '❌ Insufficient dashboard balance: \$${_dashboardBalance} < \$${amount}');
+    return false;
+  }
+
+  /// Transfer money from lock save back to dashboard
+  bool transferFromLockSave(double amount) {
+    if (_lockSaveBalance >= amount) {
+      _lockSaveBalance -= amount;
+      _dashboardBalance += amount;
+      _usdcBalance = _dashboardBalance;
+      _updateTotalSavingsBalance();
+      notifyListeners(); // Trigger UI update
+      return true;
+    }
     return false;
   }
 

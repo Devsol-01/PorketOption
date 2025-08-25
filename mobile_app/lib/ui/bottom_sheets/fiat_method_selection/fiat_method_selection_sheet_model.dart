@@ -8,7 +8,7 @@ class FiatMethodSelectionSheetModel extends BaseViewModel {
 
   Future<void> onCardTap(Function(SheetResponse) completer) async {
     completer(SheetResponse(confirmed: true, data: 'card'));
-    
+
     // Show card deposit form
     final cardResponse = await _bottomSheetService.showCustomSheet(
       variant: BottomSheetType.cardDeposit,
@@ -26,7 +26,7 @@ class FiatMethodSelectionSheetModel extends BaseViewModel {
 
   Future<void> onBankTransferTap(Function(SheetResponse) completer) async {
     completer(SheetResponse(confirmed: true, data: 'bank_transfer'));
-    
+
     // Show bank transfer details
     final bankResponse = await _bottomSheetService.showCustomSheet(
       variant: BottomSheetType.bankTransfer,
@@ -44,7 +44,7 @@ class FiatMethodSelectionSheetModel extends BaseViewModel {
 
   Future<void> onVirtualAccountTap(Function(SheetResponse) completer) async {
     completer(SheetResponse(confirmed: true, data: 'virtual_account'));
-    
+
     // Show virtual account creation
     final virtualResponse = await _bottomSheetService.showCustomSheet(
       variant: BottomSheetType.virtualAccount,

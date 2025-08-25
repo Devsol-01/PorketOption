@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_view.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() {
   setUpAll(() => setupLocator());

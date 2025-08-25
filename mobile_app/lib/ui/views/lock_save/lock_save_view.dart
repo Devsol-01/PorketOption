@@ -6,6 +6,7 @@ import 'package:mobile_app/ui/views/lock_save/lock_save_viewmodel.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:stacked/stacked.dart';
+import 'package:mobile_app/utils/format_utils.dart';
 
 class LockSaveView extends StackedView<LockSaveViewModel> {
   const LockSaveView({Key? key}) : super(key: key);
@@ -86,7 +87,8 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                     children: [
                       Text(
                         viewModel.isBalanceVisible
-                            ? '\$${viewModel.lockSaveBalance.toStringAsFixed(0)}'
+                            ? FormatUtils.formatCurrency(
+                                viewModel.lockSaveBalance)
                             : '****',
                         style: GoogleFonts.poppins(
                           fontSize: 24,
@@ -511,18 +513,23 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
   Widget _buildLockCard(
       Map<String, dynamic> lock, LockSaveViewModel viewModel) {
     final amount = (lock['amount'] as double? ?? 0.0);
-    final daysLeft = _calculateDaysLeft(lock['maturityDate'] as String?);
+    final title = lock['title'] as String? ?? 'Untitled Lock';
+    final maturityDateStr = lock['maturityDate'] as String?;
+    final daysLeft = _calculateDaysLeft(maturityDateStr);
     final isMatured = daysLeft <= 0;
+    final status = lock['status'] as String? ?? 'active';
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
             offset: const Offset(0, 2),
           ),
         ],
@@ -531,61 +538,73 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
         children: [
           // Icon container
           Container(
-            width: 60,
-            height: 60,
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
-              color: Color(lock['color'] as int? ?? 0xFFFFA82F),
-              borderRadius: BorderRadius.circular(12),
+              color: const Color(0xFFFFA82F).withOpacity(0.9),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.lock,
               color: Colors.white,
-              size: 24,
+              size: 20,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
+
           // Lock details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Title
                 Text(
-                  lock['title'] as String? ?? 'Untitled Lock',
+                  title,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
+
+                // Amount
                 Text(
-                  '\$${amount.toStringAsFixed(0)}',
+                  FormatUtils.formatCurrency(amount),
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Colors.black,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
+
+                // Progress + status
                 Row(
                   children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: LinearProgressIndicator(
+                          minHeight: 6,
+                          value: isMatured ? 1.0 : 0.7,
+                          backgroundColor: Colors.grey.shade200,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            isMatured ? Colors.green : const Color(0xFFFFA82F),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     Text(
-                      'Locked',
+                      isMatured ? "Matured" : "$daysLeft d",
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                        color: isMatured ? Colors.green[700] : Colors.grey[700],
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 8),
-                // Progress bar
-                LinearProgressIndicator(
-                  value: isMatured ? 1.0 : 0.7, // Mock progress
-                  backgroundColor: Colors.grey[200],
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Color(0xFFFFA82F),
-                  ),
                 ),
               ],
             ),
@@ -598,20 +617,28 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
   int _calculateDaysLeft(String? maturityDateStr) {
     if (maturityDateStr == null) return 0;
     try {
-      // Parse date in format 'dd/mm/yyyy'
-      final parts = maturityDateStr.split('/');
-      if (parts.length == 3) {
-        final day = int.parse(parts[0]);
-        final month = int.parse(parts[1]);
-        final year = int.parse(parts[2]);
-        final maturityDate = DateTime(year, month, day);
-        final now = DateTime.now();
-        final difference = maturityDate.difference(now).inDays;
-        return difference > 0 ? difference : 0;
-      }
-      return 0;
+      // Parse ISO 8601 date format from mock data service
+      final maturityDate = DateTime.parse(maturityDateStr);
+      final now = DateTime.now();
+      final difference = maturityDate.difference(now).inDays;
+      return difference > 0 ? difference : 0;
     } catch (e) {
-      return 0;
+      // Fallback for old format 'dd/mm/yyyy'
+      try {
+        final parts = maturityDateStr.split('/');
+        if (parts.length == 3) {
+          final day = int.parse(parts[0]);
+          final month = int.parse(parts[1]);
+          final year = int.parse(parts[2]);
+          final maturityDate = DateTime(year, month, day);
+          final now = DateTime.now();
+          final difference = maturityDate.difference(now).inDays;
+          return difference > 0 ? difference : 0;
+        }
+        return 0;
+      } catch (e2) {
+        return 0;
+      }
     }
   }
 

@@ -9,7 +9,7 @@ import 'virtual_account_sheet_model.dart';
 class VirtualAccountSheet extends StackedView<VirtualAccountSheetModel> {
   final Function(SheetResponse response)? completer;
   final SheetRequest request;
-  
+
   const VirtualAccountSheet({
     Key? key,
     required this.completer,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/app/app.router.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:mobile_app/app/app.locator.dart';
@@ -10,7 +11,7 @@ class CreateGoalViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final ContractService _contractService = locator<ContractService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
-  
+
   DashboardViewModel? _dashboardViewModel;
 
   // Controllers
@@ -240,16 +241,17 @@ class CreateGoalViewModel extends BaseViewModel {
 
     final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
     final contributionAmount = calculatedContributionAmount;
-    
+
     if (targetAmount <= 0) {
       _showErrorSnackbar('Please enter a valid target amount');
       return;
     }
-    
+
     // Check if dashboard has sufficient balance for initial contribution
     if (_dashboardViewModel != null) {
       if (_dashboardViewModel!.dashboardBalance < contributionAmount) {
-        _showErrorSnackbar('Insufficient balance in dashboard for initial contribution');
+        _showErrorSnackbar(
+            'Insufficient balance in dashboard for initial contribution');
         return;
       }
     }
@@ -257,17 +259,18 @@ class CreateGoalViewModel extends BaseViewModel {
     setBusy(true);
     try {
       print('🎯 Creating goal with contract...');
-      
+
       // Transfer initial contribution from dashboard to goal save
       bool transferSuccess = false;
       if (_dashboardViewModel != null) {
-        transferSuccess = _dashboardViewModel!.transferToGoalSave(contributionAmount);
+        transferSuccess =
+            _dashboardViewModel!.transferToGoalSave(contributionAmount);
       }
-      
+
       if (transferSuccess) {
         // Simulate contract interaction delay
         await Future.delayed(Duration(milliseconds: 1500));
-        
+
         // Create goal on contract
         final goalId = await _contractService.createGoalSave(
           title: purposeController.text,
@@ -280,10 +283,11 @@ class CreateGoalViewModel extends BaseViewModel {
 
         if (goalId.isNotEmpty) {
           print('✅ Goal created successfully! ID: $goalId');
-          _showSuccessSnackbar('🎯 Goal Save created successfully! \$${contributionAmount.toStringAsFixed(2)} transferred as initial contribution');
-          
+          _showSuccessSnackbar(
+              '🎯 Goal Save created successfully! \$${contributionAmount.toStringAsFixed(2)} transferred as initial contribution');
+
           // Navigate back to Goal Save page
-          _navigationService.back();
+          _navigationService.navigateToGoalSaveView();
         } else {
           _showErrorSnackbar('Failed to create goal save');
           // Rollback the transfer on error
@@ -297,7 +301,7 @@ class CreateGoalViewModel extends BaseViewModel {
     } catch (e) {
       print('❌ Error creating goal: $e');
       _showErrorSnackbar('Error creating goal: $e');
-      
+
       // Rollback the transfer on error
       if (_dashboardViewModel != null) {
         _dashboardViewModel!.transferFromGoalSave(contributionAmount);

@@ -4,6 +4,7 @@ import 'package:stacked/stacked.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dashboard_viewmodel.dart';
 import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
+import 'package:mobile_app/utils/format_utils.dart';
 
 class DashboardView extends StackedView<DashboardViewModel> {
   const DashboardView({Key? key}) : super(key: key);
@@ -41,7 +42,13 @@ class DashboardView extends StackedView<DashboardViewModel> {
 
                 // Bottom Buttons
                 _buildBottomButtons(context, viewModel),
-                const SizedBox(height: 100), // Space for bottom navigation
+              const SizedBox(height: 24),
+
+              // Transaction History Section (only shown when Transactions is selected)
+              if (!viewModel.isOngoingSelected)
+                _buildTransactionHistory(viewModel),
+              
+              const SizedBox(height: 100), // Space for bottom navigation
               ],
             ),
           ),
@@ -232,7 +239,8 @@ class DashboardView extends StackedView<DashboardViewModel> {
                     : AnimatedSwitcher(
                         duration: Duration(milliseconds: 10000),
                         child: Text(
-                          viewModel.formattedDashboardBalance,
+                          FormatUtils.formatCurrency(
+                              viewModel.dashboardBalance),
                           key: ValueKey(viewModel.dashboardBalance),
                           style: GoogleFonts.poppins(
                             fontSize: 24,
@@ -254,7 +262,6 @@ class DashboardView extends StackedView<DashboardViewModel> {
       ),
     );
   }
-
 
   Widget _buildAction(BuildContext context, DashboardViewModel viewModel) {
     return Row(
@@ -333,7 +340,8 @@ class DashboardView extends StackedView<DashboardViewModel> {
     );
   }
 
-  Widget _buildInterestEarningsCard(BuildContext context, DashboardViewModel viewModel) {
+  Widget _buildInterestEarningsCard(
+      BuildContext context, DashboardViewModel viewModel) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -720,6 +728,142 @@ class DashboardView extends StackedView<DashboardViewModel> {
   @override
   void onViewModelReady(DashboardViewModel viewModel) {
     viewModel.initialize();
+  }
+
+  Widget _buildTransactionHistory(DashboardViewModel viewModel) {
+    if (viewModel.recentTransactions.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200, width: 1),
+        ),
+        child: Column(
+          children: [
+            Text(
+              'Recent Transactions',
+              style: GoogleFonts.inter(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No transactions yet',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Recent Transactions',
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 16),
+        ListView.separated(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: viewModel.recentTransactions.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final transaction = viewModel.recentTransactions[index];
+            return _buildTransactionCard(transaction);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTransactionCard(Map<String, dynamic> transaction) {
+    final type = transaction['type'] as String? ?? 'deposit';
+    final amount = (transaction['amount'] as double? ?? 0.0);
+    final date = transaction['date'] as String? ?? '';
+    final status = transaction['status'] as String? ?? 'completed';
+
+    final isDeposit = type.toLowerCase().contains('deposit') ||
+        type.toLowerCase().contains('save');
+    final icon = isDeposit ? Icons.arrow_downward : Icons.arrow_upward;
+    final color = isDeposit ? Colors.green : Colors.red;
+    final prefix = isDeposit ? '+' : '-';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  type.replaceAll('_', ' ').toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  date,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '$prefix\$${amount.toStringAsFixed(2)}',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

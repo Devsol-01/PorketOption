@@ -84,7 +84,7 @@ class CreateGoalView extends StackedView<CreateGoalViewModel> {
                       const SizedBox(height: 12),
                       _buildTextField(
                         controller: viewModel.targetAmountController,
-                        hintText: 'Enter target amount',
+                        hintText: 'Enter goal amount',
                         keyboardType: TextInputType.number,
                         prefixText: '\$',
                       ),
@@ -147,52 +147,68 @@ class CreateGoalView extends StackedView<CreateGoalViewModel> {
 
                       // Terms and Conditions
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Checkbox(
-                            value: viewModel.isTermsAccepted,
-                            onChanged: (value) =>
-                                viewModel.toggleTermsAcceptance(),
-                            activeColor: const Color(0xFF675DFF),
+                          Transform.scale(
+                            scale:
+                                0.8, // Adjust the scale to reduce size (0.5 = half size, 1.0 = default)
+                            child: Switch(
+                              value: viewModel.isTermsAccepted,
+                              onChanged: (value) =>
+                                  viewModel.toggleTermsAcceptance(),
+                              activeColor: const Color(
+                                  0xFF0000A5), // thumb color when active
+                              activeTrackColor: const Color(0xFF0000A5)
+                                  .withOpacity(0.5), // track color when active
+                              //inactiveThumbColor: Colors.grey, // thumb color when inactive
+                              //inactiveTrackColor: Colors.grey.shade400, // track color when inactive
+                            ),
                           ),
                           Expanded(
                             child: Text(
-                              'I agree to the terms and conditions',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
+                              'I hereby agree that I will forfeit the interest accrued on this Goal savings if I fail to meet the goal amount by the set withdrawal date.',
+                              style: GoogleFonts.inter(
+                                  color: Color(0xFF8A38F5),
+                                  fontSize: 14,
+                                  height: 1),
                             ),
                           ),
                         ],
                       ),
 
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 50),
 
                       // Create Goal Button
                       GestureDetector(
-                        onTap: viewModel.isBusy ? null : () => viewModel.createGoal(),
+                        onTap: viewModel.isBusy
+                            ? null
+                            : () => viewModel.createGoal(),
                         child: Container(
                           width: 358,
                           height: 50,
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
-                            color: viewModel.isBusy ? Colors.grey[300] : Colors.white,
+                            color: viewModel.isBusy
+                                ? Colors.grey[300]
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(46),
-                            boxShadow: viewModel.isBusy ? [] : const [
-                              BoxShadow(
-                                color: Color.fromRGBO(138, 56, 245, 0.1),
-                                offset: Offset(-4, 4),
-                                blurRadius: 20,
-                                inset:
-                                    true, // requires flutter_inset_box_shadow package
-                              ),
-                              BoxShadow(
-                                color: Color.fromRGBO(138, 56, 245, 0.1),
-                                offset: Offset(4, 4),
-                                blurRadius: 6,
-                                inset: true,
-                              ),
-                            ],
+                            boxShadow: viewModel.isBusy
+                                ? []
+                                : const [
+                                    BoxShadow(
+                                      color: Color.fromRGBO(138, 56, 245, 0.1),
+                                      offset: Offset(-4, 4),
+                                      blurRadius: 20,
+                                      inset:
+                                          true, // requires flutter_inset_box_shadow package
+                                    ),
+                                    BoxShadow(
+                                      color: Color.fromRGBO(138, 56, 245, 0.1),
+                                      offset: Offset(4, 4),
+                                      blurRadius: 6,
+                                      inset: true,
+                                    ),
+                                  ],
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -204,18 +220,23 @@ class CreateGoalView extends StackedView<CreateGoalViewModel> {
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8A38F5)),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Color(0xFF8A38F5)),
                                   ),
                                 ),
                                 const SizedBox(width: 12),
                               ],
                               Text(
-                                viewModel.isBusy ? "Creating..." : "+ Create Goal Save",
+                                viewModel.isBusy
+                                    ? "Creating..."
+                                    : "+ Create Goal Save",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 16,
                                   height: 19 / 16, // line-height / font-size
-                                  color: viewModel.isBusy ? Colors.grey[600] : const Color(0xFF8A38F5),
+                                  color: viewModel.isBusy
+                                      ? Colors.grey[600]
+                                      : const Color(0xFF8A38F5),
                                 ),
                               ),
                             ],
@@ -223,7 +244,7 @@ class CreateGoalView extends StackedView<CreateGoalViewModel> {
                         ),
                       ),
 
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 80),
                     ],
                   ),
                 ),
@@ -256,8 +277,8 @@ class CreateGoalView extends StackedView<CreateGoalViewModel> {
     bool readOnly = false,
   }) {
     return Container(
-      width: 370,
-      height: 55,
+      width: 380,
+      height: 60,
       padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.8), // Secondary color/White 80%
@@ -275,12 +296,12 @@ class CreateGoalView extends StackedView<CreateGoalViewModel> {
           ),
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: const TextStyle(
-              color: Color(0xFF9CA3AF), // optional placeholder color
+            hintStyle: GoogleFonts.inter(
+              color: Color(0xFF9CA3AF),
               fontSize: 16,
             ),
             prefixText: prefixText,
-            prefixStyle: const TextStyle(
+            prefixStyle: GoogleFonts.inter(
               color: Color(0xFF9CA3AF),
               fontSize: 16,
             ),
@@ -558,7 +579,7 @@ class CreateGoalView extends StackedView<CreateGoalViewModel> {
                   : 'Select preferred time',
               style: TextStyle(
                 color: viewModel.preferredTime != null
-                    ? Colors.white
+                    ? Colors.black
                     : const Color(0xFF9CA3AF),
                 fontSize: 16,
               ),

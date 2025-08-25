@@ -5,12 +5,14 @@ import 'package:mobile_app/services/wallet_service.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:mobile_app/app/app.router.dart';
 
 class PorketSaveViewModel extends BaseViewModel {
   final ContractService _contractService = locator<ContractService>();
   final WalletService _walletService = locator<WalletService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
-  
+  final NavigationService _navigationService = locator<NavigationService>();
+
   // Reference to dashboard viewmodel for balance updates
   DashboardViewModel? _dashboardViewModel;
 
@@ -90,12 +92,18 @@ class PorketSaveViewModel extends BaseViewModel {
     notifyListeners();
 
     try {
-      final userAddress =
-          _walletService.currentAccount?.accountAddress.toHexString();
-      if (userAddress != null) {
-        final balance = await _contractService.getFlexiBalance();
-        _balance = balance;
+      if (_walletService.currentAccount == null) {
+        print('❌ Wallet service not initialized');
+        return;
       }
+      if (_contractService == null) {
+        print('❌ Contract service not initialized');
+        return;
+      }
+      final userAddress =
+          _walletService.currentAccount!.accountAddress.toHexString();
+      final balance = await _contractService.getFlexiBalance();
+      _balance = balance;
     } catch (e) {
       print('Error loading balance: $e');
       _balance = 0.0;
@@ -119,6 +127,10 @@ class PorketSaveViewModel extends BaseViewModel {
 
   Future<void> loadTransactions() async {
     try {
+      if (_contractService == null) {
+        print('❌ Contract service not initialized');
+        return;
+      }
       final transactions = await _contractService.getTransactionHistory();
       _transactions = transactions;
       notifyListeners();
@@ -133,7 +145,7 @@ class PorketSaveViewModel extends BaseViewModel {
       _showErrorSnackbar('Please enter a valid amount');
       return;
     }
-    
+
     // Check if dashboard has sufficient balance
     if (_dashboardViewModel != null) {
       if (_dashboardViewModel!.dashboardBalance < amount) {
@@ -145,27 +157,23 @@ class PorketSaveViewModel extends BaseViewModel {
     setBusy(true);
     try {
       // Transfer from dashboard to flexi save
-      bool transferSuccess = false;
       if (_dashboardViewModel != null) {
-        transferSuccess = _dashboardViewModel!.transferToFlexiSave(amount);
+        _dashboardViewModel!.transferToFlexiSave(amount);
       }
-      
-      if (transferSuccess) {
-        // Simulate contract interaction
-        await Future.delayed(Duration(milliseconds: 1500));
-        await _contractService.flexiDeposit(amount: amount);
-        
-        await loadBalance();
-        await loadTransactions();
-        
-        _showSuccessSnackbar('💰 Quick save successful! \$${amount.toStringAsFixed(2)} added to Porket Save');
-      } else {
-        _showErrorSnackbar('Transfer failed. Please try again.');
-      }
+
+      // Simulate contract interaction
+      await Future.delayed(Duration(milliseconds: 1500));
+      await _contractService.flexiDeposit(amount: amount);
+
+      await loadBalance();
+      await loadTransactions();
+
+      _showSuccessSnackbar(
+          '💰 Quick save successful! \$${amount.toStringAsFixed(2)} added to Porket Save');
     } catch (e) {
       print('Quick save failed: $e');
       _showErrorSnackbar('Quick save failed: $e');
-      
+
       // Rollback the transfer on error
       if (_dashboardViewModel != null) {
         _dashboardViewModel!.transferFromFlexiSave(amount);
@@ -180,7 +188,7 @@ class PorketSaveViewModel extends BaseViewModel {
       _showErrorSnackbar('Please enter a valid amount');
       return;
     }
-    
+
     if (amount > _balance) {
       _showErrorSnackbar('Insufficient balance in Porket Save');
       return;
@@ -191,17 +199,18 @@ class PorketSaveViewModel extends BaseViewModel {
       // Simulate contract interaction
       await Future.delayed(Duration(milliseconds: 1500));
       final result = await _contractService.flexiWithdraw(amount: amount);
-      
+
       if (result.isNotEmpty) {
         // Transfer from flexi save back to dashboard
         if (_dashboardViewModel != null) {
           _dashboardViewModel!.transferFromFlexiSave(amount);
         }
-        
+
         await loadBalance();
         await loadTransactions();
-        
-        _showSuccessSnackbar('💸 Withdrawal successful! \$${amount.toStringAsFixed(2)} added to dashboard balance');
+
+        _showSuccessSnackbar(
+            '💸 Withdrawal successful! \$${amount.toStringAsFixed(2)} added to dashboard balance');
       }
     } catch (e) {
       print('Withdrawal failed: $e');
@@ -263,4 +272,12 @@ class PorketSaveViewModel extends BaseViewModel {
     );
   }
 
+  // Navigation methods for goal and group details
+  void navigateToGoalDetail(Map<String, dynamic> goal) {
+    _navigationService.navigateToGoalSaveDetailsView(goal: goal);
+  }
+
+  void navigateToGroupDetail(Map<String, dynamic> group) {
+    _navigationService.navigateToGroupSaveDetailsView(group: group);
+  }
 }

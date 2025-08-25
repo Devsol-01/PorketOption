@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stacked/stacked.dart';
 import 'create_lock_viewmodel.dart';
+import 'package:mobile_app/utils/format_utils.dart';
 
 class CreateLockView extends StackedView<CreateLockViewModel> {
   final Map<String, dynamic> selectedPeriod;
@@ -103,7 +105,7 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: const Color(0xFFFFA82F),
                 ),
               ),
               const SizedBox(height: 12),
@@ -116,7 +118,7 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                 ),
                 decoration: InputDecoration(
                   hintText: 'Enter amount',
-                  prefixText: '\$',
+                  //prefixText: '\$',
                   prefixStyle: GoogleFonts.inter(
                     fontSize: 16,
                     color: Colors.black,
@@ -124,14 +126,14 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                      color: Colors.black,
+                      color: const Color(0xFF9CA3AF),
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
                       color: Colors.black,
-                      width: 2,
+                      width: 1,
                     ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
@@ -139,7 +141,16 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                     vertical: 16,
                   ),
                 ),
-                onChanged: (value) => viewModel.updateAmount(value),
+                onChanged: (value) {
+                  // Format the input as the user types
+                  viewModel.amountController.value = TextEditingValue(
+                    text: FormatUtils.formatCurrency(double.tryParse(
+                            value.replaceAll('\$', '').replaceAll(',', '')) ??
+                        0),
+                    selection: TextSelection.collapsed(offset: value.length),
+                  );
+                  viewModel.updateAmount(value);
+                },
               ),
 
               const SizedBox(height: 24),
@@ -150,7 +161,7 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: const Color(0xFFFFA82F),
                 ),
               ),
               const SizedBox(height: 12),
@@ -172,7 +183,7 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
                       color: Colors.black,
-                      width: 2,
+                      width: 1,
                     ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
@@ -190,7 +201,7 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: const Color(0xFFFFA82F),
                 ),
               ),
               const SizedBox(height: 12),
@@ -199,7 +210,7 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: Colors.black,
+                    color: Color(0xFF9CA3AF),
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -230,65 +241,78 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: const Color(0xFFFFA82F),
                 ),
               ),
               const SizedBox(height: 12),
 
               // Dynamic Date Options
+// Dynamic Date Options
               if (viewModel.amount > 0) ...[
                 Container(
-                  height: 200,
+                  height: 220,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Colors.black,
+                      color: const Color(0xFFE5E7EB),
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
-                  child: ListView.builder(
+                  child: ListView.separated(
                     itemCount: viewModel.generateDateOptions().length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     itemBuilder: (context, index) {
                       final dateOptions = viewModel.generateDateOptions();
-                      if (dateOptions.isEmpty) {
-                        return Container();
-                      }
                       final option = dateOptions[index];
                       final isSelected =
                           viewModel.selectedDays == option['days'];
 
                       return InkWell(
+                        borderRadius: BorderRadius.circular(12),
                         onTap: () => viewModel.selectDate(option['days']),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
-                            vertical: 12,
+                            vertical: 14,
                           ),
                           decoration: BoxDecoration(
-                            color:
-                                isSelected ? Colors.black : Colors.transparent,
-                            border: index <
-                                    viewModel.generateDateOptions().length - 1
-                                ? Border(
-                                    bottom: BorderSide(
-                                      color: Colors.black,
-                                      width: 0.5,
-                                    ),
-                                  )
-                                : null,
+                            color: isSelected
+                                ? Color(selectedPeriod['color'])
+                                    .withOpacity(0.1) // light tint
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? Color(selectedPeriod[
+                                      'color']) // highlight border
+                                  : const Color(0xFFE5E7EB),
+                              width: 1.2,
+                            ),
                           ),
                           child: Row(
                             children: [
+                              // Days badge
                               Container(
-                                width: 40,
-                                height: 24,
+                                width: 50,
+                                height: 28,
                                 decoration: BoxDecoration(
                                   color: Color(selectedPeriod['color'])
-                                      .withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(4),
+                                      .withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Center(
                                   child: Text(
-                                    '[${option['days']}]',
+                                    '${option['days']}d',
                                     style: GoogleFonts.inter(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
@@ -297,31 +321,39 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+
+                              const SizedBox(width: 14),
+
+                              // Date
                               Expanded(
                                 child: Text(
                                   option['date'],
                                   style: GoogleFonts.inter(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: Colors.black,
+                                    color: isSelected
+                                        ? Color(selectedPeriod['color'])
+                                        : Colors.black87,
                                   ),
                                 ),
                               ),
+
+                              // Interest Rate
                               Text(
                                 '${option['interestRate'].toStringAsFixed(2)}%',
                                 style: GoogleFonts.inter(
                                   fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w700,
                                   color: Color(selectedPeriod['color']),
                                 ),
                               ),
+
                               if (isSelected) ...[
                                 const SizedBox(width: 8),
                                 Icon(
                                   Icons.check_circle,
                                   size: 20,
-                                  color: Colors.black,
+                                  color: Color(selectedPeriod['color']),
                                 ),
                               ],
                             ],
@@ -333,68 +365,91 @@ class CreateLockView extends StackedView<CreateLockViewModel> {
                 ),
               ] else ...[
                 Container(
-                  height: 100,
+                  height: 70,
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Colors.black,
+                      color: const Color(0xFFE5E7EB),
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white,
                   ),
                   child: Center(
                     child: Text(
                       'Enter amount to see payback date options',
+                      textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
                         fontSize: 14,
-                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black54,
                       ),
                     ),
                   ),
                 ),
               ],
-
               const SizedBox(height: 32),
 
               // Preview Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: viewModel.isBusy ? null : () => viewModel.createLockSave(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: viewModel.isBusy ? Colors.grey[400] : Colors.black,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
+              GestureDetector(
+                onTap:
+                    viewModel.isBusy ? null : () => viewModel.createLockSave(),
+                child: Container(
+                  width: 358,
+                  height: 45,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white, // Light mode background
+                    borderRadius: BorderRadius.circular(46),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFFA82F).withOpacity(0.1),
+                        offset: const Offset(-4, 4),
+                        blurRadius: 20,
+                        spreadRadius: 0,
+                        inset:
+                            true, // 👈 requires flutter_inset_box_shadow package
+                      ),
+                      BoxShadow(
+                        color: const Color(0xFFFFA82F).withOpacity(0.1),
+                        offset: const Offset(4, 4),
+                        blurRadius: 6,
+                        spreadRadius: 0,
+                        inset: true, // 👈
+                      ),
+                    ],
                   ),
                   child: viewModel.isBusy
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ? Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Creating...',
-                              style: GoogleFonts.inter(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                              const SizedBox(width: 12),
+                              Text(
+                                'Creating...',
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         )
-                      : Text(
-                          'Create SafeLock',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                      : Center(
+                          child: Text(
+                            'Create SafeLock',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFFFA82F),
+                            ),
                           ),
                         ),
                 ),

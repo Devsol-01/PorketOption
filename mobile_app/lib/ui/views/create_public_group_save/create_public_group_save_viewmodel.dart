@@ -11,7 +11,7 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final ContractService _contractService = locator<ContractService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
-  
+
   DashboardViewModel? _dashboardViewModel;
 
   // Controllers
@@ -262,16 +262,17 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
 
     final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
     final contributionAmount = calculatedContributionAmount;
-    
+
     if (targetAmount <= 0) {
       _showErrorSnackbar('Please enter a valid target amount');
       return;
     }
-    
+
     // Check if dashboard has sufficient balance for initial contribution
     if (_dashboardViewModel != null) {
       if (_dashboardViewModel!.dashboardBalance < contributionAmount) {
-        _showErrorSnackbar('Insufficient balance in dashboard for initial contribution');
+        _showErrorSnackbar(
+            'Insufficient balance in dashboard for initial contribution');
         return;
       }
     }
@@ -279,17 +280,18 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
     setBusy(true);
     try {
       print('👥 Creating public group with contract...');
-      
+
       // Transfer initial contribution from dashboard to group save
       bool transferSuccess = false;
       if (_dashboardViewModel != null) {
-        transferSuccess = _dashboardViewModel!.transferToGroupSave(contributionAmount);
+        transferSuccess =
+            _dashboardViewModel!.transferToGroupSave(contributionAmount);
       }
-      
+
       if (transferSuccess) {
         // Simulate contract interaction delay
         await Future.delayed(Duration(milliseconds: 1500));
-        
+
         final groupId = await _contractService.createGroupSave(
           title: purposeController.text,
           description: descriptionController.text,
@@ -303,7 +305,8 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
 
         if (groupId.isNotEmpty) {
           print('👥 Public group created successfully with ID: $groupId');
-          _showSuccessSnackbar('👥 Group Save created successfully! \$${contributionAmount.toStringAsFixed(2)} transferred as initial contribution');
+          _showSuccessSnackbar(
+              '👥 Group Save created successfully! \$${contributionAmount.toStringAsFixed(2)} transferred as initial contribution');
           _navigationService.back();
         } else {
           _showErrorSnackbar('Failed to create group save');
@@ -318,7 +321,7 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
     } catch (e) {
       print('❌ Error creating public group: $e');
       _showErrorSnackbar('Error creating group: $e');
-      
+
       // Rollback the transfer on error
       if (_dashboardViewModel != null) {
         _dashboardViewModel!.transferFromGroupSave(contributionAmount);
@@ -350,7 +353,6 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
     contributionController.dispose();
     super.dispose();
   }
-
 
   // Initialize listeners when the view is ready
   void initializeListeners() {

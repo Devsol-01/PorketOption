@@ -7,6 +7,7 @@ import 'package:mobile_app/ui/widgets/deposit_sheet.dart';
 import 'package:mobile_app/ui/widgets/withdraw_sheet.dart';
 import 'package:stacked/stacked.dart';
 import 'package:mobile_app/app/app.locator.dart';
+import 'package:mobile_app/utils/format_utils.dart';
 
 class PorketSaveView extends StackedView<PorketSaveViewModel> {
   const PorketSaveView({Key? key}) : super(key: key);
@@ -86,7 +87,9 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
                   Row(
                     children: [
                       Text(
-                        viewModel.isBalanceVisible ? viewModel.balance : '****',
+                        viewModel.isBalanceVisible
+                            ? FormatUtils.formatCurrency(viewModel.rawBalance)
+                            : '****',
                         style: GoogleFonts.poppins(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -120,49 +123,52 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
             // Action Buttons
             _buildAction(context, viewModel),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 50),
 
-            const SizedBox(height: 40),
+
 
             // Flexible Savings Section
-            Column(
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFCADAFC),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Icon(
-                    Icons.savings_outlined,
-                    color: Colors.black,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No ongoing Porket savings',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w500, // 500 = medium
-                    fontSize: 15,
-                    height: 17 / 14, // line-height ÷ font-size
-                    color: const Color(0xFF0D0D0D), // #0D0D0D
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Create your first Porket savings to get started',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
+            //Column(
+            //   children: [
+            //     Container(
+            //       width: 80,
+            //       height: 80,
+            //       decoration: BoxDecoration(
+            //         color: Color(0xFFCADAFC),
+            //         borderRadius: BorderRadius.circular(16),
+            //       ),
+            //       child: Icon(
+            //         Icons.savings_outlined,
+            //         color: Colors.black,
+            //         size: 24,
+            //       ),
+            //     ),
+            //     const SizedBox(height: 16),
+            //     Text(
+            //       'No ongoing Porket savings',
+            //       style: GoogleFonts.inter(
+            //         fontWeight: FontWeight.w500, // 500 = medium
+            //         fontSize: 15,
+            //         height: 17 / 14, // line-height ÷ font-size
+            //         color: const Color(0xFF0D0D0D), // #0D0D0D
+            //       ),
+            //     ),
+            //     const SizedBox(height: 8),
+            //     Text(
+            //       'Create your first Porket savings to get started',
+            //       style: TextStyle(
+            //         fontSize: 13,
+            //         color: Colors.grey[600],
+            //       ),
+            //       textAlign: TextAlign.center,
+            //     ),
+            //   ],
+            // ),
 
-            const SizedBox(height: 20),
+           // const SizedBox(height: 10),
+
+            // Transaction History Section
+            _buildTransactionHistory(viewModel),
           ],
         ),
       ),
@@ -177,7 +183,7 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Color(0xFF004CE8).withOpacity(0.3),
+          color: const Color.fromARGB(77, 58, 58, 59),
         ),
       ),
       child: Column(
@@ -186,18 +192,19 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
           const Text(
             'AutoSave is enable',
             style: TextStyle(
-              color: Color(0xFF0000A5),
+              color: Colors.black,
               height: 17 / 14,
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 5),
           Text(
             'Your next auto save is schedule to be on 3rd October 2025, by 8:00 am',
             style: TextStyle(
-              color: Color(0xFF0000A5),
               fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
             ),
           ),
           const SizedBox(height: 12),
@@ -205,11 +212,11 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Auto Save amount :\$${viewModel.autoSaveAmount} daily',
+                'Auto Save amount :${FormatUtils.formatCurrency(double.tryParse(viewModel.autoSaveAmount) ?? 0.0)} daily',
                 style: const TextStyle(
-                  color: Color(0xFF0000A5),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               Transform.scale(
@@ -217,7 +224,7 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
                     0.8, // Adjust the scale to reduce size (0.5 = half size, 1.0 = default)
                 child: Switch(
                   value: viewModel.isAutoSaveEnabled,
-                  onChanged: viewModel.toggleAutoSave,
+                  onChanged: (value) => viewModel.toggleAutoSave(value),
                   activeColor:
                       const Color(0xFF0000A5), // thumb color when active
                   activeTrackColor: const Color(0xFF0000A5)
@@ -309,14 +316,16 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
   void _showDepositSheet(BuildContext context, PorketSaveViewModel viewModel) {
     // Get dashboard viewmodel for balance checking
     final dashboardViewModel = locator<DashboardViewModel>();
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => DepositSheet(
-        onDeposit: (amount, fundSource) => viewModel.quickSave(amount, fundSource),
-        currentBalance: dashboardViewModel.dashboardBalance, // Use dashboard balance
+        onDeposit: (amount, fundSource) =>
+            viewModel.quickSave(amount, fundSource),
+        currentBalance:
+            dashboardViewModel.dashboardBalance, // Use dashboard balance
         isLoading: viewModel.isBusy,
       ),
     );
@@ -328,7 +337,7 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => WithdrawSheet(
-        onWithdraw: viewModel.withdraw,
+        onWithdraw: (amount) => viewModel.withdraw(amount),
         currentBalance: viewModel.rawBalance,
         isLoading: viewModel.isBusy,
       ),
@@ -343,5 +352,114 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
     final viewModel = PorketSaveViewModel();
     viewModel.initialize(dashboardViewModel);
     return viewModel;
+  }
+
+  Widget _buildTransactionHistory(PorketSaveViewModel viewModel) {
+    if (viewModel.transactions.isEmpty) {
+      return SizedBox.shrink(); // Don't show anything if no transactions
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Recent Transactions',
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 16),
+        ListView.separated(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: viewModel.transactions.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final transaction = viewModel.transactions[index];
+            return _buildTransactionCard(transaction);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTransactionCard(Map<String, dynamic> transaction) {
+    final type = transaction['type'] as String? ?? 'deposit';
+    final amount = (transaction['amount'] as double? ?? 0.0);
+    final date = transaction['date'] as String? ?? '';
+    final status = transaction['status'] as String? ?? 'completed';
+
+    final isDeposit = type.toLowerCase().contains('deposit') ||
+        type.toLowerCase().contains('save');
+    final icon = isDeposit ? Icons.arrow_downward : Icons.arrow_upward;
+    final color = isDeposit ? Colors.green : Colors.red;
+    final prefix = isDeposit ? '+' : '-';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  type.replaceAll('_', ' ').toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  date,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '$prefix\$${amount.toStringAsFixed(2)}',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

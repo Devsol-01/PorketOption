@@ -46,6 +46,9 @@ import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dar
 import 'package:mobile_app/ui/views/goal_save_details/goal_save_details_view.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 import 'package:mobile_app/ui/views/goal_save/goal_save_viewmodel.dart';
+import 'package:mobile_app/ui/views/badges/badges_view.dart';
+import 'package:mobile_app/ui/views/login/login_view.dart';
+import 'package:mobile_app/ui/views/login/login_view.dart';
 // @stacked-import
 
 @StackedApp(
@@ -71,6 +74,8 @@ import 'package:mobile_app/ui/views/goal_save/goal_save_viewmodel.dart';
     MaterialRoute(page: CreatePrivateGroupSaveView),
     MaterialRoute(page: GroupSaveDetailsView),
     MaterialRoute(page: GoalSaveDetailsView),
+    MaterialRoute(page: BadgesView),
+    MaterialRoute(page: LoginView),
 // @stacked-route
   ],
   dependencies: [
@@ -87,7 +92,7 @@ import 'package:mobile_app/ui/views/goal_save/goal_save_viewmodel.dart';
     LazySingleton(classType: ContractService),
     LazySingleton(classType: DashboardViewModel),
     LazySingleton(classType: GoalSaveViewModel),
-// @stacked-service
+    // @stacked-service
   ],
   bottomsheets: [
     StackedBottomsheet(classType: CryptoDepositSheet),
@@ -104,7 +109,7 @@ import 'package:mobile_app/ui/views/goal_save/goal_save_viewmodel.dart';
     StackedBottomsheet(classType: CardDepositSheet),
     StackedBottomsheet(classType: BankTransferSheet),
     StackedBottomsheet(classType: VirtualAccountSheet),
-// @stacked-bottom-sheet
+    // @stacked-bottom-sheet
   ],
   dialogs: [
     StackedDialog(classType: InfoAlertDialog),

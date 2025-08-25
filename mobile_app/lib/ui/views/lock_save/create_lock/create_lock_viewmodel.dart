@@ -194,8 +194,10 @@ class CreateLockViewModel extends BaseViewModel {
 
       print('✅ Lock created successfully with hash: $txHash');
 
-      // Navigate back to trigger refresh
-      _navigationService.back();
+      // Refresh dashboard after creation
+      await _dashboardViewModel.refreshDashboard();
+      _navigationService.back(
+          result: true); // Pass result to indicate refresh needed
     } catch (e) {
       print('❌ Error creating lock: $e');
       // Rollback on error

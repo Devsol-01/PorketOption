@@ -25,21 +25,22 @@ class CardDepositSheetModel extends BaseViewModel {
     }
 
     setBusy(true);
-    
+
     try {
       // Simulate payment processing
       await Future.delayed(const Duration(seconds: 2));
-      
+
       // TODO: Integrate with actual payment processor (Paystack, Flutterwave, etc.)
-      
+
       completer(SheetResponse(
         confirmed: true,
         data: {
           'method': 'card',
           'amount': amountController.text,
-          'card_last_four': cardNumberController.text.replaceAll(' ', '').substring(
-            cardNumberController.text.replaceAll(' ', '').length - 4
-          ),
+          'card_last_four': cardNumberController.text
+              .replaceAll(' ', '')
+              .substring(
+                  cardNumberController.text.replaceAll(' ', '').length - 4),
         },
       ));
     } catch (e) {
@@ -55,27 +56,27 @@ class CardDepositSheetModel extends BaseViewModel {
       // TODO: Show error message
       return false;
     }
-    
+
     if (cardNumberController.text.isEmpty) {
       // TODO: Show error message
       return false;
     }
-    
+
     if (expiryController.text.isEmpty) {
       // TODO: Show error message
       return false;
     }
-    
+
     if (cvvController.text.isEmpty) {
       // TODO: Show error message
       return false;
     }
-    
+
     if (cardholderController.text.isEmpty) {
       // TODO: Show error message
       return false;
     }
-    
+
     return true;
   }
 }

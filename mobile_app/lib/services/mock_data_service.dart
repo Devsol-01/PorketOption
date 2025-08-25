@@ -18,6 +18,21 @@ class MockDataService {
   factory MockDataService() => _instance;
   MockDataService._internal();
 
+  // Callback for balance updates
+  Function()? _onBalanceUpdateCallback;
+
+  /// Set callback to be notified when balances are updated
+  void setBalanceUpdateCallback(Function() callback) {
+    _onBalanceUpdateCallback = callback;
+  }
+
+  /// Notify listeners that balances have been updated
+  void _notifyBalanceUpdate() {
+    if (_onBalanceUpdateCallback != null) {
+      _onBalanceUpdateCallback!();
+    }
+  }
+
   // In-memory cache
   Map<String, dynamic>? _balances;
   List<Map<String, dynamic>>? _transactions;
@@ -232,6 +247,7 @@ class MockDataService {
     _balances!['usdc'] = isDebit ? currentUsdc + amount : currentUsdc - amount;
 
     await _saveAllData();
+    _notifyBalanceUpdate(); // Notify that balances have been updated
   }
 
   // Transaction operations

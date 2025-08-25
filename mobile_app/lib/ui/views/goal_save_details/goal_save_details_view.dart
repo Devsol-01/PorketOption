@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stacked/stacked.dart';
+import 'package:mobile_app/utils/format_utils.dart';
 
 import 'goal_save_details_viewmodel.dart';
 
@@ -80,7 +81,7 @@ class GoalSaveDetailsView extends StackedView<GoalSaveDetailsViewModel> {
     Color cardColor;
 
     switch (category.toLowerCase()) {
-      case 'vacation':
+      
       case 'education':
         categoryIcon = Icons.school;
         cardColor = const Color(0xFF00C851);
@@ -109,6 +110,9 @@ class GoalSaveDetailsView extends StackedView<GoalSaveDetailsViewModel> {
         categoryIcon = Icons.event;
         cardColor = const Color(0xFFB39DDB);
         break;
+        case 'vacation':
+        categoryIcon = Icons.flight;
+        cardColor = const Color(0xFF4A90E2);
       default:
         categoryIcon = Icons.flag;
         cardColor = const Color(0xFF4A4A4A);
@@ -135,12 +139,12 @@ class GoalSaveDetailsView extends StackedView<GoalSaveDetailsViewModel> {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.12),
+              color: Colors.purple.withOpacity(0.12),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
               categoryIcon,
-              color: Colors.white,
+              color: Colors.purple,
               size: 26,
             ),
           ),
@@ -169,14 +173,14 @@ class GoalSaveDetailsView extends StackedView<GoalSaveDetailsViewModel> {
                   children: [
                     _buildHeaderStat(
                       label: "Saved",
-                      value: currentAmount.toStringAsFixed(0),
+                      value: FormatUtils.formatCurrency(currentAmount),
                     ),
-                    const SizedBox(width: 35),
+                    const SizedBox(width: 25),
                     _buildHeaderStat(
                       label: "Target",
-                      value: "\$${targetAmount.toStringAsFixed(0)}",
+                      value: FormatUtils.formatCurrency(targetAmount),
                     ),
-                    const SizedBox(width: 35),
+                    const SizedBox(width: 25),
                     _buildHeaderStat(
                       label: "Days Left",
                       value: "$daysLeft",
@@ -320,7 +324,7 @@ class GoalSaveDetailsView extends StackedView<GoalSaveDetailsViewModel> {
             Expanded(
               child: _buildDetailCard(
                 'Frequency',
-                '\$${contributionAmount.toStringAsFixed(0)} ${frequency?.toLowerCase() ?? 'manually'}',
+                '${FormatUtils.formatCurrency(contributionAmount)} ${frequency?.toLowerCase() ?? 'manually'}',
                 Icons.repeat,
               ),
             ),

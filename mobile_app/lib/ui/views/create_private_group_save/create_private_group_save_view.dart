@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:stacked/stacked.dart';
+import 'package:mobile_app/utils/format_utils.dart';
 
 import 'create_private_group_save_viewmodel.dart';
 
@@ -97,6 +99,22 @@ class CreatePrivateGroupSaveView
                         hintText: 'Enter target amount',
                         keyboardType: TextInputType.number,
                         prefixText: '\$',
+                        onChanged: (value) {
+                          final formattedValue = FormatUtils.formatCurrency(
+                            double.tryParse(value
+                                    .replaceAll('\$', '')
+                                    .replaceAll(',', '')) ??
+                                0,
+                          );
+                          if (value != formattedValue) {
+                            viewModel.targetAmountController.value =
+                                TextEditingValue(
+                              text: formattedValue,
+                              selection: TextSelection.collapsed(
+                                  offset: formattedValue.length),
+                            );
+                          }
+                        },
                       ),
 
                       const SizedBox(height: 24),
@@ -151,6 +169,22 @@ class CreatePrivateGroupSaveView
                         keyboardType: TextInputType.number,
                         prefixText: '\$',
                         readOnly: true,
+                        onChanged: (value) {
+                          final formattedValue = FormatUtils.formatCurrency(
+                            double.tryParse(value
+                                    .replaceAll('\$', '')
+                                    .replaceAll(',', '')) ??
+                                0,
+                          );
+                          if (value != formattedValue) {
+                            viewModel.contributionController.value =
+                                TextEditingValue(
+                              text: formattedValue,
+                              selection: TextSelection.collapsed(
+                                  offset: formattedValue.length),
+                            );
+                          }
+                        },
                       ),
 
                       const SizedBox(height: 32),
@@ -163,21 +197,34 @@ class CreatePrivateGroupSaveView
                       SizedBox(height: 32),
 
                       // Terms and Conditions
+
+
+
+                                            // Terms and Conditions
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Checkbox(
-                            value: viewModel.isTermsAccepted,
-                            onChanged: (value) =>
-                                viewModel.toggleTermsAcceptance(),
-                            activeColor: const Color(0xFF675DFF),
+                          Transform.scale(
+                            scale:
+                                0.8, // Adjust the scale to reduce size (0.5 = half size, 1.0 = default)
+                            child: Switch(
+                              value: viewModel.isTermsAccepted,
+                              onChanged: (value) =>
+                                  viewModel.toggleTermsAcceptance(),
+                              activeColor: Colors.green, // thumb color when active
+                              activeTrackColor: Colors.green
+                                  .withOpacity(0.5), // track color when active
+                              //inactiveThumbColor: Colors.grey, // thumb color when inactive
+                              //inactiveTrackColor: Colors.grey.shade400, // track color when inactive
+                            ),
                           ),
                           Expanded(
                             child: Text(
-                              'I agree to the terms and conditions',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                              ),
+                              'I hereby agree that I will forfeit the interest accrued on this Goal savings if I fail to meet the goal amount by the set withdrawal date.',
+                              style: GoogleFonts.inter(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  height: 1),
                             ),
                           ),
                         ],
@@ -186,72 +233,71 @@ class CreatePrivateGroupSaveView
                       const SizedBox(height: 20),
 
                       // Create Goal Button
-                      Container(
-                        width: double.infinity,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          gradient: const LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              Color(0xFF675DFF),
-                              Color(0xFF4F46E5),
-                            ],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF675DFF)
-                                  .withValues(alpha: 0.25),
-                              blurRadius: 16,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          onPressed: viewModel.isBusy ? null : (viewModel.canCreateGoal
-                              ? viewModel.createGoal
-                              : null),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(28),
-                            ),
-                          ),
-                          child: viewModel.isBusy
-                              ? Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    const Text(
-                                      'Creating...',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : const Text(
-                                  'Create Goal Save',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                        ),
-                      ),
+InkWell(
+  onTap: viewModel.isBusy
+      ? null
+      : (viewModel.canCreateGoal ? viewModel.createGoal : null),
+  borderRadius: BorderRadius.circular(46),
+  child: Container(
+    width: 358,
+    height: 50, // use same as Figma input/button height
+    decoration: BoxDecoration(
+      color: Colors.white, // background for light mode
+      borderRadius: BorderRadius.circular(46),
+      boxShadow: [
+        const BoxShadow(
+          color: Color.fromRGBO(13, 213, 13, 0.1),
+          offset: Offset(-4, 4),
+          blurRadius: 20,
+          spreadRadius: 0,
+          inset: true
+        ),
+        const BoxShadow(
+          color: Color.fromRGBO(13, 213, 13, 0.1),
+          offset: Offset(4, 4),
+          blurRadius: 6,
+          spreadRadius: 0,
+          inset: true
+        ),
+      ],
+    ),
+    child: Center(
+      child: viewModel.isBusy
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Creating...',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            )
+          : const Text(
+              'Create Goal Save',
+              style: TextStyle(
+                color: Colors.green,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+    ),
+  ),
+),
+
 
                       const SizedBox(height: 32),
                     ],
@@ -270,7 +316,7 @@ Widget _buildSectionTitle(String title) {
   return Text(
     title,
     style: const TextStyle(
-      color: Colors.black,
+      color: Colors.green,
       fontSize: 16,
       fontWeight: FontWeight.w600,
     ),
@@ -283,6 +329,7 @@ Widget _buildTextField({
   TextInputType? keyboardType,
   String? prefixText,
   bool readOnly = false,
+  Function(String)? onChanged,
 }) {
   return Container(
     decoration: BoxDecoration(
@@ -298,9 +345,10 @@ Widget _buildTextField({
       keyboardType: keyboardType,
       readOnly: readOnly,
       style: const TextStyle(
-        color: Colors.white,
+        color: Colors.black,
         fontSize: 16,
       ),
+      onChanged: onChanged,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: const TextStyle(
@@ -585,7 +633,7 @@ Widget _buildTimeSelector(
                 : 'Select preferred time',
             style: TextStyle(
               color: viewModel.preferredTime != null
-                  ? Colors.white
+                  ? Colors.black
                   : const Color(0xFF9CA3AF),
               fontSize: 16,
             ),

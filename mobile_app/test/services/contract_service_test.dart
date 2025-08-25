@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../../lib/services/contract_service.dart';
-import '../../lib/services/wallet_service.dart';
+import 'package:mobile_app/services/contract_service.dart';
+import 'package:mobile_app/services/wallet_service.dart';
 
 void main() {
   group('ContractService Mock Mode Tests', () {

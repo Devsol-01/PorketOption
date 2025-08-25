@@ -272,8 +272,6 @@ class GroupSaveViewModel extends BaseViewModel {
   }
 
   void navigateToGroupDetail(Map<String, dynamic> group) {
-    _navigationService.navigateToView(
-      GroupSaveDetailsView(group: group),
-    );
+    _navigationService.navigateToGroupSaveDetailsView(group: group);
   }
 }

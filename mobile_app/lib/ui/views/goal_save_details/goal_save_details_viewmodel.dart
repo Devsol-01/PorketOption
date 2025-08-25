@@ -11,7 +11,6 @@ class GoalSaveDetailsViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final ContractService _contractService = locator<ContractService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
-  
 
   void navigateBack() {
     _navigationService.back();
@@ -19,7 +18,7 @@ class GoalSaveDetailsViewModel extends BaseViewModel {
 
   void showTopUpDialog(BuildContext context, Map<String, dynamic> goal) {
     final dashboardViewModel = locator<DashboardViewModel>();
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -32,14 +31,15 @@ class GoalSaveDetailsViewModel extends BaseViewModel {
     );
   }
 
-  Future<void> topUpGoal(Map<String, dynamic> goal, double amount, String fundSource) async {
+  Future<void> topUpGoal(
+      Map<String, dynamic> goal, double amount, String fundSource) async {
     if (amount <= 0) {
       _showErrorSnackbar('Please enter a valid amount');
       return;
     }
 
     final dashboardViewModel = locator<DashboardViewModel>();
-    
+
     // Check if dashboard has sufficient balance
     if (dashboardViewModel.dashboardBalance < amount) {
       _showErrorSnackbar('Insufficient balance in dashboard');
@@ -50,28 +50,30 @@ class GoalSaveDetailsViewModel extends BaseViewModel {
     try {
       // Transfer from dashboard to goal save
       bool transferSuccess = dashboardViewModel.transferToGoalSave(amount);
-      
+
       if (transferSuccess) {
         // Update goal with new contribution (mock implementation)
         await _contractService.contributeGoalSave(
           goalId: goal['id'].toString(),
           amount: amount,
         );
-        
+
         // Update the goal data locally to reflect changes immediately
         goal['currentAmount'] = (goal['currentAmount'] as double) + amount;
-        goal['progress'] = (goal['currentAmount'] as double) / (goal['targetAmount'] as double);
-        
-        _showSuccessSnackbar('Goal topped up successfully! \$${amount.toStringAsFixed(2)} added');
-        
+        goal['progress'] = (goal['currentAmount'] as double) /
+            (goal['targetAmount'] as double);
+
+        _showSuccessSnackbar(
+            'Goal topped up successfully! \$${amount.toStringAsFixed(2)} added');
+
         // Refresh all related ViewModels to update UI
         final goalSaveViewModel = locator<GoalSaveViewModel>();
         await goalSaveViewModel.initialize();
-        
+
         // Refresh dashboard to update all balances
         await dashboardViewModel.loadSavingsBalance();
         await dashboardViewModel.refreshDashboard();
-        
+
         // Refresh the goal data
         notifyListeners();
       } else {

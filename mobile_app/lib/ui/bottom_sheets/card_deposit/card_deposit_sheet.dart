@@ -8,7 +8,7 @@ import 'card_deposit_sheet_model.dart';
 class CardDepositSheet extends StackedView<CardDepositSheetModel> {
   final Function(SheetResponse response)? completer;
   final SheetRequest request;
-  
+
   const CardDepositSheet({
     Key? key,
     required this.completer,
@@ -301,8 +301,8 @@ class CardDepositSheet extends StackedView<CardDepositSheetModel> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: viewModel.isBusy 
-                          ? null 
+                      onPressed: viewModel.isBusy
+                          ? null
                           : () => viewModel.processCardDeposit(completer!),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF4A90E2),
@@ -319,7 +319,8 @@ class CardDepositSheet extends StackedView<CardDepositSheetModel> {
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
                           : Text(

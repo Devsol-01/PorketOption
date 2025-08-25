@@ -5,9 +5,10 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:flutter/material.dart' as _i23;
+import 'package:flutter/material.dart' as _i25;
 import 'package:flutter/material.dart';
 import 'package:mobile_app/ui/views/auth/auth_view.dart' as _i14;
+import 'package:mobile_app/ui/views/badges/badges_view.dart' as _i23;
 import 'package:mobile_app/ui/views/bottom_nav/bottom_nav_view.dart' as _i3;
 import 'package:mobile_app/ui/views/create_private_group_save/create_private_group_save_view.dart'
     as _i20;
@@ -27,6 +28,7 @@ import 'package:mobile_app/ui/views/investment/investment_view.dart' as _i8;
 import 'package:mobile_app/ui/views/lock_save/create_lock/create_lock_view.dart'
     as _i18;
 import 'package:mobile_app/ui/views/lock_save/lock_save_view.dart' as _i9;
+import 'package:mobile_app/ui/views/login/login_view.dart' as _i24;
 import 'package:mobile_app/ui/views/onboarding/onboarding_view.dart' as _i10;
 import 'package:mobile_app/ui/views/porket_save/porket_save_view.dart' as _i16;
 import 'package:mobile_app/ui/views/profile/profile_view.dart' as _i11;
@@ -36,7 +38,7 @@ import 'package:mobile_app/ui/views/startup/startup_view.dart' as _i2;
 import 'package:mobile_app/ui/views/verification/verification_view.dart'
     as _i13;
 import 'package:stacked/stacked.dart' as _i1;
-import 'package:stacked_services/stacked_services.dart' as _i24;
+import 'package:stacked_services/stacked_services.dart' as _i26;
 
 class Routes {
   static const startupView = '/startup-view';
@@ -81,6 +83,10 @@ class Routes {
 
   static const goalSaveDetailsView = '/goal-save-details-view';
 
+  static const badgesView = '/badges-view';
+
+  static const loginView = '/login-view';
+
   static const all = <String>{
     startupView,
     bottomNavView,
@@ -103,6 +109,8 @@ class Routes {
     createPrivateGroupSaveView,
     groupSaveDetailsView,
     goalSaveDetailsView,
+    badgesView,
+    loginView,
   };
 }
 
@@ -192,128 +200,136 @@ class StackedRouter extends _i1.RouterBase {
       Routes.goalSaveDetailsView,
       page: _i22.GoalSaveDetailsView,
     ),
+    _i1.RouteDef(
+      Routes.badgesView,
+      page: _i23.BadgesView,
+    ),
+    _i1.RouteDef(
+      Routes.loginView,
+      page: _i24.LoginView,
+    ),
   ];
 
   final _pagesMap = <Type, _i1.StackedRouteFactory>{
     _i2.StartupView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i2.StartupView(),
         settings: data,
       );
     },
     _i3.BottomNavView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i3.BottomNavView(),
         settings: data,
       );
     },
     _i4.DashboardView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i4.DashboardView(),
         settings: data,
       );
     },
     _i5.EmailView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i5.EmailView(),
         settings: data,
       );
     },
     _i6.GoalSaveView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i6.GoalSaveView(),
         settings: data,
       );
     },
     _i7.GroupSaveView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i7.GroupSaveView(),
         settings: data,
       );
     },
     _i8.InvestmentView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i8.InvestmentView(),
         settings: data,
       );
     },
     _i9.LockSaveView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i9.LockSaveView(),
         settings: data,
       );
     },
     _i10.OnboardingView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i10.OnboardingView(),
         settings: data,
       );
     },
     _i11.ProfileView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i11.ProfileView(),
         settings: data,
       );
     },
     _i12.SavingView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i12.SavingView(),
         settings: data,
       );
     },
     _i13.VerificationView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i13.VerificationView(),
         settings: data,
       );
     },
     _i14.AuthView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i14.AuthView(),
         settings: data,
       );
     },
     _i15.RegisterView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i15.RegisterView(),
         settings: data,
       );
     },
     _i16.PorketSaveView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i16.PorketSaveView(),
         settings: data,
       );
     },
     _i17.CreateGoalView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i17.CreateGoalView(),
         settings: data,
       );
     },
     _i18.CreateLockView: (data) {
       final args = data.getArgs<CreateLockViewArguments>(nullOk: false);
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => _i18.CreateLockView(
             key: args.key, selectedPeriod: args.selectedPeriod),
         settings: data,
       );
     },
     _i19.CreatePublicGroupSaveView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i19.CreatePublicGroupSaveView(),
         settings: data,
       );
     },
     _i20.CreatePrivateGroupSaveView: (data) {
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) => const _i20.CreatePrivateGroupSaveView(),
         settings: data,
       );
     },
     _i21.GroupSaveDetailsView: (data) {
       final args = data.getArgs<GroupSaveDetailsViewArguments>(nullOk: false);
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) =>
             _i21.GroupSaveDetailsView(key: args.key, group: args.group),
         settings: data,
@@ -321,9 +337,21 @@ class StackedRouter extends _i1.RouterBase {
     },
     _i22.GoalSaveDetailsView: (data) {
       final args = data.getArgs<GoalSaveDetailsViewArguments>(nullOk: false);
-      return _i23.MaterialPageRoute<dynamic>(
+      return _i25.MaterialPageRoute<dynamic>(
         builder: (context) =>
             _i22.GoalSaveDetailsView(key: args.key, goal: args.goal),
+        settings: data,
+      );
+    },
+    _i23.BadgesView: (data) {
+      return _i25.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i23.BadgesView(),
+        settings: data,
+      );
+    },
+    _i24.LoginView: (data) {
+      return _i25.MaterialPageRoute<dynamic>(
+        builder: (context) => const _i24.LoginView(),
         settings: data,
       );
     },
@@ -342,7 +370,7 @@ class CreateLockViewArguments {
     required this.selectedPeriod,
   });
 
-  final _i23.Key? key;
+  final _i25.Key? key;
 
   final Map<String, dynamic> selectedPeriod;
 
@@ -369,7 +397,7 @@ class GroupSaveDetailsViewArguments {
     required this.group,
   });
 
-  final _i23.Key? key;
+  final _i25.Key? key;
 
   final Map<String, dynamic> group;
 
@@ -396,7 +424,7 @@ class GoalSaveDetailsViewArguments {
     required this.goal,
   });
 
-  final _i23.Key? key;
+  final _i25.Key? key;
 
   final Map<String, dynamic> goal;
 
@@ -417,7 +445,7 @@ class GoalSaveDetailsViewArguments {
   }
 }
 
-extension NavigatorStateExtension on _i24.NavigationService {
+extension NavigatorStateExtension on _i26.NavigationService {
   Future<dynamic> navigateToStartupView([
     int? routerId,
     bool preventDuplicates = true,
@@ -643,7 +671,7 @@ extension NavigatorStateExtension on _i24.NavigationService {
   }
 
   Future<dynamic> navigateToCreateLockView({
-    _i23.Key? key,
+    _i25.Key? key,
     required Map<String, dynamic> selectedPeriod,
     int? routerId,
     bool preventDuplicates = true,
@@ -689,7 +717,7 @@ extension NavigatorStateExtension on _i24.NavigationService {
   }
 
   Future<dynamic> navigateToGroupSaveDetailsView({
-    _i23.Key? key,
+    _i25.Key? key,
     required Map<String, dynamic> group,
     int? routerId,
     bool preventDuplicates = true,
@@ -706,7 +734,7 @@ extension NavigatorStateExtension on _i24.NavigationService {
   }
 
   Future<dynamic> navigateToGoalSaveDetailsView({
-    _i23.Key? key,
+    _i25.Key? key,
     required Map<String, dynamic> goal,
     int? routerId,
     bool preventDuplicates = true,
@@ -716,6 +744,34 @@ extension NavigatorStateExtension on _i24.NavigationService {
   }) async {
     return navigateTo<dynamic>(Routes.goalSaveDetailsView,
         arguments: GoalSaveDetailsViewArguments(key: key, goal: goal),
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
+  Future<dynamic> navigateToBadgesView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return navigateTo<dynamic>(Routes.badgesView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
+  Future<dynamic> navigateToLoginView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return navigateTo<dynamic>(Routes.loginView,
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,
@@ -947,7 +1003,7 @@ extension NavigatorStateExtension on _i24.NavigationService {
   }
 
   Future<dynamic> replaceWithCreateLockView({
-    _i23.Key? key,
+    _i25.Key? key,
     required Map<String, dynamic> selectedPeriod,
     int? routerId,
     bool preventDuplicates = true,
@@ -993,7 +1049,7 @@ extension NavigatorStateExtension on _i24.NavigationService {
   }
 
   Future<dynamic> replaceWithGroupSaveDetailsView({
-    _i23.Key? key,
+    _i25.Key? key,
     required Map<String, dynamic> group,
     int? routerId,
     bool preventDuplicates = true,
@@ -1010,7 +1066,7 @@ extension NavigatorStateExtension on _i24.NavigationService {
   }
 
   Future<dynamic> replaceWithGoalSaveDetailsView({
-    _i23.Key? key,
+    _i25.Key? key,
     required Map<String, dynamic> goal,
     int? routerId,
     bool preventDuplicates = true,
@@ -1020,6 +1076,34 @@ extension NavigatorStateExtension on _i24.NavigationService {
   }) async {
     return replaceWith<dynamic>(Routes.goalSaveDetailsView,
         arguments: GoalSaveDetailsViewArguments(key: key, goal: goal),
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
+  Future<dynamic> replaceWithBadgesView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return replaceWith<dynamic>(Routes.badgesView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
+  }
+
+  Future<dynamic> replaceWithLoginView([
+    int? routerId,
+    bool preventDuplicates = true,
+    Map<String, String>? parameters,
+    Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+        transition,
+  ]) async {
+    return replaceWith<dynamic>(Routes.loginView,
         id: routerId,
         preventDuplicates: preventDuplicates,
         parameters: parameters,

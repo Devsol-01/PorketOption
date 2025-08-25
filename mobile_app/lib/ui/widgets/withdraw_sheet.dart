@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/utils/format_utils.dart';
 
 class WithdrawSheet extends StatefulWidget {
   final Function(double amount) onWithdraw;
@@ -28,7 +29,8 @@ class _WithdrawSheetState extends State<WithdrawSheet> {
   }
 
   void _onWithdraw() {
-    final amount = double.tryParse(_amountController.text);
+    final amount = double.tryParse(
+        _amountController.text.replaceAll('\$', '').replaceAll(',', ''));
     if (amount != null && amount > 0 && amount <= widget.currentBalance) {
       widget.onWithdraw(amount);
       Navigator.pop(context);
@@ -36,7 +38,10 @@ class _WithdrawSheetState extends State<WithdrawSheet> {
   }
 
   void _setMaxAmount() {
-    _amountController.text = widget.currentBalance.toStringAsFixed(2);
+    _amountController.text = FormatUtils.formatCurrency(widget.currentBalance);
+    _amountController.selection = TextSelection.collapsed(
+      offset: FormatUtils.formatCurrency(widget.currentBalance).length,
+    );
   }
 
   @override
@@ -107,7 +112,15 @@ class _WithdrawSheetState extends State<WithdrawSheet> {
             ),
             child: TextField(
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              onChanged: (value) {
+                // Format the input as the user types with proper cursor preservation
+                _amountController.value = FormatUtils.formatCurrencyInput(
+                  value,
+                  _amountController.selection,
+                );
+              },
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
               ],
@@ -253,7 +266,10 @@ class _WithdrawSheetState extends State<WithdrawSheet> {
               multiplier = 0.0;
           }
           final amount = widget.currentBalance * multiplier;
-          _amountController.text = amount.toStringAsFixed(2);
+          _amountController.text = FormatUtils.formatCurrency(amount);
+          _amountController.selection = TextSelection.collapsed(
+            offset: FormatUtils.formatCurrency(amount).length,
+          );
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),

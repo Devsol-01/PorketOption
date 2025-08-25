@@ -263,7 +263,7 @@ class CreatePrivateGroupSaveViewModel extends BaseViewModel {
 
       print(
           '🔒 Private group created successfully with ID: $groupId and code: $groupCode');
-      _navigationService.back();
+      _navigationService.navigateToGroupSaveView();
     } catch (e) {
       print('❌ Error creating private group: $e');
     } finally {
@@ -281,7 +281,6 @@ class CreatePrivateGroupSaveViewModel extends BaseViewModel {
     }
     return code;
   }
-
 
   // Sample options - replace with your data
   final List<String> _allOptions = [

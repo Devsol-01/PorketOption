@@ -9,7 +9,7 @@ import 'bank_transfer_sheet_model.dart';
 class BankTransferSheet extends StackedView<BankTransferSheetModel> {
   final Function(SheetResponse response)? completer;
   final SheetRequest request;
-  
+
   const BankTransferSheet({
     Key? key,
     required this.completer,
@@ -128,7 +128,8 @@ class BankTransferSheet extends StackedView<BankTransferSheetModel> {
                     context: context,
                     label: 'Bank Name',
                     value: 'First Bank Nigeria',
-                    onCopy: () => viewModel.copyToClipboard('First Bank Nigeria'),
+                    onCopy: () =>
+                        viewModel.copyToClipboard('First Bank Nigeria'),
                   ),
 
                   const SizedBox(height: 16),
@@ -146,7 +147,8 @@ class BankTransferSheet extends StackedView<BankTransferSheetModel> {
                     context: context,
                     label: 'Account Name',
                     value: 'PorketOption Limited',
-                    onCopy: () => viewModel.copyToClipboard('PorketOption Limited'),
+                    onCopy: () =>
+                        viewModel.copyToClipboard('PorketOption Limited'),
                   ),
 
                   const SizedBox(height: 16),
@@ -155,7 +157,8 @@ class BankTransferSheet extends StackedView<BankTransferSheetModel> {
                     context: context,
                     label: 'Reference',
                     value: viewModel.transferReference,
-                    onCopy: () => viewModel.copyToClipboard(viewModel.transferReference),
+                    onCopy: () =>
+                        viewModel.copyToClipboard(viewModel.transferReference),
                     isReference: true,
                   ),
 
@@ -210,7 +213,10 @@ class BankTransferSheet extends StackedView<BankTransferSheetModel> {
                     child: ElevatedButton(
                       onPressed: () => completer!(SheetResponse(
                         confirmed: true,
-                        data: {'method': 'bank_transfer', 'reference': viewModel.transferReference},
+                        data: {
+                          'method': 'bank_transfer',
+                          'reference': viewModel.transferReference
+                        },
                       )),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF34C759),

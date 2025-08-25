@@ -72,7 +72,7 @@ class FiatMethodSelectionSheet
 
                 // Close button
                 GestureDetector(
-                   onTap: () => completer!(SheetResponse(confirmed: false)),
+                  onTap: () => completer!(SheetResponse(confirmed: false)),
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(

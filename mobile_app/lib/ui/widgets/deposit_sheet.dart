@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/utils/format_utils.dart';
 
 class DepositSheet extends StatefulWidget {
   final Function(double amount, String fundSource) onDeposit;
@@ -34,7 +35,8 @@ class _DepositSheetState extends State<DepositSheet> {
   }
 
   void _onDeposit() {
-    final amount = double.tryParse(_amountController.text);
+    final amount = double.tryParse(
+        _amountController.text.replaceAll('\$', '').replaceAll(',', ''));
     if (amount != null && amount > 0) {
       widget.onDeposit(amount, _selectedFundSource);
       Navigator.pop(context);
@@ -109,14 +111,21 @@ class _DepositSheetState extends State<DepositSheet> {
             ),
             child: TextField(
               controller: _amountController,
+              onChanged: (value) {
+                // Format the input as the user types with proper cursor preservation
+                _amountController.value = FormatUtils.formatCurrencyInput(
+                  value,
+                  _amountController.selection,
+                );
+              },
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
               ],
               decoration: InputDecoration(
-                hintText: '0.00',
-                prefixText: '\$ ',
+                //hintText: '0.00',
+                //prefixText: '\$ ',
                 prefixStyle: GoogleFonts.inter(
                   fontSize: 16,
                   color: Colors.black,
@@ -217,7 +226,7 @@ class _DepositSheetState extends State<DepositSheet> {
             child: ElevatedButton(
               onPressed: widget.isLoading ? null : _onDeposit,
               style: ElevatedButton.styleFrom(
-                backgroundColor:  Color(0xFF0000A5),
+                backgroundColor: Color(0xFF0000A5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -252,7 +261,11 @@ class _DepositSheetState extends State<DepositSheet> {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          _amountController.text = amount;
+          final numericAmount = double.tryParse(amount) ?? 0;
+          _amountController.text = FormatUtils.formatCurrency(numericAmount);
+          _amountController.selection = TextSelection.collapsed(
+            offset: FormatUtils.formatCurrency(numericAmount).length,
+          );
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),

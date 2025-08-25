@@ -82,11 +82,6 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: const Color(0xFF4A90E2),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 
@@ -95,17 +90,17 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
       width: double.infinity,
       height: 150,
       padding: const EdgeInsets.all(16),
-  decoration: BoxDecoration(
-    gradient: LinearGradient(
-      begin: Alignment(-0.5, -1.0),
-      end: Alignment(0.5, 1.0),
-      colors: [
-        Color(0xFF0000A5).withOpacity(0.7),
-        Color(0xFF1D84F3).withOpacity(0.7),
-      ],
-    ),
-    borderRadius: BorderRadius.circular(30),
-  ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(-0.5, -1.0),
+          end: Alignment(0.5, 1.0),
+          colors: [
+            Color(0xFF0000A5).withOpacity(0.7),
+            Color(0xFF1D84F3).withOpacity(0.7),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(30),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -264,10 +259,9 @@ class InvestmentView extends StackedView<InvestmentViewModel> {
               child: Text(
                 'Active', // replace with your label or pass via constructor
                 style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF0000A5)
-                ),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF0000A5)),
               ),
             ),
           ),

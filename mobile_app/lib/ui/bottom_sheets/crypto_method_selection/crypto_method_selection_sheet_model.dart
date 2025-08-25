@@ -7,14 +7,21 @@ class CryptoMethodSelectionSheetModel extends BaseViewModel {
   final _bottomSheetService = locator<BottomSheetService>();
 
   Future<void> onAppWalletTap(Function(SheetResponse) completer) async {
-    // Close current sheet
-    completer(SheetResponse(confirmed: true, data: 'app_wallet'));
+    completer(SheetResponse(confirmed: true));
 
-    // Navigate directly to crypto deposit (QR/Address)
-    await _bottomSheetService.showCustomSheet(
+    // Show crypto send sheet
+    final cryptoResponse = await _bottomSheetService.showCustomSheet(
       variant: BottomSheetType.cryptoDeposit,
       title: 'Deposit with Crypto',
     );
+
+    if (cryptoResponse?.confirmed == false) {
+      // User cancelled, go back to send sheet
+      await _bottomSheetService.showCustomSheet(
+        variant: BottomSheetType.cryptoMethodSelection,
+        title: 'CryptoMethodSelection',
+      );
+    }
   }
 
   Future<void> onOtherChainTap(Function(SheetResponse) completer) async {
@@ -27,10 +34,10 @@ class CryptoMethodSelectionSheetModel extends BaseViewModel {
       title: 'Select Chain',
     );
 
-    if (chainResponse?.confirmed == true) {
+    if (chainResponse?.confirmed == false) {
       // After chain selection, show crypto deposit
       await _bottomSheetService.showCustomSheet(
-        variant: BottomSheetType.cryptoDeposit,
+        variant: BottomSheetType.cryptoMethodSelection,
         title: 'Deposit with Crypto',
       );
     }

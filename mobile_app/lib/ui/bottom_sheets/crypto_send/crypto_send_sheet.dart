@@ -8,7 +8,7 @@
 // class CryptoSendSheet extends StackedView<CryptoSendSheetModel> {
 //   final Function(SheetResponse response)? completer;
 //   final SheetRequest request;
-  
+
 //   const CryptoSendSheet({
 //     Key? key,
 //     required this.completer,
@@ -169,7 +169,7 @@
 //                     ),
 //                   ),
 //                   const SizedBox(height: 12),
-                  
+
 //                   Container(
 //                     width: double.infinity,
 //                     padding: const EdgeInsets.all(24),
@@ -453,9 +453,10 @@ class CryptoSendSheet extends StackedView<CryptoSendSheetModel> {
                           ? null
                           : () => viewModel.processCryptoSend(completer!),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: viewModel.addressController.text.isEmpty
-                            ? Colors.grey[300]
-                            : Colors.black,
+                        backgroundColor:
+                            viewModel.addressController.text.isEmpty
+                                ? Colors.grey[300]
+                                : Colors.black,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
