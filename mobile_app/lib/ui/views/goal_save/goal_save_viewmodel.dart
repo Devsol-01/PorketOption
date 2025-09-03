@@ -60,9 +60,10 @@ class GoalSaveViewModel extends BaseViewModel {
   // Load goal save balance from contract
   Future<void> loadGoalSaveBalance() async {
     try {
-      final goals = await _contractService.getUserGoals();
-      _goalSaveBalance =
-          goals.fold(0.0, (sum, goal) => sum + (goal['currentAmount'] ?? 0.0));
+      // TODO: Implement contract integration
+      // final goals = await _contractService.getUserGoals();
+      // _goalSaveBalance = goals.fold(0.0, (sum, goal) => sum + (goal['currentAmount'] ?? 0.0));
+      _goalSaveBalance = 0.0; // Mock data
       notifyListeners();
     } catch (e) {
       print('Error loading goal save balance: $e');
@@ -73,10 +74,12 @@ class GoalSaveViewModel extends BaseViewModel {
   // Load user goals from contract
   Future<void> loadUserGoals() async {
     try {
-      final goals = await _contractService.getUserGoals();
-      _liveGoals = goals.where((goal) => goal['status'] == 'active').toList();
-      _completedGoals =
-          goals.where((goal) => goal['status'] == 'completed').toList();
+      // TODO: Implement contract integration
+      // final goals = await _contractService.getUserGoals();
+      // _liveGoals = goals.where((goal) => goal['status'] == 'active').toList();
+      // _completedGoals = goals.where((goal) => goal['status'] == 'completed').toList();
+      _liveGoals = []; // Mock data
+      _completedGoals = []; // Mock data
       notifyListeners();
     } catch (e) {
       print('Error loading user goals: $e');
@@ -98,14 +101,16 @@ class GoalSaveViewModel extends BaseViewModel {
   }) async {
     setBusy(true);
     try {
-      final goalId = await _contractService.createGoalSave(
-        title: purpose,
-        category: category,
-        targetAmount: targetAmount,
-        contributionAmount: contributionAmount,
-        frequency: frequency,
-        endTime: endDate,
-      );
+      // TODO: Implement contract integration
+      // final goalId = await _contractService.createGoalSave(
+      //   title: purpose,
+      //   category: category,
+      //   targetAmount: targetAmount,
+      //   contributionAmount: contributionAmount,
+      //   frequency: frequency,
+      //   endTime: endDate,
+      // );
+      final goalId = 'mock_goal_${DateTime.now().millisecondsSinceEpoch}';
 
       print('Goal created successfully with ID: $goalId');
       // Refresh data
@@ -122,10 +127,12 @@ class GoalSaveViewModel extends BaseViewModel {
   Future<void> addContribution(String goalId, double amount) async {
     setBusy(true);
     try {
-      final txHash = await _contractService.contributeGoalSave(
-        goalId: goalId,
-        amount: amount,
-      );
+      // TODO: Implement contract integration
+      // final txHash = await _contractService.contributeGoalSave(
+      //   goalId: goalId,
+      //   amount: amount,
+      // );
+      final txHash = 'mock_tx_${DateTime.now().millisecondsSinceEpoch}';
 
       print('Contribution successful: $txHash');
       // Refresh data
@@ -162,7 +169,9 @@ class GoalSaveViewModel extends BaseViewModel {
   Future<void> claimCompletedGoal(String goalId) async {
     setBusy(true);
     try {
-      // For now, just mark as claimed in mock data
+      // TODO: Implement contract integration
+      // await _contractService.contributeGoalSave(goalId: goalId, amount: 0.0);
+      await Future.delayed(Duration(milliseconds: 500)); // Mock delay
       print('Goal claimed successfully: $goalId');
       // Refresh data
       await loadGoalSaveBalance();

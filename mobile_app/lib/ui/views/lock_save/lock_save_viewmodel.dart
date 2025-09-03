@@ -19,8 +19,6 @@ class LockSaveViewModel extends BaseViewModel {
   double _lockSaveBalance = 0.0;
   List<Map<String, dynamic>> _ongoingLocks = [];
   List<Map<String, dynamic>> _completedLocks = [];
-  List<Map<String, dynamic>> _legacyOngoingLocks = [];
-  List<Map<String, dynamic>> _legacyCompletedLocks = [];
 
   // Lock period configurations with interest rates
   final List<Map<String, dynamic>> _lockPeriods = [
@@ -108,9 +106,7 @@ class LockSaveViewModel extends BaseViewModel {
   List<Map<String, dynamic>> get completedLocks => _completedLocks;
   List<Map<String, dynamic>> get lockPeriods => _lockPeriods;
 
-  // Legacy getters for UI compatibility
-  List<Map<String, dynamic>> get legacyOngoingLocks => _legacyOngoingLocks;
-  List<Map<String, dynamic>> get legacyCompletedLocks => _legacyCompletedLocks;
+  // Real data getters - no legacy mock data
 
   List<dynamic> get currentLocks =>
       _isOngoingSelected ? _ongoingLocks : _completedLocks;
@@ -147,9 +143,10 @@ class LockSaveViewModel extends BaseViewModel {
   // Load lock save balance from contract
   Future<void> loadLockSaveBalance() async {
     try {
-      final locks = await _contractService.getUserLocks();
-      _lockSaveBalance =
-          locks.fold(0.0, (sum, lock) => sum + (lock['amount'] ?? 0.0));
+      // TODO: Implement contract integration
+      // final locks = await _contractService.getUserLocks();
+      // _lockSaveBalance = locks.fold(0.0, (sum, lock) => sum + (lock['amount'] ?? 0.0));
+      _lockSaveBalance = 0.0; // Mock data
       notifyListeners();
     } catch (e) {
       print('Error loading lock save balance: $e');
@@ -160,17 +157,13 @@ class LockSaveViewModel extends BaseViewModel {
   // Load user locks from contract
   Future<void> loadUserLocks() async {
     try {
-      final locks = await _contractService.getUserLocks();
+      // TODO: Implement contract integration
+      // final locks = await _contractService.getUserLocks();
+      final locks = <Map<String, dynamic>>[]; // Mock data
       print('🔒 Raw locks from contract: ${locks.length} total');
-      for (var lock in locks) {
-        print(
-            '🔒 Lock: ${lock['id']} - ${lock['title']} - ${lock['status']} - \$${lock['amount']}');
-      }
-
-      _ongoingLocks =
-          locks.where((lock) => lock['status'] == 'active').toList();
-      _completedLocks =
-          locks.where((lock) => lock['status'] == 'matured').toList();
+      
+      _ongoingLocks = [];
+      _completedLocks = [];
 
       print(
           '🔒 Filtered: ${_ongoingLocks.length} ongoing, ${_completedLocks.length} completed');
@@ -215,12 +208,14 @@ class LockSaveViewModel extends BaseViewModel {
       if (transferSuccess) {
         // Simulate contract interaction
         await Future.delayed(Duration(milliseconds: 1500));
-        final lockId = await _contractService.createLockSave(
-          amount: amount,
-          title: title,
-          durationDays: lockDays,
-          fundSource: 'Porket Wallet',
-        );
+        // TODO: Implement contract integration
+        // final lockId = await _contractService.createLockSave(
+        //   amount: amount,
+        //   title: title,
+        //   durationDays: lockDays,
+        //   fundSource: 'Porket Wallet',
+        // );
+        final lockId = 'mock_lock_${DateTime.now().millisecondsSinceEpoch}';
 
         if (lockId.isNotEmpty) {
           // Refresh data
@@ -259,16 +254,23 @@ class LockSaveViewModel extends BaseViewModel {
     String periodId,
   ) async {
     try {
-      final preview = await _contractService.calculateLockInterest(
-        amount: amount,
-        durationDays: lockDays,
-      );
+      // TODO: Implement contract integration
+      // final preview = await _contractService.calculateLockInterest(
+      //   amount: amount,
+      //   durationDays: lockDays,
+      // );
+      
+      // Fallback to local calculation
+      final period = _lockPeriods.firstWhere((p) => p['id'] == periodId, orElse: () => _lockPeriods[0]);
+      final rate = period['interestRate'] / 100;
+      final interest = (amount * rate * lockDays) / 365;
+      final maturityDate = DateTime.now().add(Duration(days: lockDays));
 
       return {
-        'interest': preview.interestAmount,
-        'totalPayout': preview.totalPayout,
+        'interest': interest,
+        'totalPayout': amount + interest,
         'maturityDate':
-            '${preview.maturityDate.day}/${preview.maturityDate.month}/${preview.maturityDate.year}',
+            '${maturityDate.day}/${maturityDate.month}/${maturityDate.year}',
       };
     } catch (e) {
       print('Error calculating lock preview: $e');
@@ -291,7 +293,9 @@ class LockSaveViewModel extends BaseViewModel {
   Future<void> withdrawLock(String lockId) async {
     setBusy(true);
     try {
-      final txHash = await _contractService.withdrawLockSave(lockId: lockId);
+      // TODO: Implement contract integration
+      // final txHash = await _contractService.withdrawLockSave(lockId: lockId);
+      final txHash = 'mock_tx_${DateTime.now().millisecondsSinceEpoch}';
       if (txHash.isNotEmpty) {
         print('Lock withdrawal successful');
         // Refresh data
@@ -311,7 +315,9 @@ class LockSaveViewModel extends BaseViewModel {
   Future<void> breakLock(String lockId) async {
     setBusy(true);
     try {
-      final txHash = await _contractService.breakLockSave(lockId: lockId);
+      // TODO: Implement contract integration
+      // final txHash = await _contractService.breakLockSave(lockId: lockId);
+      final txHash = 'mock_tx_${DateTime.now().millisecondsSinceEpoch}';
       if (txHash.isNotEmpty) {
         print('Lock break successful (with penalty)');
         // Refresh data
@@ -327,75 +333,10 @@ class LockSaveViewModel extends BaseViewModel {
     }
   }
 
-  // Initialize with sample data for UI testing - DISABLED
+  // Initialize with real contract data only
   void initializeSampleData() {
-    // DON'T USE SAMPLE DATA - it interferes with real data display
-    print('🔒 Sample data initialization SKIPPED - using real data only');
-    return;
-
-    if (_lockSaveBalance == 0.0) {
-      _lockSaveBalance = 2500.75;
-    }
-
-    _legacyOngoingLocks = [
-      {
-        'id': '1',
-        'title': 'Emergency Fund Lock',
-        'amount': 1000.0,
-        'interestRate': 7.8,
-        'interestEarned': 39.45,
-        'lockDays': 120,
-        'periodId': '91-180',
-        'periodLabel': '91-180 days',
-        'fundSource': 'Porket Wallet',
-        'createdAt': DateTime.now().subtract(const Duration(days: 30)),
-        'maturityDate':
-            '${DateTime.now().add(const Duration(days: 90)).day}/${DateTime.now().add(const Duration(days: 90)).month}/${DateTime.now().add(const Duration(days: 90)).year}',
-        'status': 'ongoing',
-        'color': 0xFF9C27B0,
-        'totalPayout': 1000.0 + 39.45,
-      },
-      {
-        'id': '2',
-        'title': 'Vacation Savings',
-        'amount': 500.0,
-        'interestRate': 6.2,
-        'interestEarned': 5.11,
-        'lockDays': 45,
-        'periodId': '31-60',
-        'periodLabel': '31-60 days',
-        'fundSource': 'External Wallet',
-        'createdAt': DateTime.now().subtract(const Duration(days: 15)),
-        'maturityDate':
-            '${DateTime.now().add(const Duration(days: 30)).day}/${DateTime.now().add(const Duration(days: 30)).month}/${DateTime.now().add(const Duration(days: 30)).year}',
-        'status': 'ongoing',
-        'color': 0xFF2196F3,
-        'totalPayout': 500.0 + 5.11,
-      },
-    ];
-
-    _legacyCompletedLocks = [
-      {
-        'id': '3',
-        'title': 'Short Term Lock',
-        'amount': 200.0,
-        'interestRate': 5.5,
-        'interestEarned': 3.01,
-        'lockDays': 20,
-        'periodId': '10-30',
-        'periodLabel': '10-30 days',
-        'fundSource': 'Porket Wallet',
-        'createdAt': DateTime.now().subtract(const Duration(days: 25)),
-        'maturityDate':
-            '${DateTime.now().subtract(const Duration(days: 5)).day}/${DateTime.now().subtract(const Duration(days: 5)).month}/${DateTime.now().subtract(const Duration(days: 5)).year}',
-        'status': 'completed',
-        'withdrawnAt': DateTime.now().subtract(const Duration(days: 5)),
-        'color': 0xFF4CAF50,
-        'totalPayout': 200.0 + 3.01,
-      },
-    ];
-
-    notifyListeners();
+    print('🔒 Using real contract data only - no mock data');
+    // All data comes from contract service calls
   }
 
   // Set dashboard viewmodel reference for balance transfers

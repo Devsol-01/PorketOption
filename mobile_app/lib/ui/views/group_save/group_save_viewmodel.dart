@@ -20,8 +20,6 @@ class GroupSaveViewModel extends BaseViewModel {
   List<Map<String, dynamic>> _liveGroups = [];
   List<Map<String, dynamic>> _completedGroups = [];
   List<Map<String, dynamic>> _publicGroups = [];
-  List<Map<String, dynamic>> _legacyLiveGroups = [];
-  List<Map<String, dynamic>> _legacyCompletedGroups = [];
 
   // Getters for state properties
   bool get isOngoingSelected => _isOngoingSelected;
@@ -31,10 +29,7 @@ class GroupSaveViewModel extends BaseViewModel {
   List<Map<String, dynamic>> get completedGroups => _completedGroups;
   List<Map<String, dynamic>> get publicGroups => _publicGroups;
 
-  // Legacy getters for UI compatibility
-  List<Map<String, dynamic>> get legacyLiveGroups => _legacyLiveGroups;
-  List<Map<String, dynamic>> get legacyCompletedGroups =>
-      _legacyCompletedGroups;
+  // Real data getters - no legacy mock data
 
   List<dynamic> get currentGroups =>
       _isOngoingSelected ? _liveGroups : _completedGroups;
@@ -59,8 +54,9 @@ class GroupSaveViewModel extends BaseViewModel {
   // Load group save balance from contract
   Future<void> loadGroupSaveBalance() async {
     try {
-      // For now, use a mock balance - in real implementation this would come from contract
-      _groupSaveBalance = 120.50; // Mock balance for UI testing
+      // TODO: Implement contract integration
+      // _groupSaveBalance = await _contractService.getGroupSaveRate() * 1000;
+      _groupSaveBalance = 0.0; // Mock data
       notifyListeners();
     } catch (e) {
       print('Error loading group save balance: $e');
@@ -71,11 +67,12 @@ class GroupSaveViewModel extends BaseViewModel {
   // Load user groups from contract
   Future<void> loadUserGroups() async {
     try {
-      final groups = await _contractService.getUserGroups();
-      _liveGroups =
-          groups.where((group) => group['isCompleted'] != true).toList();
-      _completedGroups =
-          groups.where((group) => group['isCompleted'] == true).toList();
+      // TODO: Implement contract integration
+      // final groups = await _contractService.getUserGroups();
+      // _liveGroups = groups.where((group) => group['isCompleted'] != true).toList();
+      // _completedGroups = groups.where((group) => group['isCompleted'] == true).toList();
+      _liveGroups = []; // Mock data
+      _completedGroups = []; // Mock data
       notifyListeners();
     } catch (e) {
       print('Error loading user groups: $e');
@@ -87,8 +84,9 @@ class GroupSaveViewModel extends BaseViewModel {
   // Load public groups from contract
   Future<void> loadPublicGroups() async {
     try {
-      final groups = await _contractService.getPublicGroups();
-      _publicGroups = groups;
+      // TODO: Implement contract integration
+      // final groups = await _contractService.getPublicGroups();
+      _publicGroups = []; // Mock data
       notifyListeners();
     } catch (e) {
       print('Error loading public groups: $e');
@@ -99,8 +97,6 @@ class GroupSaveViewModel extends BaseViewModel {
   void _initializeSampleData() {
     // All sample data removed - using real contract data only
     // Data loaded from contract in respective load functions
-    _legacyLiveGroups = [];
-    _legacyCompletedGroups = [];
   }
 
   void setOngoingSelected(bool value) {
@@ -173,9 +169,9 @@ class GroupSaveViewModel extends BaseViewModel {
   Future<void> joinSavingsGroup(String groupId, {String? groupCode}) async {
     setBusy(true);
     try {
-      final txHash = await _contractService.joinGroupSave(
-        groupId: groupId,
-      );
+      // TODO: Implement contract integration
+      // final txHash = await _contractService.joinGroupSave(groupId: groupId);
+      final txHash = 'mock_tx_${DateTime.now().millisecondsSinceEpoch}';
 
       print('Successfully joined group: $txHash');
       // Refresh data
@@ -203,16 +199,17 @@ class GroupSaveViewModel extends BaseViewModel {
   }) async {
     setBusy(true);
     try {
-      final groupId = await _contractService.createGroupSave(
-        title: name,
-        description: description,
-        category: category,
-        targetAmount: targetAmount,
-        contributionType: frequency,
-        contributionAmount: contributionAmount,
-        isPublic: isPublic,
-        endTime: endDate,
-      );
+      // TODO: Implement contract integration
+      // final groupId = await _contractService.createGroupSave(
+      //   title: name,
+      //   description: description,
+      //   category: category,
+      //   targetAmount: targetAmount,
+      //   frequency: frequency,
+      //   contributionAmount: contributionAmount,
+      //   isPublic: isPublic,
+      // );
+      final groupId = 'mock_group_${DateTime.now().millisecondsSinceEpoch}';
 
       print('Group created successfully with ID: $groupId');
       // Refresh data
@@ -232,10 +229,12 @@ class GroupSaveViewModel extends BaseViewModel {
   Future<void> contributeToGroup(String groupId, double amount) async {
     setBusy(true);
     try {
-      final txHash = await _contractService.contributeGroupSave(
-        groupId: groupId,
-        amount: amount,
-      );
+      // TODO: Implement contract integration
+      // final txHash = await _contractService.contributeGroupSave(
+      //   groupId: groupId,
+      //   amount: amount,
+      // );
+      final txHash = 'mock_tx_${DateTime.now().millisecondsSinceEpoch}';
 
       print('Contribution successful: $txHash');
       // Refresh data

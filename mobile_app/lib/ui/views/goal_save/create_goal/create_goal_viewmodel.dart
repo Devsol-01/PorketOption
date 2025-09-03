@@ -4,12 +4,10 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:mobile_app/extensions/num_extensions.dart';
-import 'package:mobile_app/services/contract_service.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 
 class CreateGoalViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
-  final ContractService _contractService = locator<ContractService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
 
   DashboardViewModel? _dashboardViewModel;
@@ -271,30 +269,14 @@ class CreateGoalViewModel extends BaseViewModel {
         // Simulate contract interaction delay
         await Future.delayed(Duration(milliseconds: 1500));
 
-        // Create goal on contract
-        final goalId = await _contractService.createGoalSave(
-          title: purposeController.text,
-          category: _selectedCategory,
-          targetAmount: targetAmount,
-          contributionType: _selectedFrequency,
-          contributionAmount: contributionAmount,
-          endTime: _endDate!,
-        );
+        // Mock goal creation
+        final mockGoalId = 'goal_${DateTime.now().millisecondsSinceEpoch}';
+        print('✅ Goal created successfully! ID: $mockGoalId');
+        _showSuccessSnackbar(
+            '🎯 Goal Save created successfully! \$${contributionAmount.toStringAsFixed(2)} transferred as initial contribution');
 
-        if (goalId.isNotEmpty) {
-          print('✅ Goal created successfully! ID: $goalId');
-          _showSuccessSnackbar(
-              '🎯 Goal Save created successfully! \$${contributionAmount.toStringAsFixed(2)} transferred as initial contribution');
-
-          // Navigate back to Goal Save page
-          _navigationService.navigateToGoalSaveView();
-        } else {
-          _showErrorSnackbar('Failed to create goal save');
-          // Rollback the transfer on error
-          if (_dashboardViewModel != null) {
-            _dashboardViewModel!.transferFromGoalSave(contributionAmount);
-          }
-        }
+        // Navigate back to Goal Save page
+        _navigationService.navigateToGoalSaveView();
       } else {
         _showErrorSnackbar('Transfer failed. Please try again.');
       }

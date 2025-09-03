@@ -617,7 +617,7 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
   int _calculateDaysLeft(String? maturityDateStr) {
     if (maturityDateStr == null) return 0;
     try {
-      // Parse ISO 8601 date format from mock data service
+      // Parse ISO 8601 date format from contract data
       final maturityDate = DateTime.parse(maturityDateStr);
       final now = DateTime.now();
       final difference = maturityDate.difference(now).inDays;

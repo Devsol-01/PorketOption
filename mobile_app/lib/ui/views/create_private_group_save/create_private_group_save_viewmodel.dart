@@ -250,16 +250,18 @@ class CreatePrivateGroupSaveViewModel extends BaseViewModel {
       // Generate a random group code for private groups
       final groupCode = _generateGroupCode();
 
-      final groupId = await _contractService.createGroupSave(
-        title: purposeController.text,
-        description: descriptionController.text,
-        category: _selectedCategory,
-        targetAmount: targetAmount,
-        contributionType: _selectedFrequency,
-        contributionAmount: contributionAmount,
-        isPublic: false,
-        endTime: _endDate!,
-      );
+      // TODO: Implement contract integration
+      // final groupId = await _contractService.createGroupSave(
+      //   title: purposeController.text,
+      //   description: descriptionController.text,
+      //   category: _selectedCategory,
+      //   targetAmount: targetAmount,
+      //   frequency: _selectedFrequency,
+      //   contributionAmount: contributionAmount,
+      //   isPublic: false,
+      //   endTime: _endDate!,
+      // );
+      final groupId = 'mock_private_group_${DateTime.now().millisecondsSinceEpoch}';
 
       print(
           '🔒 Private group created successfully with ID: $groupId and code: $groupCode');

@@ -52,11 +52,13 @@ class GoalSaveDetailsViewModel extends BaseViewModel {
       bool transferSuccess = dashboardViewModel.transferToGoalSave(amount);
 
       if (transferSuccess) {
-        // Update goal with new contribution (mock implementation)
-        await _contractService.contributeGoalSave(
-          goalId: goal['id'].toString(),
-          amount: amount,
-        );
+        // Update goal with new contribution via contract
+        // TODO: Implement contract integration
+        // await _contractService.contributeGoalSave(
+        //   goalId: goal['id'].toString(),
+        //   amount: amount,
+        // );
+        await Future.delayed(Duration(milliseconds: 500)); // Mock delay
 
         // Update the goal data locally to reflect changes immediately
         goal['currentAmount'] = (goal['currentAmount'] as double) + amount;

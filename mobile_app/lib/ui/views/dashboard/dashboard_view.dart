@@ -197,7 +197,7 @@ class DashboardView extends StackedView<DashboardViewModel> {
             child: Row(
               children: [
                 Text(
-                  'Total Portfolio Value',
+                  'USDC Balance',
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

@@ -292,16 +292,18 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
         // Simulate contract interaction delay
         await Future.delayed(Duration(milliseconds: 1500));
 
-        final groupId = await _contractService.createGroupSave(
-          title: purposeController.text,
-          description: descriptionController.text,
-          category: _selectedCategory,
-          targetAmount: targetAmount,
-          contributionType: _selectedFrequency,
-          contributionAmount: contributionAmount,
-          isPublic: true,
-          endTime: _endDate!,
-        );
+        // TODO: Implement contract integration
+        // final groupId = await _contractService.createGroupSave(
+        //   title: purposeController.text,
+        //   description: descriptionController.text,
+        //   category: _selectedCategory,
+        //   targetAmount: targetAmount,
+        //   frequency: _selectedFrequency,
+        //   contributionAmount: contributionAmount,
+        //   isPublic: true,
+        //   endTime: _endDate!,
+        // );
+        final groupId = 'mock_public_group_${DateTime.now().millisecondsSinceEpoch}';
 
         if (groupId.isNotEmpty) {
           print('👥 Public group created successfully with ID: $groupId');

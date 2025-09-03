@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:mobile_app/services/contract_service.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 import 'package:mobile_app/app/app.locator.dart';
 
 class CreateLockViewModel extends BaseViewModel {
   final NavigationService _navigationService = NavigationService();
-  final ContractService _contractService = locator<ContractService>();
   final DashboardViewModel _dashboardViewModel = locator<DashboardViewModel>();
 
   final TextEditingController amountController = TextEditingController();
@@ -183,16 +181,14 @@ class CreateLockViewModel extends BaseViewModel {
       print(
           '✅ Dashboard balance updated to: ${_dashboardViewModel.dashboardBalance}');
 
-      // Use enhanced lock save with automatic approval
-      print('🔒 Creating lock save with approval...');
-      final txHash = await _contractService.createLockSaveWithApproval(
-        amount: amount,
-        title: title,
-        durationDays: duration,
-        fundSource: _selectedFundSource,
-      );
-
-      print('✅ Lock created successfully with hash: $txHash');
+      // Mock lock save creation
+      print('🔒 Creating lock save (mock mode)...');
+      
+      // Simulate contract interaction delay
+      await Future.delayed(Duration(milliseconds: 1500));
+      
+      final mockTxHash = '0x${DateTime.now().millisecondsSinceEpoch.toRadixString(16)}';
+      print('✅ Lock created successfully with hash: $mockTxHash');
 
       // Refresh dashboard after creation
       await _dashboardViewModel.refreshDashboard();

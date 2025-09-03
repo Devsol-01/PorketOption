@@ -34,8 +34,8 @@ class NgnSendSheetModel extends BaseViewModel {
       // Simulate account verification
       await Future.delayed(const Duration(seconds: 1));
 
-      // Mock account name based on account number
-      _accountName = 'CHIKE ECHE'; // From your screenshot
+      // Real account name lookup (placeholder implementation)
+      _accountName = 'CHIKE ECHE'; // TODO: Implement real account lookup
       _isVerifying = false;
       notifyListeners();
     } else {

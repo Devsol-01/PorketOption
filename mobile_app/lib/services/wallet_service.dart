@@ -36,14 +36,14 @@ class WalletService {
   WalletService() {
     // Initialize provider (mainnet to match Ark)
     _provider = JsonRpcProvider(
-        nodeUri: Uri.parse('https://starknet-mainnet.public.blastapi.io'));
+        nodeUri: Uri.parse('https://starknet-sepolia.public.blastapi.io'));
     _tokenService = TokenService();
 
     // Initialize Avnu provider for sponsored deployments
     _avnuProvider = AvnuJsonRpcProvider(
       nodeUri: Uri.parse('https://sepolia.api.avnu.fi'),
       //apiKey: Platform.environment['AVNU_API_KEY'] ?? '',
-      apiKey: '4c75a944-a3ff-4292-bce0-7738608bf9da',
+      apiKey: 'ee9d2deb-dc4c-4793-9c94-025ad10f69d6',
     );
   }
 
@@ -228,7 +228,7 @@ class WalletService {
     }
   }
 
-  /// 🔥 FIXED: Deploy account with Avnu using session keys (based on your working first code)
+  /// 🔥 FIXED: Deploy account with Avnu using session keys
   Future<String> _deployWithAvnuSessionKeys() async {
     if (_currentAccount == null ||
         _ownerSigner == null ||
@@ -476,13 +476,30 @@ class WalletService {
   Future<double> getUsdcBalance([String? walletAddress]) async {
     try {
       print('🔍 Starting USDC balance check...');
-      final address = walletAddress ?? await _storage.read(key: _addressKey);
-      if (address == null || address.isEmpty) {
-        print('❌ No wallet address found or empty address');
-        return 0.0;
+
+      String? address;
+
+      // First try to get address from parameter
+      if (walletAddress != null && walletAddress.isNotEmpty) {
+        address = walletAddress;
+        print('📋 Using provided wallet address: "$address"');
+      } else {
+        // Try to get from current wallet info
+        if (_walletInfo != null && _walletInfo!.address.isNotEmpty) {
+          address = _walletInfo!.address;
+          print('📋 Using wallet info address: "$address"');
+        } else {
+          // Try to get from storage
+          address = await _storage.read(key: _addressKey);
+          print('📋 Raw address from storage: "$address"');
+        }
       }
 
-      print('📋 Raw address from storage: "$address"');
+      if (address == null || address.isEmpty) {
+        print('❌ No wallet address found or empty address');
+        print('💡 Try loading wallet first with loadWallet()');
+        return 0.0;
+      }
 
       // Ensure address is properly formatted
       final formattedAddress = _formatAddressTo66Chars(address);
@@ -631,12 +648,14 @@ class WalletService {
     }
   }
 
-  /// 💸 Send USDC to another address (Enhanced with better error handling)
+  /// 💸 Send USDC to another address using AVNU provider (like the example)
   Future<String> sendUsdc({
     required String recipientAddress,
     required double amount,
   }) async {
-    if (_currentAccount == null) {
+    if (_currentAccount == null ||
+        _ownerSigner == null ||
+        _guardianSigner == null) {
       throw WalletException('No wallet account available');
     }
 
@@ -666,34 +685,71 @@ class WalletService {
       final rawAmount = BigInt.from((amount * pow(10, 6)).round());
       print('📊 Raw amount: $rawAmount (${amount} USDC)');
 
-      // Prepare contract addresses
-      final usdcContract = Felt.fromHexString(_usdcContractAddress);
-      final recipient = Felt.fromHexString(recipientAddress);
-
-      // Build transfer call - USDC uses Uint256 (low, high) format
-      final transferCall = FunctionCall(
-        contractAddress: usdcContract,
-        entryPointSelector: getSelectorByName('transfer'),
-        calldata: [
-          recipient, // to: address
-          Felt(rawAmount), // amount.low
-          Felt.zero, // amount.high (for amounts < 2^128)
-        ],
-      );
-
-      print('🔄 Executing USDC transfer...');
-
-      // Execute transaction
-      final response =
-          await _currentAccount!.execute(functionCalls: [transferCall]);
-
-      return response.when(
-        result: (result) {
-          print('✅ USDC transfer successful! TX: ${result.transaction_hash}');
-          return result.transaction_hash;
+      // Prepare transfer call data (like in the example)
+      final calls = [
+        {
+          'contractAddress': _usdcContractAddress,
+          'entrypoint': 'transfer',
+          'calldata': [
+            recipientAddress,
+            '0x${rawAmount.toRadixString(16)}',
+            '0x0', // amount.high for amounts < 2^128
+          ],
         },
-        error: (error) => throw WalletException('USDC transfer failed: $error'),
+      ];
+
+      print('🔧 Building typed data with Avnu...');
+
+      // Build typed data with AVNU (like in the example)
+      final avnuBuildTypeDataResponse = await _avnuProvider.buildTypedData(
+        _currentAccount!.accountAddress.toHexString(),
+        calls,
+        '', // use sponsor gas token
+        '', // use sponsor gas limit
+        argentClassHash.toHexString(),
       );
+
+      if (avnuBuildTypeDataResponse is AvnuBuildTypedDataError) {
+        throw WalletException(
+            'Failed to build typed data: $avnuBuildTypeDataResponse');
+      }
+
+      final avnuTypedData =
+          avnuBuildTypeDataResponse as AvnuBuildTypedDataResult;
+
+      // Create owner account signer (like in the example)
+      final ownerAccountSigner = ArgentXGuardianAccountSigner(
+        ownerSigner: _ownerSigner!,
+        guardianSigner: _guardianSigner!,
+      );
+
+      // Compute message hash and sign it (like in the example)
+      final hash = avnuTypedData.hash(_currentAccount!.accountAddress);
+      final signature = await ownerAccountSigner.sign(hash, null);
+
+      print('🚀 Executing USDC transfer with Avnu...');
+
+      // Execute the transaction via AVNU provider (like in the example)
+      final avnuExecute = await _avnuProvider.execute(
+        _currentAccount!.accountAddress.toHexString(),
+        jsonEncode(avnuTypedData.toTypedData()),
+        signature.map((e) => e.toHexString()).toList(),
+        null, // account is already deployed
+      );
+
+      if (avnuExecute is AvnuExecuteError) {
+        throw WalletException('USDC transfer failed: $avnuExecute');
+      }
+
+      final result = avnuExecute as AvnuExecuteResult;
+      final transactionHash = result.transactionHash;
+
+      if (transactionHash == null || transactionHash.isEmpty) {
+        throw WalletException('Transaction hash is null or empty');
+      }
+
+      print('✅ USDC transfer successful! TX: $transactionHash');
+      return transactionHash;
     } catch (e) {
       print('❌ USDC transfer error: $e');
       if (e is WalletException) rethrow;

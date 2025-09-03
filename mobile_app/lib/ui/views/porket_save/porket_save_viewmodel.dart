@@ -60,12 +60,14 @@ class PorketSaveViewModel extends BaseViewModel {
     if (value) {
       // Setup default autosave settings
       try {
-        await _contractService.setupAutoSave(
-          enabled: value,
-          amount: _amount,
-          frequency: _selectedFrequency ?? 'weekly',
-          fundSource: 'Porket Wallet',
-        );
+        // TODO: Implement contract integration
+      // await _contractService.setupAutoSave(
+      //   enabled: value,
+      //   amount: _amount,
+      //   frequency: _selectedFrequency ?? 'weekly',
+      //   fundSource: 'Porket Wallet',
+      // );
+      await Future.delayed(Duration(milliseconds: 500)); // Mock delay
       } catch (e) {
         print('Error setting up autosave: $e');
         _isAutoSaveEnabled = false;
@@ -102,7 +104,9 @@ class PorketSaveViewModel extends BaseViewModel {
       }
       final userAddress =
           _walletService.currentAccount!.accountAddress.toHexString();
-      final balance = await _contractService.getFlexiBalance();
+      // TODO: Implement contract integration
+      // final balance = await _contractService.getFlexiBalance();
+      final balance = 0.0; // Mock data
       _balance = balance;
     } catch (e) {
       print('Error loading balance: $e');
@@ -127,11 +131,9 @@ class PorketSaveViewModel extends BaseViewModel {
 
   Future<void> loadTransactions() async {
     try {
-      if (_contractService == null) {
-        print('❌ Contract service not initialized');
-        return;
-      }
-      final transactions = await _contractService.getTransactionHistory();
+      // TODO: Implement contract integration
+      // final transactions = await _contractService.getTransactionHistory();
+      final transactions = <Map<String, dynamic>>[];
       _transactions = transactions;
       notifyListeners();
     } catch (e) {
@@ -163,7 +165,9 @@ class PorketSaveViewModel extends BaseViewModel {
 
       // Simulate contract interaction
       await Future.delayed(Duration(milliseconds: 1500));
-      await _contractService.flexiDeposit(amount: amount);
+      // TODO: Implement contract integration
+      // await _contractService.flexiDeposit(amount: amount);
+      await Future.delayed(Duration(milliseconds: 500)); // Mock delay
 
       await loadBalance();
       await loadTransactions();
@@ -198,7 +202,9 @@ class PorketSaveViewModel extends BaseViewModel {
     try {
       // Simulate contract interaction
       await Future.delayed(Duration(milliseconds: 1500));
-      final result = await _contractService.flexiWithdraw(amount: amount);
+      // TODO: Implement contract integration
+      // final result = await _contractService.flexiWithdraw(amount: amount);
+      final result = 'mock_tx_${DateTime.now().millisecondsSinceEpoch}';
 
       if (result.isNotEmpty) {
         // Transfer from flexi save back to dashboard
@@ -236,7 +242,9 @@ class PorketSaveViewModel extends BaseViewModel {
 
     setBusy(true);
     try {
-      final result = await _contractService.flexiDeposit(amount: amount);
+      // TODO: Implement contract integration
+      // final result = await _contractService.flexiDeposit(amount: amount);
+      final result = 'mock_tx_${DateTime.now().millisecondsSinceEpoch}';
       if (result.isNotEmpty) {
         await loadBalance();
         await loadTransactions();
