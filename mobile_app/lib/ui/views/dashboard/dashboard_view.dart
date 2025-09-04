@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'dashboard_viewmodel.dart';
 import 'package:flutter_inset_shadow/flutter_inset_shadow.dart';
 import 'package:mobile_app/utils/format_utils.dart';
+import 'package:mobile_app/app/app.locator.dart';
 
 class DashboardView extends StackedView<DashboardViewModel> {
   const DashboardView({Key? key}) : super(key: key);
@@ -722,11 +723,12 @@ class DashboardView extends StackedView<DashboardViewModel> {
 
   @override
   DashboardViewModel viewModelBuilder(BuildContext context) {
-    return DashboardViewModel();
+    return locator<DashboardViewModel>();
   }
 
   @override
   void onViewModelReady(DashboardViewModel viewModel) {
+    print('🎯 Dashboard viewmodel instance: ${viewModel.hashCode}');
     viewModel.initialize();
   }
 

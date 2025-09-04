@@ -314,8 +314,17 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
   }
 
   void _showDepositSheet(BuildContext context, PorketSaveViewModel viewModel) {
-    // Get dashboard viewmodel for balance checking
-    final dashboardViewModel = locator<DashboardViewModel>();
+    // Use the same dashboard viewmodel instance that was passed to porket save viewmodel
+    final dashboardViewModel = viewModel.dashboardViewModel;
+
+    if (dashboardViewModel == null) {
+      print('❌ Dashboard viewmodel is null in deposit sheet');
+      return;
+    }
+
+    print('💰 Deposit sheet using dashboard balance: \$${dashboardViewModel.usdcBalance}');
+    print('💰 Dashboard balance (display): \$${dashboardViewModel.dashboardBalance}');
+    print('💰 Dashboard viewmodel instance: ${dashboardViewModel.hashCode}');
 
     showModalBottomSheet(
       context: context,
@@ -325,7 +334,7 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
         onDeposit: (amount, fundSource) =>
             viewModel.quickSave(amount, fundSource),
         currentBalance:
-            dashboardViewModel.dashboardBalance, // Use dashboard balance
+            dashboardViewModel.usdcBalance, // Use real USDC balance
         isLoading: viewModel.isBusy,
       ),
     );
@@ -353,6 +362,7 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
     viewModel.initialize(dashboardViewModel);
     return viewModel;
   }
+
 
   Widget _buildTransactionHistory(PorketSaveViewModel viewModel) {
     if (viewModel.transactions.isEmpty) {

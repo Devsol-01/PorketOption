@@ -1,95 +1,35 @@
-# PorketOption - Flexi Save Integration TODO
+# TODO: Display Real USDC Balance on Dashboard
 
-## ✅ Completed Tasks
+## Current Issues
+- Dashboard shows fixed $3000 balance instead of real USDC balance
+- Wallet address retrieval failing in getUsdcBalance
+- Need to load real blockchain balance
 
-### 1. USDC Transfer Functionality
-- [x] Fixed null type cast error in sendUsdc method
-- [x] Implemented AVNU provider approach for sponsored transactions
-- [x] Added proper error handling and validation
-- [x] Integrated with wallet service for seamless USDC transfers
+## Tasks
+- [x] Fix wallet address retrieval in wallet_service.dart getUsdcBalance method
+- [x] Update dashboard_viewmodel.dart to load real USDC balance
+- [x] Update dashboard_view.dart to display real USDC balance
+- [x] Test balance loading functionality
+- [x] Verify wallet initialization works correctly
+- [x] Fix USDC approval for contract deposits
+- [x] Add contract existence validation
+- [x] Add detailed error logging for transaction failures
 
-### 2. Contract Service Implementation
-- [x] Created ContractService class with wallet service dependency
-- [x] Implemented flexiDeposit method for depositing USDC to flexi save
-- [x] Added flexiWithdraw method for withdrawing from flexi save
-- [x] Implemented getFlexiBalance method to query current balance
-- [x] Added getUserTotalDeposits method for total deposit tracking
-- [x] Implemented getUserSavingsStreak method for streak tracking
-- [x] Added proper u256 handling for Starknet amounts
-- [x] Integrated with dependency injection (locator)
+## Files to Edit
+- mobile_app/lib/services/wallet_service.dart
+- mobile_app/lib/ui/views/dashboard/dashboard_viewmodel.dart
+- mobile_app/lib/ui/views/dashboard/dashboard_view.dart
+- mobile_app/lib/services/contract_service.dart
 
-### 3. Configuration Setup
-- [x] Created EnvConfig class for contract addresses and settings
-- [x] Added savings vault contract address configuration
-- [x] Added minimum deposit validation
-- [x] Added network configuration
+## Current Status
+✅ USDC balance display working ($70.0 shown)
+✅ Wallet address retrieval fixed
+✅ Dashboard loads real USDC balance
+✅ USDC approval working with wallet service
+✅ Contract existence check added
+✅ Detailed error logging added
 
-### 4. Integration & Dependencies
-- [x] Fixed locator to properly inject WalletService into ContractService
-- [x] Added proper imports for Starknet libraries
-- [x] Resolved all compilation errors
-
-## 🔄 Next Steps
-
-### UI Integration
-- [ ] Create FlexiSaveViewModel to handle UI state
-- [ ] Implement deposit/withdraw UI components
-- [ ] Add balance display widgets
-- [ ] Create savings streak visualization
-- [ ] Add transaction history view
-
-### Additional Contract Functions
-- [ ] Implement lock save functionality (create_lock_save, withdraw_lock_save)
-- [ ] Add goal save features (create_goal_save, contribute_goal_save)
-- [ ] Implement group save functionality
-- [ ] Add interest calculation and display methods
-
-### Error Handling & UX
-- [ ] Add loading states for contract interactions
-- [ ] Implement retry mechanisms for failed transactions
-- [ ] Add transaction confirmation dialogs
-- [ ] Create error handling UI components
-
-### Testing
-- [ ] Write unit tests for ContractService methods
-- [ ] Add integration tests for contract interactions
-- [ ] Test edge cases (insufficient balance, network errors)
-- [ ] Add mock data for testing scenarios
-
-### Advanced Features
-- [ ] Add transaction history tracking
-- [ ] Implement push notifications for savings milestones
-- [ ] Add analytics for savings patterns
-- [ ] Create referral system integration
-
-## 📋 Usage Example
-
-```dart
-// In a ViewModel or Controller
-final contractService = locator<ContractService>();
-
-// Deposit to flexi save
-final txHash = await contractService.flexiDeposit(BigInt.from(1000000)); // 1 USDC
-
-// Get current balance
-final balance = await contractService.getFlexiBalance();
-
-// Withdraw from flexi save
-final withdrawTx = await contractService.flexiWithdraw(BigInt.from(500000)); // 0.5 USDC
-```
-
-## 🔧 Configuration Required
-
-Before using the contract service, update the contract address in `env_config.dart`:
-
-```dart
-static const String savingsVaultContractAddress = '0xYOUR_ACTUAL_CONTRACT_ADDRESS_HERE';
-```
-
-## 📊 Contract Functions Available
-
-- `flexi_deposit(amount: u256)` - Deposit USDC to flexi save
-- `flexi_withdraw(amount: u256)` - Withdraw USDC from flexi save
-- `get_flexi_balance(user: ContractAddress)` - Get current flexi balance
-- `get_user_total_deposits(user: ContractAddress)` - Get total deposits
-- `get_user_savings_streak(user: ContractAddress)` - Get savings streak
+## Next Steps
+- Test contract deployment on Starknet Sepolia
+- Verify contract has flexi_deposit function
+- Test complete deposit flow after contract is deployed

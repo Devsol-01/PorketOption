@@ -3,10 +3,14 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 import 'package:mobile_app/app/app.locator.dart';
+import 'package:mobile_app/services/contract_service.dart';
+import 'package:mobile_app/services/wallet_service.dart';
 
 class CreateLockViewModel extends BaseViewModel {
   final NavigationService _navigationService = NavigationService();
   final DashboardViewModel _dashboardViewModel = locator<DashboardViewModel>();
+  final ContractService _contractService = locator<ContractService>();
+  final WalletService _walletService = locator<WalletService>();
 
   final TextEditingController amountController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
@@ -181,14 +185,13 @@ class CreateLockViewModel extends BaseViewModel {
       print(
           '✅ Dashboard balance updated to: ${_dashboardViewModel.dashboardBalance}');
 
-      // Mock lock save creation
-      print('🔒 Creating lock save (mock mode)...');
-      
-      // Simulate contract interaction delay
-      await Future.delayed(Duration(milliseconds: 1500));
-      
-      final mockTxHash = '0x${DateTime.now().millisecondsSinceEpoch.toRadixString(16)}';
-      print('✅ Lock created successfully with hash: $mockTxHash');
+      // Use contract service to create lock save
+      final txHash = await _contractService.createLockSave(
+        amount: amount,
+        durationDays: duration,
+        title: title,
+      );
+      print('✅ Lock created successfully with hash: $txHash');
 
       // Refresh dashboard after creation
       await _dashboardViewModel.refreshDashboard();

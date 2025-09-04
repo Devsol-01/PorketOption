@@ -16,7 +16,7 @@ class DashboardViewModel extends BaseViewModel {
 
   bool _isOngoingSelected = true;
 
-  late final TokenService _tokenService;
+  TokenService? _tokenService;
 
   bool get isOngoingSelected => _isOngoingSelected;
 
@@ -29,8 +29,16 @@ class DashboardViewModel extends BaseViewModel {
   double _usdcBalance = 0.0; // Will be loaded from blockchain
   double _dashboardBalance = 0.0; // Will be synced with USDC balance
 
-  double get usdcBalance => _usdcBalance;
-  double get dashboardBalance => _dashboardBalance;
+  double get usdcBalance {
+    print('🔍 usdcBalance getter called: $_usdcBalance');
+    return _usdcBalance;
+  }
+
+  double get dashboardBalance {
+    print('🔍 dashboardBalance getter called: $_dashboardBalance');
+    return _dashboardBalance;
+  }
+
   String get formattedBalance => formatBalance(_balance);
   String get formattedDashboardBalance =>
       '\$${_dashboardBalance.toStringAsFixed(2)}';
@@ -54,7 +62,7 @@ class DashboardViewModel extends BaseViewModel {
     setBusy(true);
 
     try {
-      _tokenService = TokenService();
+      _tokenService ??= TokenService();
 
       // Check if user is authenticated
       if (_firebaseWalletManager.isAuthenticated) {
@@ -80,13 +88,15 @@ class DashboardViewModel extends BaseViewModel {
                 '✅ Wallet loaded after initialization: ${_walletInfo!.address}');
             await loadBalance();
           } else {
-            print('⚠️ Firebase initialization didn\'t load wallet, trying direct load...');
+            print(
+                '⚠️ Firebase initialization didn\'t load wallet, trying direct load...');
 
             // Try to load wallet directly from WalletService storage
             try {
               _walletInfo = await _walletService.loadWallet();
               if (_walletInfo != null) {
-                print('✅ Wallet loaded directly from storage: ${_walletInfo!.address}');
+                print(
+                    '✅ Wallet loaded directly from storage: ${_walletInfo!.address}');
                 await loadBalance();
               } else {
                 print('❌ Still no wallet found after direct load');
@@ -124,6 +134,7 @@ class DashboardViewModel extends BaseViewModel {
       _dashboardBalance = _usdcBalance; // Sync dashboard balance with real USDC
 
       print('✅ Real USDC balance loaded: $_usdcBalance');
+      print('✅ Dashboard balance set to: $_dashboardBalance');
 
       // Keep ETH balance for deployment checks only (not displayed)
       _balance = await _walletService.getEthBalance(_walletInfo!.address);
@@ -141,7 +152,7 @@ class DashboardViewModel extends BaseViewModel {
   void setOngoingSelected(bool value) {
     _isOngoingSelected = value;
     notifyListeners(); // Notify UI to rebuild
-    
+
     // Load transactions when Transactions tab is selected
     if (!value) {
       loadRecentTransactions();
@@ -176,10 +187,12 @@ class DashboardViewModel extends BaseViewModel {
     }
 
     // Show the crypto send sheet
-    _bottomSheetService.showCustomSheet(
+    _bottomSheetService
+        .showCustomSheet(
       variant: BottomSheetType.cryptoSend,
       title: 'Send Crypto',
-    ).then((response) {
+    )
+        .then((response) {
       if (response?.confirmed == true && response?.data != null) {
         // Handle the confirmed response
         final address = response!.data!['address'];
@@ -287,10 +300,10 @@ class DashboardViewModel extends BaseViewModel {
   Future<void> loadSavingsBalance() async {
     try {
       print('📊 Loading savings balances (mock mode)...');
-      
+
       // Mock balances - these will be updated by transfer methods
       // Keep existing balances that were set by transfers
-      
+
       _updateTotalSavingsBalance();
       print('✅ Savings balances loaded successfully');
     } catch (e) {
@@ -379,6 +392,58 @@ class DashboardViewModel extends BaseViewModel {
         variant: BottomSheetType.deposit, barrierDismissible: false);
   }
 
+  /// Handle flexi save deposit from dashboard
+  Future<void> depositToFlexiSave(double amount) async {
+    if (amount <= 0) {
+      _showErrorSnackbar('Invalid deposit amount');
+      return;
+    }
+
+    if (_dashboardBalance < amount) {
+      _showErrorSnackbar(
+          'Insufficient balance. Available: \$${_dashboardBalance}, Required: \$${amount}');
+      return;
+    }
+
+    setBusy(true);
+    try {
+      print('🚀 Starting flexi save deposit: \$${amount}');
+
+      // Show deposit sheet with flexi save option
+      final response = await _bottomSheetService.showCustomSheet(
+        variant: BottomSheetType.deposit,
+        title: 'Deposit to Flexi Save',
+        data: {'amount': amount, 'type': 'flexi_save'},
+      );
+
+      if (response?.confirmed == true) {
+        // Deposit was successful
+        final data = response!.data as Map<String, dynamic>;
+        final txHash = data['txHash'];
+        final depositedAmount = data['amount'];
+
+        // Update balances
+        _dashboardBalance -= depositedAmount;
+        _flexiSaveBalance += depositedAmount;
+        _usdcBalance = _dashboardBalance;
+        _updateTotalSavingsBalance();
+        notifyListeners();
+
+        _showSuccessSnackbar(
+            'Flexi save deposit successful! TX: ${txHash.substring(0, 10)}...');
+        print('✅ Flexi save deposit completed: TX $txHash');
+      } else if (response?.data != null) {
+        // Deposit failed
+        _showErrorSnackbar(response!.data.toString());
+      }
+    } catch (e) {
+      print('❌ Flexi save deposit error: $e');
+      _showErrorSnackbar('Flexi save deposit failed: $e');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   void showSendSheet() {
     _bottomSheetService.showCustomSheet(
         variant: BottomSheetType.send, barrierDismissible: false);
@@ -388,14 +453,26 @@ class DashboardViewModel extends BaseViewModel {
 
   /// Transfer money from dashboard to flexi save
   bool transferToFlexiSave(double amount) {
+    print('🔄 Attempting flexi save transfer: \$${amount}');
+    print('💰 Current dashboard balance: \$${_dashboardBalance}');
+    print('💰 Current USDC balance: \$${_usdcBalance}');
+
     if (_dashboardBalance >= amount) {
+      print('✅ Sufficient balance, proceeding with transfer');
       _dashboardBalance -= amount;
       _flexiSaveBalance += amount;
       _usdcBalance = _dashboardBalance; // Keep USDC balance in sync
       _updateTotalSavingsBalance();
       notifyListeners(); // Trigger UI update
+      print(
+          '✅ Transfer completed. New dashboard balance: \$${_dashboardBalance}');
       return true;
     }
+
+    print('❌ Insufficient balance for transfer');
+    print('   Required: \$${amount}, Available: \$${_dashboardBalance}');
+    _showErrorSnackbar(
+        'Insufficient balance. Available: \$${_dashboardBalance}, Required: \$${amount}');
     return false;
   }
 
@@ -558,5 +635,13 @@ class DashboardViewModel extends BaseViewModel {
 
     _isRefreshing = false;
     notifyListeners();
+  }
+
+  /// Force refresh balance - useful for debugging balance issues
+  Future<void> forceRefreshBalance() async {
+    print('🔄 Force refreshing balance...');
+    await loadBalance();
+    print('✅ Balance refresh completed');
+    _showInfoSnackbar('Balance refreshed: \$${_dashboardBalance}');
   }
 }

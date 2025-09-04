@@ -25,10 +25,6 @@ class PorketSaveViewModel extends BaseViewModel {
   List<Map<String, dynamic>> _transactions = [];
   bool _isLoading = false;
 
-  // AutoSave setup variables
-  double _amount = 1000.0;
-  String? _selectedFrequency = 'daily';
-
   // Getters
   String get balance =>
       _isBalanceVisible ? '${_balance.toStringAsFixed(2)}' : '****';
@@ -41,10 +37,19 @@ class PorketSaveViewModel extends BaseViewModel {
   List<Map<String, dynamic>> get transactions => _transactions;
   bool get isLoading => _isLoading;
 
+  // Public getter for dashboard viewmodel
+  DashboardViewModel? get dashboardViewModel {
+    print(
+        '🔍 Porket save viewmodel accessing dashboard viewmodel: ${_dashboardViewModel?.hashCode}');
+    return _dashboardViewModel;
+  }
+
   void initialize([DashboardViewModel? dashboardViewModel]) async {
+    print('🎯 Porket save viewmodel initialize called');
+    print('🎯 Received dashboard viewmodel: ${dashboardViewModel?.hashCode}');
     _dashboardViewModel = dashboardViewModel;
+    print('🎯 Stored dashboard viewmodel: ${_dashboardViewModel?.hashCode}');
     await loadBalance();
-    await loadWalletInfo();
     await loadTransactions();
   }
 
@@ -61,28 +66,13 @@ class PorketSaveViewModel extends BaseViewModel {
       // Setup default autosave settings
       try {
         // TODO: Implement contract integration
-      // await _contractService.setupAutoSave(
-      //   enabled: value,
-      //   amount: _amount,
-      //   frequency: _selectedFrequency ?? 'weekly',
-      //   fundSource: 'Porket Wallet',
-      // );
-      await Future.delayed(Duration(milliseconds: 500)); // Mock delay
+        await Future.delayed(Duration(milliseconds: 500)); // Mock delay
       } catch (e) {
         print('Error setting up autosave: $e');
         _isAutoSaveEnabled = false;
         notifyListeners();
       }
     }
-  }
-
-  void copyWalletAddress() {
-    Clipboard.setData(ClipboardData(text: _walletAddress));
-    // You can show a snackbar here to indicate successful copy
-  }
-
-  void onQRCodeTap() {
-    // Navigate to QR code screen
   }
 
   void onNotificationTap() {
@@ -98,34 +88,23 @@ class PorketSaveViewModel extends BaseViewModel {
         print('❌ Wallet service not initialized');
         return;
       }
-      if (_contractService == null) {
-        print('❌ Contract service not initialized');
-        return;
-      }
-      final userAddress =
-          _walletService.currentAccount!.accountAddress.toHexString();
-      // TODO: Implement contract integration
-      // final balance = await _contractService.getFlexiBalance();
-      final balance = 0.0; // Mock data
+
+      print('💰 Loading flexi save balance from contract...');
+
+      // Get real flexi balance from contract
+      final balanceBigInt = await _contractService.getFlexiBalance();
+      final balance = balanceBigInt.toDouble() /
+          1000000; // Convert from USDC units to readable format
+
+      print('✅ Flexi save balance loaded: $balance USDC');
       _balance = balance;
     } catch (e) {
-      print('Error loading balance: $e');
-      _balance = 0.0;
+      print('❌ Error loading balance: $e');
+      print('⚠️ Using mock balance due to contract error');
+      _balance = 0.0; // Mock balance for now
     } finally {
       _isLoading = false;
       notifyListeners();
-    }
-  }
-
-  Future<void> loadWalletInfo() async {
-    try {
-      final account = _walletService.currentAccount;
-      if (account != null) {
-        _walletAddress = account.accountAddress.toHexString();
-        notifyListeners();
-      }
-    } catch (e) {
-      print('Error loading wallet info: $e');
     }
   }
 
@@ -148,40 +127,35 @@ class PorketSaveViewModel extends BaseViewModel {
       return;
     }
 
-    // Check if dashboard has sufficient balance
-    if (_dashboardViewModel != null) {
-      if (_dashboardViewModel!.dashboardBalance < amount) {
-        _showErrorSnackbar('Insufficient balance in dashboard');
-        return;
-      }
-    }
-
     setBusy(true);
     try {
-      // Transfer from dashboard to flexi save
-      if (_dashboardViewModel != null) {
-        _dashboardViewModel!.transferToFlexiSave(amount);
+      print('💰 Starting quick save: \$${amount} from $fundSource');
+
+      // Call the contract service to perform flexi deposit with approval
+      final txHash =
+          await _contractService.flexiDepositWithApproval(amount: amount);
+
+      print('✅ Quick save successful! TX: $txHash');
+
+      // Update balance after successful deposit
+      await loadBalance();
+
+      // Transfer from dashboard to flexi save (safely handle disposed viewmodel)
+      try {
+        if (_dashboardViewModel != null) {
+          _dashboardViewModel!.transferToFlexiSave(amount);
+        }
+      } catch (e) {
+        print('⚠️ Dashboard viewmodel disposed, skipping transfer update: $e');
       }
 
-      // Simulate contract interaction
-      await Future.delayed(Duration(milliseconds: 1500));
-      // TODO: Implement contract integration
-      // await _contractService.flexiDeposit(amount: amount);
-      await Future.delayed(Duration(milliseconds: 500)); // Mock delay
-
-      await loadBalance();
       await loadTransactions();
 
       _showSuccessSnackbar(
-          '💰 Quick save successful! \$${amount.toStringAsFixed(2)} added to Porket Save');
+          '💰 Quick save successful! \$${amount.toStringAsFixed(2)} saved to Porket Save');
     } catch (e) {
-      print('Quick save failed: $e');
+      print('❌ Quick save failed: $e');
       _showErrorSnackbar('Quick save failed: $e');
-
-      // Rollback the transfer on error
-      if (_dashboardViewModel != null) {
-        _dashboardViewModel!.transferFromFlexiSave(amount);
-      }
     } finally {
       setBusy(false);
     }
@@ -200,26 +174,30 @@ class PorketSaveViewModel extends BaseViewModel {
 
     setBusy(true);
     try {
-      // Simulate contract interaction
-      await Future.delayed(Duration(milliseconds: 1500));
-      // TODO: Implement contract integration
-      // final result = await _contractService.flexiWithdraw(amount: amount);
-      final result = 'mock_tx_${DateTime.now().millisecondsSinceEpoch}';
+      print('💸 Starting flexi save withdrawal: \$${amount}');
 
-      if (result.isNotEmpty) {
-        // Transfer from flexi save back to dashboard
+      // Call the contract service to perform flexi withdraw
+      final txHash =
+          await _contractService.flexiWithdrawWithApproval(amount: amount);
+
+      print('✅ Flexi withdraw successful! TX: $txHash');
+
+      await loadBalance();
+      // Transfer from flexi save back to dashboard
+      try {
         if (_dashboardViewModel != null) {
           _dashboardViewModel!.transferFromFlexiSave(amount);
         }
-
-        await loadBalance();
-        await loadTransactions();
-
-        _showSuccessSnackbar(
-            '💸 Withdrawal successful! \$${amount.toStringAsFixed(2)} added to dashboard balance');
+      } catch (e) {
+        print('⚠️ Dashboard viewmodel disposed, skipping transfer update: $e');
       }
+
+      await loadTransactions();
+
+      _showSuccessSnackbar(
+          '💸 Withdrawal successful! \$${amount.toStringAsFixed(2)} added to dashboard balance');
     } catch (e) {
-      print('Withdrawal failed: $e');
+      print('❌ Withdrawal failed: $e');
       _showErrorSnackbar('Withdrawal failed: $e');
     } finally {
       setBusy(false);
@@ -232,29 +210,6 @@ class PorketSaveViewModel extends BaseViewModel {
 
   void onWithdrawal() {
     // This will be called by the UI to show withdrawal dialog
-  }
-
-  Future<void> deposit(double amount, String fundSource) async {
-    if (amount <= 0) {
-      print('Invalid amount');
-      return;
-    }
-
-    setBusy(true);
-    try {
-      // TODO: Implement contract integration
-      // final result = await _contractService.flexiDeposit(amount: amount);
-      final result = 'mock_tx_${DateTime.now().millisecondsSinceEpoch}';
-      if (result.isNotEmpty) {
-        await loadBalance();
-        await loadTransactions();
-        print('Deposit successful!');
-      }
-    } catch (e) {
-      print('Deposit failed: $e');
-    } finally {
-      setBusy(false);
-    }
   }
 
   void onSettings() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_app/utils/format_utils.dart';
 import 'package:stacked/stacked.dart';
 
 import 'saving_viewmodel.dart';
@@ -31,7 +32,7 @@ class SavingView extends StackedView<SavingViewModel> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                _buildBalanceCard(context),
+                _buildBalanceCard(context, viewModel),
                 const SizedBox(height: 32),
                 Text(
                   'Choose a Savings Plan',
@@ -82,7 +83,7 @@ class SavingView extends StackedView<SavingViewModel> {
     );
   }
 
-  Widget _buildBalanceCard(BuildContext context) {
+  Widget _buildBalanceCard(BuildContext context, SavingViewModel viewModel) {
     return Container(
       width: double.infinity,
       height: 150,
@@ -129,21 +130,30 @@ class SavingView extends StackedView<SavingViewModel> {
           SizedBox(height: 5),
           Padding(
             padding: const EdgeInsets.only(left: 20),
-            child: Row(
+            child:
+                // Balance Amount
+                Row(
               children: [
                 Text(
-                  '\$2,567.87',
+                  viewModel.isBalanceVisible
+                      ? FormatUtils.formatCurrency(viewModel.rawBalance)
+                      : '****',
                   style: GoogleFonts.poppins(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(width: 12),
-                Icon(
-                  Icons.visibility_outlined,
-                  color: Colors.white.withOpacity(0.8),
-                  size: 24,
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: viewModel.toggleBalanceVisibility,
+                  child: Icon(
+                    viewModel.isBalanceVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
               ],
             ),
@@ -168,6 +178,9 @@ class SavingView extends StackedView<SavingViewModel> {
   @override
   SavingViewModel viewModelBuilder(
     BuildContext context,
-  ) =>
-      SavingViewModel();
+  ) {
+    final viewModel = SavingViewModel();
+    viewModel.initialize();
+    return viewModel;
+  }
 }
