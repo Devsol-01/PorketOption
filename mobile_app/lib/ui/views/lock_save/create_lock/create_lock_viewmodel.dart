@@ -164,7 +164,7 @@ class CreateLockViewModel extends BaseViewModel {
 
     setBusy(true);
     try {
-      final amount = double.tryParse(amountController.text) ?? 0.0;
+      final amount = _amount;
       final title = titleController.text;
       final duration = _selectedDays;
 
@@ -200,7 +200,6 @@ class CreateLockViewModel extends BaseViewModel {
     } catch (e) {
       print('❌ Error creating lock: $e');
       // Rollback on error
-      final amount = double.tryParse(amountController.text) ?? 0.0;
       _dashboardViewModel.withdrawFromSavings(amount);
     } finally {
       setBusy(false);

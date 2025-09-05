@@ -204,7 +204,7 @@ class CreatePublicGroupSaveView
                           onPressed: viewModel.isBusy
                               ? null
                               : (viewModel.canCreateGoal
-                                  ? viewModel.createGoal
+                                  ? viewModel.createPublicGroup
                                   : null),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,

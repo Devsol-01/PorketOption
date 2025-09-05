@@ -1,5 +1,6 @@
 import 'package:mobile_app/app/app.bottomsheets.dart';
 import 'package:mobile_app/app/app.locator.dart';
+import 'package:mobile_app/services/contract_service.dart';
 import 'package:mobile_app/services/firebase_auth_service.dart';
 import 'package:mobile_app/services/firebase_wallet_manager_service.dart';
 import 'package:mobile_app/services/token_service.dart';
@@ -296,18 +297,44 @@ class DashboardViewModel extends BaseViewModel {
   List<Map<String, dynamic>> _recentTransactions = [];
   List<Map<String, dynamic>> get recentTransactions => _recentTransactions;
 
-  /// Load total savings balance - mock implementation
+  /// Load total savings balance from contract
   Future<void> loadSavingsBalance() async {
     try {
-      print('📊 Loading savings balances (mock mode)...');
+      print('📊 Loading real savings balances from contract...');
 
-      // Mock balances - these will be updated by transfer methods
-      // Keep existing balances that were set by transfers
+      // Import contract service
+      final contractService = locator<ContractService>();
+
+      // Load real balances from contract
+      final flexiBalanceBigInt = await contractService.getFlexiBalance();
+      final totalDepositsBigInt = await contractService.getUserTotalDeposits();
+
+      _flexiSaveBalance = flexiBalanceBigInt.toDouble() /
+          1000000.0; // Convert from raw USDC units
+      _lockSaveBalance = totalDepositsBigInt.toDouble() /
+          1000000.0; // This includes all deposits (flexi + lock + goal + group)
+
+      // Load goal save balance from contract
+      final userGoalSaves = await contractService.getUserGoalSaves();
+      _goalSaveBalance = userGoalSaves.fold(0.0, (sum, goal) {
+        final currentAmount = goal['current_amount'] as BigInt?;
+        if (currentAmount != null) {
+          return sum +
+              (currentAmount.toDouble() / 1000000.0); // Convert from USDC units
+        }
+        return sum;
+      });
+
+      // For now, set group to 0 until we implement group saves
+      _groupSaveBalance = 0.0;
 
       _updateTotalSavingsBalance();
-      print('✅ Savings balances loaded successfully');
+      print(
+          '✅ Real savings balances loaded: Flexi: \$${_flexiSaveBalance}, Lock: \$${_lockSaveBalance}, Total: \$${_totalSavingsBalance}');
     } catch (e) {
-      print('❌ Error loading savings balances: $e');
+      print('❌ Error loading real savings balances: $e');
+      // Fallback to mock mode if contract call fails
+      _updateTotalSavingsBalance();
     }
   }
 
@@ -643,5 +670,11 @@ class DashboardViewModel extends BaseViewModel {
     await loadBalance();
     print('✅ Balance refresh completed');
     _showInfoSnackbar('Balance refreshed: \$${_dashboardBalance}');
+  }
+
+  @override
+  void dispose() {
+    // Dispose any controllers or listeners here if any
+    super.dispose();
   }
 }

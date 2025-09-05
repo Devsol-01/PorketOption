@@ -77,7 +77,12 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
       return;
     }
 
-    final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
+    final targetAmountText = targetAmountController.text;
+    final targetAmount = double.tryParse(targetAmountText
+            .replaceAll('\$', '')
+            .replaceAll(',', '')
+            .replaceAll(' USDC', '')) ??
+        0.0;
     if (targetAmount <= 0) {
       _calculatedContributionAmount = 0.0;
       notifyListeners();
@@ -158,7 +163,9 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
   void _updateContributionAmount() {
     final calculatedAmount = calculatedContributionAmount;
     if (calculatedAmount > 0) {
-      contributionController.text = calculatedAmount.toCurrency(symbol: ' 24');
+      // Fix: Use correct currency symbol for USDC (6 decimals)
+      contributionController.text =
+          calculatedAmount.toCurrency(symbol: ' USDC');
     } else {
       contributionController.text = '';
     }
@@ -257,79 +264,63 @@ class CreatePublicGroupSaveViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> createGoal() async {
-    if (!canCreateGoal) return;
-
-    final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
-    final contributionAmount = calculatedContributionAmount;
-
-    if (targetAmount <= 0) {
-      _showErrorSnackbar('Please enter a valid target amount');
+  Future<void> createPublicGroup() async {
+    if (!canCreateGoal) {
+      _showErrorSnackbar('Please fill all required fields and accept terms.');
       return;
     }
 
-    // Check if dashboard has sufficient balance for initial contribution
-    if (_dashboardViewModel != null) {
-      if (_dashboardViewModel!.dashboardBalance < contributionAmount) {
-        _showErrorSnackbar(
-            'Insufficient balance in dashboard for initial contribution');
-        return;
-      }
-    }
-
     setBusy(true);
+
     try {
-      print('👥 Creating public group with contract...');
+      final title = purposeController.text.trim();
+      final description = descriptionController.text.trim();
+      final category = _selectedCategory;
+      final targetAmountText = targetAmountController.text;
+      print('🔍 Public group target amount text: "$targetAmountText"');
+      final targetAmount = double.tryParse(targetAmountText
+              .replaceAll('\$', '')
+              .replaceAll(',', '')
+              .replaceAll(' USDC', '')) ??
+          0.0;
+      print('🔍 Public group parsed target amount: $targetAmount');
+      final contributionType = _frequencyToInt(_selectedFrequency);
+      final contributionAmount = _calculatedContributionAmount;
+      final isPublic = true;
+      final endDate = _endDate!;
 
-      // Transfer initial contribution from dashboard to group save
-      bool transferSuccess = false;
-      if (_dashboardViewModel != null) {
-        transferSuccess =
-            _dashboardViewModel!.transferToGroupSave(contributionAmount);
-      }
+      final txHash = await _contractService.createGroupSave(
+        title: title,
+        description: description,
+        category: category,
+        targetAmount: targetAmount,
+        contributionType: contributionType,
+        contributionAmount: contributionAmount,
+        isPublic: isPublic,
+        endDate: endDate,
+      );
 
-      if (transferSuccess) {
-        // Simulate contract interaction delay
-        await Future.delayed(Duration(milliseconds: 1500));
-
-        // TODO: Implement contract integration
-        // final groupId = await _contractService.createGroupSave(
-        //   title: purposeController.text,
-        //   description: descriptionController.text,
-        //   category: _selectedCategory,
-        //   targetAmount: targetAmount,
-        //   frequency: _selectedFrequency,
-        //   contributionAmount: contributionAmount,
-        //   isPublic: true,
-        //   endTime: _endDate!,
-        // );
-        final groupId = 'mock_public_group_${DateTime.now().millisecondsSinceEpoch}';
-
-        if (groupId.isNotEmpty) {
-          print('👥 Public group created successfully with ID: $groupId');
-          _showSuccessSnackbar(
-              '👥 Group Save created successfully! \$${contributionAmount.toStringAsFixed(2)} transferred as initial contribution');
-          _navigationService.back();
-        } else {
-          _showErrorSnackbar('Failed to create group save');
-          // Rollback the transfer on error
-          if (_dashboardViewModel != null) {
-            _dashboardViewModel!.transferFromGroupSave(contributionAmount);
-          }
-        }
-      } else {
-        _showErrorSnackbar('Transfer failed. Please try again.');
-      }
+      _showSuccessSnackbar('👥 Group Save created successfully! TX: $txHash');
+      _navigationService.back();
     } catch (e) {
-      print('❌ Error creating public group: $e');
-      _showErrorSnackbar('Error creating group: $e');
-
-      // Rollback the transfer on error
-      if (_dashboardViewModel != null) {
-        _dashboardViewModel!.transferFromGroupSave(contributionAmount);
-      }
+      _showErrorSnackbar('Failed to create group save: $e');
     } finally {
       setBusy(false);
+    }
+  }
+
+  int _frequencyToInt(String frequency) {
+    switch (frequency.toLowerCase()) {
+      case 'daily':
+        return 1;
+      case 'weekly':
+        return 2;
+      case 'monthly':
+        return 3;
+      case 'manual':
+        return 4;
+      default:
+        return 4;
     }
   }
 

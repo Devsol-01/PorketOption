@@ -4,6 +4,7 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:mobile_app/extensions/num_extensions.dart';
+import 'package:mobile_app/services/contract_service.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 
 class CreateGoalViewModel extends BaseViewModel {
@@ -235,61 +236,40 @@ class CreateGoalViewModel extends BaseViewModel {
   }
 
   Future<void> createGoal() async {
-    if (!canCreateGoal) return;
-
-    final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
-    final contributionAmount = calculatedContributionAmount;
-
-    if (targetAmount <= 0) {
-      _showErrorSnackbar('Please enter a valid target amount');
+    if (!canCreateGoal) {
+      _showErrorSnackbar('Please fill all required fields and accept terms.');
       return;
     }
 
-    // Check if dashboard has sufficient balance for initial contribution
-    if (_dashboardViewModel != null) {
-      if (_dashboardViewModel!.dashboardBalance < contributionAmount) {
-        _showErrorSnackbar(
-            'Insufficient balance in dashboard for initial contribution');
-        return;
-      }
-    }
-
-    setBusy(true);
     try {
-      print('🎯 Creating goal with contract...');
+      final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
+      final contributionAmount = double.tryParse(
+              contributionController.text.replaceAll(RegExp(r'[^0-9.]'), '')) ??
+          0.0;
 
-      // Transfer initial contribution from dashboard to goal save
-      bool transferSuccess = false;
-      if (_dashboardViewModel != null) {
-        transferSuccess =
-            _dashboardViewModel!.transferToGoalSave(contributionAmount);
-      }
+      final contributionTypeMap = {
+        'Daily': 1,
+        'Weekly': 2,
+        'Monthly': 3,
+        'Manual': 4,
+      };
 
-      if (transferSuccess) {
-        // Simulate contract interaction delay
-        await Future.delayed(Duration(milliseconds: 1500));
+      final contributionType = contributionTypeMap[_selectedFrequency] ?? 4;
 
-        // Mock goal creation
-        final mockGoalId = 'goal_${DateTime.now().millisecondsSinceEpoch}';
-        print('✅ Goal created successfully! ID: $mockGoalId');
-        _showSuccessSnackbar(
-            '🎯 Goal Save created successfully! \$${contributionAmount.toStringAsFixed(2)} transferred as initial contribution');
+      final txHash = await locator<ContractService>().createGoalSave(
+        title: purposeController.text,
+        category: _selectedCategory,
+        targetAmount: targetAmount,
+        contributionType: contributionType,
+        contributionAmount: contributionAmount,
+        endDate: _endDate!,
+      );
 
-        // Navigate back to Goal Save page
-        _navigationService.navigateToGoalSaveView();
-      } else {
-        _showErrorSnackbar('Transfer failed. Please try again.');
-      }
+      _showSuccessSnackbar('Goal created successfully! TX: $txHash');
+      _dashboardViewModel?.refreshDashboard();
+      navigateBack();
     } catch (e) {
-      print('❌ Error creating goal: $e');
-      _showErrorSnackbar('Error creating goal: $e');
-
-      // Rollback the transfer on error
-      if (_dashboardViewModel != null) {
-        _dashboardViewModel!.transferFromGoalSave(contributionAmount);
-      }
-    } finally {
-      setBusy(false);
+      _showErrorSnackbar('Failed to create goal: $e');
     }
   }
 

@@ -9,6 +9,7 @@ import 'package:stacked_services/stacked_services.dart';
 class CreatePrivateGroupSaveViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final ContractService _contractService = locator<ContractService>();
+  final SnackbarService _snackbarService = locator<SnackbarService>();
 
   // Controllers
   final TextEditingController purposeController = TextEditingController();
@@ -140,7 +141,9 @@ class CreatePrivateGroupSaveViewModel extends BaseViewModel {
   void _updateContributionAmount() {
     final calculatedAmount = calculatedContributionAmount;
     if (calculatedAmount > 0) {
-      contributionController.text = calculatedAmount.toCurrency(symbol: ' 24');
+      // Fix: Use correct currency symbol for USDC (6 decimals)
+      contributionController.text =
+          calculatedAmount.toCurrency(symbol: ' USDC');
     } else {
       contributionController.text = '';
     }
@@ -239,38 +242,80 @@ class CreatePrivateGroupSaveViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> createGoal() async {
-    if (!canCreateGoal) return;
+  Future<void> createPrivateGroup() async {
+    if (!canCreateGoal) {
+      // Show error snackbar
+      _showErrorSnackbar('Please fill all required fields and accept terms.');
+      return;
+    }
 
     setBusy(true);
+
     try {
-      final targetAmount = double.tryParse(targetAmountController.text) ?? 0.0;
+      final title = purposeController.text.trim();
+      final description = descriptionController.text.trim();
+      final category = _selectedCategory;
+      final targetAmountText = targetAmountController.text;
+      print('🔍 Target amount text: "$targetAmountText"');
+      final targetAmount = double.tryParse(targetAmountText
+              .replaceAll('\$', '')
+              .replaceAll(',', '')
+              .replaceAll(' USDC', '')) ??
+          0.0;
+      print('🔍 Parsed target amount: $targetAmount');
+      final contributionType = _frequencyToInt(_selectedFrequency);
       final contributionAmount = calculatedContributionAmount;
+      final isPublic = false;
+      final endDate = _endDate!;
 
-      // Generate a random group code for private groups
-      final groupCode = _generateGroupCode();
+      final txHash = await _contractService.createGroupSave(
+        title: title,
+        description: description,
+        category: category,
+        targetAmount: targetAmount,
+        contributionType: contributionType,
+        contributionAmount: contributionAmount,
+        isPublic: isPublic,
+        endDate: endDate,
+      );
 
-      // TODO: Implement contract integration
-      // final groupId = await _contractService.createGroupSave(
-      //   title: purposeController.text,
-      //   description: descriptionController.text,
-      //   category: _selectedCategory,
-      //   targetAmount: targetAmount,
-      //   frequency: _selectedFrequency,
-      //   contributionAmount: contributionAmount,
-      //   isPublic: false,
-      //   endTime: _endDate!,
-      // );
-      final groupId = 'mock_private_group_${DateTime.now().millisecondsSinceEpoch}';
-
-      print(
-          '🔒 Private group created successfully with ID: $groupId and code: $groupCode');
-      _navigationService.navigateToGroupSaveView();
+      _showSuccessSnackbar(
+          '🔒 Private Group Save created successfully! TX: $txHash');
+      _navigationService.clearStackAndShow(Routes.groupSaveView);
     } catch (e) {
-      print('❌ Error creating private group: $e');
+      _showErrorSnackbar('Failed to create private group save: $e');
     } finally {
       setBusy(false);
     }
+  }
+
+  int _frequencyToInt(String frequency) {
+    switch (frequency.toLowerCase()) {
+      case 'daily':
+        return 1;
+      case 'weekly':
+        return 2;
+      case 'monthly':
+        return 3;
+      case 'manual':
+        return 4;
+      default:
+        return 4;
+    }
+  }
+
+  void _showSuccessSnackbar(String message) {
+    _snackbarService.showSnackbar(
+      message: message,
+      duration: Duration(seconds: 3),
+    );
+  }
+
+  void _showErrorSnackbar(String message) {
+    _snackbarService.showSnackbar(
+      message: message,
+      duration: Duration(seconds: 4),
+    );
   }
 
   String _generateGroupCode() {

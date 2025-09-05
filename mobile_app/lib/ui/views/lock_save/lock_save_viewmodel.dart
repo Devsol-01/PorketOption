@@ -86,7 +86,7 @@ class LockSaveViewModel extends BaseViewModel {
 
   Future<void> initialize() async {
     await loadLockSaveBalance();
-    await loadUserLocks();
+    //await loadUserLocks();
     print(
         '🔒 Lock Save Debug: Loaded ${_ongoingLocks.length} ongoing locks, ${_completedLocks.length} completed locks');
 
@@ -157,13 +157,24 @@ class LockSaveViewModel extends BaseViewModel {
   // Load user locks from contract
   Future<void> loadUserLocks() async {
     try {
-      // TODO: Implement contract integration
-      // final locks = await _contractService.getUserLocks();
-      final locks = <Map<String, dynamic>>[]; // Mock data
+      // Get all lock saves for the current user
+      final locks = await _contractService.getUserLockSaves();
       print('🔒 Raw locks from contract: ${locks.length} total');
-      
+
       _ongoingLocks = [];
       _completedLocks = [];
+
+      // Filter locks into ongoing and completed
+      for (final lock in locks) {
+        final isMatured = lock['is_matured'] ?? false;
+        final isWithdrawn = lock['is_withdrawn'] ?? false;
+
+        if (isWithdrawn) {
+          _completedLocks.add(lock);
+        } else {
+          _ongoingLocks.add(lock);
+        }
+      }
 
       print(
           '🔒 Filtered: ${_ongoingLocks.length} ongoing, ${_completedLocks.length} completed');
@@ -357,5 +368,11 @@ class LockSaveViewModel extends BaseViewModel {
       message: message,
       duration: Duration(seconds: 4),
     );
+  }
+
+  @override
+  void dispose() {
+    // Dispose any controllers or listeners here if any
+    super.dispose();
   }
 }

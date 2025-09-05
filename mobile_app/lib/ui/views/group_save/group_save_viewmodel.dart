@@ -54,9 +54,11 @@ class GroupSaveViewModel extends BaseViewModel {
   // Load group save balance from contract
   Future<void> loadGroupSaveBalance() async {
     try {
-      // TODO: Implement contract integration
-      // _groupSaveBalance = await _contractService.getGroupSaveRate() * 1000;
-      _groupSaveBalance = 0.0; // Mock data
+      // Get the group save rate (in percentage)
+      final rate = await _contractService.getGroupSaveRate();
+      // For now, we'll use the rate as a placeholder for balance
+      // In a real implementation, you'd calculate based on user's group contributions
+      _groupSaveBalance = rate; // This is just a placeholder
       notifyListeners();
     } catch (e) {
       print('Error loading group save balance: $e');
@@ -169,9 +171,10 @@ class GroupSaveViewModel extends BaseViewModel {
   Future<void> joinSavingsGroup(String groupId, {String? groupCode}) async {
     setBusy(true);
     try {
-      // TODO: Implement contract integration
-      // final txHash = await _contractService.joinGroupSave(groupId: groupId);
-      final txHash = 'mock_tx_${DateTime.now().millisecondsSinceEpoch}';
+      // Convert string groupId to BigInt
+      final groupIdBigInt = BigInt.parse(groupId);
+      final txHash =
+          await _contractService.joinGroupSave(groupId: groupIdBigInt);
 
       print('Successfully joined group: $txHash');
       // Refresh data
@@ -179,6 +182,7 @@ class GroupSaveViewModel extends BaseViewModel {
       await loadUserGroups();
     } catch (e) {
       print('Error joining group: $e');
+      rethrow; // Re-throw to let UI handle the error
     } finally {
       setBusy(false);
     }
@@ -229,12 +233,12 @@ class GroupSaveViewModel extends BaseViewModel {
   Future<void> contributeToGroup(String groupId, double amount) async {
     setBusy(true);
     try {
-      // TODO: Implement contract integration
-      // final txHash = await _contractService.contributeGroupSave(
-      //   groupId: groupId,
-      //   amount: amount,
-      // );
-      final txHash = 'mock_tx_${DateTime.now().millisecondsSinceEpoch}';
+      // Convert string groupId to BigInt
+      final groupIdBigInt = BigInt.parse(groupId);
+      final txHash = await _contractService.contributeToGroupSave(
+        groupId: groupIdBigInt,
+        amount: amount,
+      );
 
       print('Contribution successful: $txHash');
       // Refresh data
@@ -242,6 +246,7 @@ class GroupSaveViewModel extends BaseViewModel {
       await loadUserGroups();
     } catch (e) {
       print('Error contributing to group: $e');
+      rethrow; // Re-throw to let UI handle the error
     } finally {
       setBusy(false);
     }
@@ -270,7 +275,26 @@ class GroupSaveViewModel extends BaseViewModel {
     await initialize();
   }
 
+  // Get group save details
+  Future<Map<String, dynamic>> getGroupSaveDetails(String groupId) async {
+    try {
+      final groupIdBigInt = BigInt.parse(groupId);
+      final groupDetails =
+          await _contractService.getGroupSave(groupId: groupIdBigInt);
+      return groupDetails;
+    } catch (e) {
+      print('Error getting group save details: $e');
+      rethrow;
+    }
+  }
+
   void navigateToGroupDetail(Map<String, dynamic> group) {
     _navigationService.navigateToGroupSaveDetailsView(group: group);
+  }
+
+  @override
+  void dispose() {
+    // Dispose any controllers or listeners here if any
+    super.dispose();
   }
 }

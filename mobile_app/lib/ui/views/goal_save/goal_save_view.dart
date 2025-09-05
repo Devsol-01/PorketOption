@@ -653,6 +653,6 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
 
   @override
   void onViewModelReady(GoalSaveViewModel viewModel) {
-    viewModel.initialize();
+    //viewModel.initialize();
   }
 }

@@ -236,7 +236,7 @@ class CreatePrivateGroupSaveView
 InkWell(
   onTap: viewModel.isBusy
       ? null
-      : (viewModel.canCreateGoal ? viewModel.createGoal : null),
+      : (viewModel.canCreateGoal ? viewModel.createPrivateGroup : null),
   borderRadius: BorderRadius.circular(46),
   child: Container(
     width: 358,
