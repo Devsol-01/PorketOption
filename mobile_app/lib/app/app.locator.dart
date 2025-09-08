@@ -43,7 +43,8 @@ Future<void> setupLocator({
   locator.registerLazySingleton(() => FirebaseAuthService());
   locator.registerLazySingleton(() => SnackbarService());
   locator.registerLazySingleton(() => ApiService());
-  locator.registerLazySingleton(() => ContractService(locator<WalletService>()));
-  locator.registerLazySingleton(() => DashboardViewModel());
-  locator.registerLazySingleton(() => GoalSaveViewModel());
+  locator
+      .registerLazySingleton(() => ContractService(locator<WalletService>()));
+  locator.registerFactory(() => DashboardViewModel());
+  locator.registerFactory(() => GoalSaveViewModel());
 }

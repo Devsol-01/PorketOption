@@ -182,8 +182,9 @@ class CreateGoalViewModel extends BaseViewModel {
   Future<void> selectStartDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _startDate ?? DateTime.now(),
-      firstDate: DateTime.now(),
+      initialDate: _startDate ?? DateTime.now().add(const Duration(days: 1)),
+      firstDate:
+          DateTime.now().add(const Duration(days: 1)), // Start from tomorrow
       lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
       builder: (context, child) {
         return Theme(
@@ -262,6 +263,7 @@ class CreateGoalViewModel extends BaseViewModel {
         targetAmount: targetAmount,
         contributionType: contributionType,
         contributionAmount: contributionAmount,
+        startDate: _startDate!,
         endDate: _endDate!,
       );
 

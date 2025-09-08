@@ -43,13 +43,13 @@ class DashboardView extends StackedView<DashboardViewModel> {
 
                 // Bottom Buttons
                 _buildBottomButtons(context, viewModel),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // Transaction History Section (only shown when Transactions is selected)
-              if (!viewModel.isOngoingSelected)
-                _buildTransactionHistory(viewModel),
-              
-              const SizedBox(height: 100), // Space for bottom navigation
+                // Transaction History Section (only shown when Transactions is selected)
+                if (!viewModel.isOngoingSelected)
+                  _buildTransactionHistory(viewModel),
+
+                const SizedBox(height: 100), // Space for bottom navigation
               ],
             ),
           ),

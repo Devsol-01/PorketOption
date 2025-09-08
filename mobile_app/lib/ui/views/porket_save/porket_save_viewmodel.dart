@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:stacked/stacked.dart';
 import 'package:mobile_app/services/contract_service.dart';
 import 'package:mobile_app/services/wallet_service.dart';
+import 'package:mobile_app/services/firebase_wallet_manager_service.dart';
 import 'package:mobile_app/ui/views/dashboard/dashboard_viewmodel.dart';
 import 'package:mobile_app/app/app.locator.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -10,6 +11,8 @@ import 'package:mobile_app/app/app.router.dart';
 class PorketSaveViewModel extends BaseViewModel {
   final ContractService _contractService = locator<ContractService>();
   final WalletService _walletService = locator<WalletService>();
+  final FirebaseWalletManagerService _firebaseWalletManager =
+      locator<FirebaseWalletManagerService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
   final NavigationService _navigationService = locator<NavigationService>();
 
@@ -84,24 +87,57 @@ class PorketSaveViewModel extends BaseViewModel {
     notifyListeners();
 
     try {
+      // Check if wallet is available in WalletService first
       if (_walletService.currentAccount == null) {
-        print('❌ Wallet service not initialized');
-        return;
+        print('⚠️ No wallet in WalletService, checking Firebase...');
+
+        // Check if user is authenticated with Firebase
+        if (_firebaseWalletManager.isAuthenticated) {
+          print(
+              '✅ User authenticated, initializing Firebase wallet manager...');
+
+          // Initialize Firebase wallet manager to load wallet
+          await _firebaseWalletManager.initialize();
+
+          // Check if wallet is now available
+          if (_walletService.currentAccount == null) {
+            print(
+                '❌ Firebase initialization didn\'t load wallet, trying direct load...');
+
+            // Try direct load as fallback
+            try {
+              await _walletService.loadWallet();
+              if (_walletService.currentAccount == null) {
+                print('❌ Still no wallet available after all attempts');
+                _balance = 0.0;
+                return;
+              }
+            } catch (e) {
+              print('❌ Error in direct wallet load: $e');
+              _balance = 0.0;
+              return;
+            }
+          }
+        } else {
+          print('❌ User not authenticated with Firebase');
+          _balance = 0.0;
+          return;
+        }
       }
 
       print('💰 Loading flexi save balance from contract...');
 
       // Get real flexi balance from contract
       final balanceBigInt = await _contractService.getFlexiBalance();
+
       final balance = balanceBigInt.toDouble() /
           1000000; // Convert from USDC units to readable format
-
       print('✅ Flexi save balance loaded: $balance USDC');
       _balance = balance;
     } catch (e) {
       print('❌ Error loading balance: $e');
-      print('⚠️ Using mock balance due to contract error');
-      _balance = 0.0; // Mock balance for now
+      print('⚠️ Using zero balance due to error');
+      _balance = 0.0;
     } finally {
       _isLoading = false;
       notifyListeners();

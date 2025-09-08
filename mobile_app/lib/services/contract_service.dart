@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:math' as math;
 import 'package:starknet/starknet.dart';
 import 'package:starknet_provider/starknet_provider.dart';
 import 'package:avnu_provider/avnu_provider.dart';
@@ -50,11 +51,12 @@ class ContractService {
 
   //functions for porket save
 
-    /// Get flexi balance for current user
+  /// Get flexi balance for current user
   Future<BigInt> getFlexiBalance() async {
     final account = _walletService.currentAccount;
     if (account == null) {
-      throw Exception('Wallet not connected');
+      print('❌ CONTRACT SERVICE: Wallet not connected');
+      return BigInt.zero; // Return zero instead of throwing
     }
 
     final userAddress = account.accountAddress;
@@ -63,54 +65,56 @@ class ContractService {
         '🔍 CONTRACT SERVICE: Getting flexi balance for user: ${userAddress.toHexString()}');
     print('📞 CONTRACT SERVICE: Contract address: $_contractAddress');
 
-    // Prepare function call for get_flexi_balance
-    final functionCall = FunctionCall(
-      contractAddress: _contractAddress,
-      entryPointSelector: getSelectorByName('get_flexi_balance'),
-      calldata: [userAddress],
-    );
+    try {
+      // Prepare function call for get_flexi_balance
+      final functionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_flexi_balance'),
+        calldata: [userAddress],
+      );
 
-    print(
-        '📋 CONTRACT SERVICE: Function call prepared: ${functionCall.entryPointSelector}');
+      print(
+          '📋 CONTRACT SERVICE: Function call prepared: ${functionCall.entryPointSelector}');
 
-    // Call the contract
-    final response = await account.provider.call(
-      request: functionCall,
-      blockId: BlockId.latest,
-    );
+      // Call the contract
+      final response = await account.provider.call(
+        request: functionCall,
+        blockId: BlockId.latest,
+      );
 
-    return response.when(
-      result: (result) {
-        print('📊 CONTRACT SERVICE: Raw balance result: $result');
+      return response.when(
+        result: (result) {
+          print('📊 CONTRACT SERVICE: Raw balance result: $result');
 
-        if (result.length < 2) {
-          print(
-              '❌ CONTRACT SERVICE: Invalid balance response - not enough elements');
-          throw Exception('Invalid balance response');
-        }
+          if (result.length < 2) {
+            print(
+                '❌ CONTRACT SERVICE: Invalid balance response - not enough elements');
+            return BigInt.zero; // Return zero instead of throwing
+          }
 
-        // Combine low and high parts for u256
-        final low = result[0].toBigInt();
-        final high = result[1].toBigInt();
+          // Combine low and high parts for u256
+          final low = result[0].toBigInt();
+          final high = result[1].toBigInt();
 
-        print('🔢 CONTRACT SERVICE: Low: $low, High: $high');
+          print('🔢 CONTRACT SERVICE: Low: $low, High: $high');
 
-        final balance = low + (high << 128);
-        print('✅ CONTRACT SERVICE: Combined balance: $balance');
+          final balance = low + (high << 128);
+          print('✅ CONTRACT SERVICE: Combined balance: $balance');
 
-        return balance;
-      },
-      error: (error) {
-        print('❌ CONTRACT SERVICE: Failed to get flexi balance: $error');
-        throw Exception('Failed to get flexi balance: $error');
-      },
-    );
+          return balance;
+        },
+        error: (error) {
+          print('❌ CONTRACT SERVICE: Failed to get flexi balance: $error');
+          return BigInt.zero; // Return zero instead of throwing
+        },
+      );
+    } catch (e) {
+      print('❌ CONTRACT SERVICE: Exception getting flexi balance: $e');
+      return BigInt.zero; // Return zero instead of throwing
+    }
   }
 
-
-
-
-    /// Flexi deposit using AVNU provider for better transaction handling
+  /// Flexi deposit using AVNU provider for better transaction handling
   Future<String> flexiDepositWithAvnu({
     required double amount,
   }) async {
@@ -440,14 +444,6 @@ class ContractService {
     }
   }
 
-
-
-
-
-
-
-
-
   /// Get Savings balance for current user
   Future<BigInt> getSavingsBalance() async {
     final account = _walletService.currentAccount;
@@ -504,8 +500,6 @@ class ContractService {
       },
     );
   }
-
-
 
   /// Get user total deposits
   Future<BigInt> getUserTotalDeposits() async {
@@ -629,7 +623,6 @@ class ContractService {
       return 0.0;
     }
   }
-
 
   /// Create a lock save
   Future<String> createLockSave({
@@ -1019,9 +1012,548 @@ class ContractService {
   }
 
   /// Get all lock saves for the current user
+  // Future<List<Map<String, dynamic>>> getUserLockSaves() async {
+  //   final account = _walletService.currentAccount;
+  //   if (account == null) {
+  //     throw Exception('Wallet not connected');
+  //   }
+
+  //   final userAddress = account.accountAddress;
+
+  //   try {
+  //     print('🔍 Getting user lock saves for: ${userAddress.toHexString()}');
+
+  //     // Get ongoing lock saves
+  //     final ongoingFunctionCall = FunctionCall(
+  //       contractAddress: _contractAddress,
+  //       entryPointSelector: getSelectorByName('get_user_ongoing_lock_saves'),
+  //       calldata: [userAddress],
+  //     );
+
+  //     final ongoingResponse = await account.provider.call(
+  //       request: ongoingFunctionCall,
+  //       blockId: BlockId.latest,
+  //     );
+
+  //     // Get matured lock saves
+  //     final maturedFunctionCall = FunctionCall(
+  //       contractAddress: _contractAddress,
+  //       entryPointSelector: getSelectorByName('get_user_matured_lock_saves'),
+  //       calldata: [userAddress],
+  //     );
+
+  //     final maturedResponse = await account.provider.call(
+  //       request: maturedFunctionCall,
+  //       blockId: BlockId.latest,
+  //     );
+
+  //     final lockSaves = <Map<String, dynamic>>[];
+
+  //     // Parse ongoing lock saves
+  //     ongoingResponse.when(
+  //       result: (result) {
+  //         if (result.isNotEmpty) {
+  //           print('🔍 Raw ongoing lock save result: $result');
+  //           // Each LockSave struct has 8 fields, so we process in chunks of 8
+  //           for (int i = 0; i < result.length; i += 8) {
+  //             if (i + 7 < result.length) {
+  //               // Convert amount from raw USDC units (6 decimals) to readable format
+  //               final rawAmount = result[i + 2].toBigInt();
+  //               final amount = rawAmount.toDouble() / pow(10, 6);
+
+  //               // Convert title from Felt back to string
+  //               final titleFelt = result[i + 6].toBigInt();
+  //               print('🔍 Title Felt value: $titleFelt');
+  //               final title = Felt(titleFelt).toString();
+  //               print('🔍 Converted title: $title');
+
+  //               final lockSave = {
+  //                 'id': result[i].toBigInt(),
+  //                 'user': result[i + 1].toHexString(),
+  //                 'amount': amount,
+  //                 'duration': result[i + 3].toBigInt().toInt(),
+  //                 'start_time': result[i + 4].toBigInt().toInt(),
+  //                 'maturity_time': result[i + 5].toBigInt().toInt(),
+  //                 'title': title,
+  //                 'is_matured': false,
+  //               };
+  //               lockSaves.add(lockSave);
+  //             }
+  //           }
+  //         }
+  //       },
+  //       error: (error) {
+  //         print('❌ Failed to get ongoing lock saves: $error');
+  //       },
+  //     );
+
+  //     // Parse matured lock saves
+  //     maturedResponse.when(
+  //       result: (result) {
+  //         if (result.isNotEmpty) {
+  //           // Each LockSave struct has 8 fields, so we process in chunks of 8
+  //           for (int i = 0; i < result.length; i += 8) {
+  //             if (i + 7 < result.length) {
+  //               // Convert amount from raw USDC units (6 decimals) to readable format
+  //               final rawAmount = result[i + 2].toBigInt();
+  //               final amount = rawAmount.toDouble() / pow(10, 6);
+
+  //               // Convert title from Felt back to string
+  //               final titleFelt = result[i + 6].toBigInt();
+  //               final title = Felt(titleFelt).toString();
+
+  //               final lockSave = {
+  //                 'id': result[i].toBigInt(),
+  //                 'user': result[i + 1].toHexString(),
+  //                 'amount': amount,
+  //                 'duration': result[i + 3].toBigInt().toInt(),
+  //                 'start_time': result[i + 4].toBigInt().toInt(),
+  //                 'maturity_time': result[i + 5].toBigInt().toInt(),
+  //                 'title': title,
+  //                 'is_matured': true,
+  //               };
+  //               lockSaves.add(lockSave);
+  //             }
+  //           }
+  //         }
+  //       },
+  //       error: (error) {
+  //         print('❌ Failed to get matured lock saves: $error');
+  //       },
+  //     );
+
+  //     print('✅ Retrieved ${lockSaves.length} lock saves');
+  //     return lockSaves;
+  //   } catch (e) {
+  //     print('❌ Error getting user lock saves: $e');
+  //     throw Exception('Failed to get user lock saves: $e');
+  //   }
+  // }
+
+  /// Get all lock saves for the current user
   Future<List<Map<String, dynamic>>> getUserLockSaves() async {
-    // Temporarily return empty list to stop terminal spam
-    return [];
+    final account = _walletService.currentAccount;
+    if (account == null) {
+      throw Exception('Wallet not connected');
+    }
+
+    final userAddress = account.accountAddress;
+
+    try {
+      print('🔍 Getting user lock saves for: ${userAddress.toHexString()}');
+
+      // Get ongoing lock saves
+      final ongoingFunctionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_user_ongoing_lock_saves'),
+        calldata: [userAddress],
+      );
+
+      // Get matured lock saves
+      final maturedFunctionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_user_matured_lock_saves'),
+        calldata: [userAddress],
+      );
+
+      // Execute both calls
+      final results = await Future.wait([
+        account.provider
+            .call(request: ongoingFunctionCall, blockId: BlockId.latest),
+        account.provider
+            .call(request: maturedFunctionCall, blockId: BlockId.latest),
+      ]);
+
+      final ongoingResponse = results[0];
+      final maturedResponse = results[1];
+      final lockSaves = <Map<String, dynamic>>[];
+
+      // Parse ongoing lock saves
+      await ongoingResponse.when(
+        result: (result) async {
+          final parsedLockSaves = await _parseLockSaveResults(result, false);
+          lockSaves.addAll(parsedLockSaves);
+        },
+        error: (error) {
+          print('❌ Failed to get ongoing lock saves: $error');
+          throw Exception('Failed to get ongoing lock saves: $error');
+        },
+      );
+
+      // Parse matured lock saves
+      await maturedResponse.when(
+        result: (result) async {
+          final parsedLockSaves = await _parseLockSaveResults(result, true);
+          lockSaves.addAll(parsedLockSaves);
+        },
+        error: (error) {
+          print('❌ Failed to get matured lock saves: $error');
+          throw Exception('Failed to get matured lock saves: $error');
+        },
+      );
+
+      print('✅ Retrieved ${lockSaves.length} lock saves');
+      return lockSaves;
+    } catch (e) {
+      print('❌ Error getting user lock saves: $e');
+      throw Exception('Failed to get user lock saves: $e');
+    }
+  }
+
+  /// Helper method to parse lock save results
+// Replace your existing _parseLockSaveResults method with this one:
+  Future<List<Map<String, dynamic>>> _parseLockSaveResults(
+    List<Felt> result,
+    bool isMatured,
+  ) async {
+    final lockSaves = <Map<String, dynamic>>[];
+
+    if (result.isEmpty) {
+      print('📝 No ${isMatured ? 'matured' : 'ongoing'} lock saves found');
+      return lockSaves;
+    }
+
+  print(
+      '🔍 Raw ${isMatured ? 'matured' : 'ongoing'} lock save result: $result');
+
+  // In Starknet, Array<T> is serialized as [length, element1, element2, ...]
+  // So we skip the first element (length) and start parsing from index 1
+  if (result.isEmpty) {
+    print('⚠️ Empty result array');
+    return lockSaves;
+  }
+
+  final arrayLength = result[0].toBigInt().toInt();
+  print('📏 Array length from contract: $arrayLength');
+
+  const int structSize = 13;
+  final dataStartIndex = 1; // Skip the length element
+  final expectedTotalLength = dataStartIndex + (arrayLength * structSize);
+
+  if (result.length != expectedTotalLength) {
+    print(
+        '⚠️ Warning: Expected length $expectedTotalLength, got ${result.length}');
+  }
+
+  for (int structIndex = 0; structIndex < arrayLength; structIndex++) {
+    final i = dataStartIndex + (structIndex * structSize);
+      if (i + structSize - 1 < result.length) {
+        try {
+          // Parse u256 fields (2 felts each)
+          BigInt parseU256(int index) {
+            final low = result[index].toBigInt();
+            final high = result[index + 1].toBigInt();
+            return low + (high << 128);
+          }
+
+          final lockId = parseU256(i); // id: u256
+          final userAddress =
+              result[i + 2].toHexString(); // user: ContractAddress
+          final amount =
+              parseU256(i + 3).toDouble() / pow(10, 6); // amount: u256
+          final interestRate = parseU256(i + 5); // interest_rate: u256
+          final lockDuration =
+              result[i + 7].toBigInt().toInt(); // lock_duration: u64
+          final startTime = result[i + 8].toBigInt().toInt(); // start_time: u64
+          final maturityTime =
+              result[i + 9].toBigInt().toInt(); // maturity_time: u64
+          final titleFelt = result[i + 10].toBigInt(); // felt252
+
+          String title;
+          try {
+            if (titleFelt == BigInt.zero) {
+              title = 'Untitled';
+            } else {
+              title = _feltToString(titleFelt);
+              if (title.isEmpty) title = 'Untitled';
+            }
+          } catch (e) {
+            print('⚠️ Failed to convert title, using fallback: $e');
+            title = 'Untitled Lock';
+          }
+
+          final isMaturedField =
+              result[i + 11].toBigInt() == BigInt.one; // is_matured: bool
+          final isWithdrawnField =
+              result[i + 12].toBigInt() == BigInt.one; // is_withdrawn: bool
+
+          final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+          final timeRemaining = math.max(0, maturityTime - currentTime);
+
+          String status;
+          if (isWithdrawnField) {
+            status = 'completed';
+          } else if (isMaturedField || currentTime >= maturityTime) {
+            status = 'ready_to_withdraw';
+          } else {
+            status = 'ongoing';
+          }
+
+          String? maturityDateString;
+          if (maturityTime > 0) {
+            try {
+              if (maturityTime < 1000000000) {
+                print('⚠️ Warning: Invalid timestamp detected: $maturityTime');
+                maturityDateString = 'Invalid Date';
+              } else {
+                final maturityDate =
+                    DateTime.fromMillisecondsSinceEpoch(maturityTime * 1000);
+                maturityDateString =
+                    '${maturityDate.day.toString().padLeft(2, '0')}/${maturityDate.month.toString().padLeft(2, '0')}/${maturityDate.year}';
+              }
+            } catch (e) {
+              print('⚠️ Error formatting maturity date: $e');
+              maturityDateString = 'Invalid Date';
+            }
+          }
+
+          final lockSave = {
+            'id': lockId,
+            'title': title,
+            'amount': amount,
+            'maturityDate': maturityDateString,
+            'status': status,
+            'isMatured': isMaturedField,
+            'isWithdrawn': isWithdrawnField,
+            'isExpired': currentTime >= maturityTime,
+            'timeRemaining': timeRemaining,
+            'duration': lockDuration,
+            'startTime': startTime,
+            'maturityTime': maturityTime,
+            'interestRate': interestRate,
+            'user': userAddress,
+            'is_expired':
+                DateTime.now().millisecondsSinceEpoch ~/ 1000 > maturityTime,
+            'time_remaining': status == 'ongoing'
+                ? math.max(
+                    0,
+                    maturityTime -
+                        (DateTime.now().millisecondsSinceEpoch ~/ 1000))
+                : 0,
+          };
+
+          lockSaves.add(lockSave);
+          print(
+              '✅ Parsed lock save: ID ${lockSave['id']}, Amount: ${lockSave['amount']}, Title: "${lockSave['title']}", Status: ${lockSave['status']}');
+          print(
+              '   Maturity Date: ${lockSave['maturityDate']}, Time Remaining: ${lockSave['timeRemaining']}s');
+        } catch (e) {
+          print('❌ Error parsing lock save at index $i: $e');
+        }
+      } else {
+        print('⚠️ Incomplete struct data at index $i, skipping');
+      }
+    }
+
+    return lockSaves;
+  }
+
+  String _feltToString(BigInt feltValue) {
+    if (feltValue == BigInt.zero) return '';
+
+    try {
+      final bytes = <int>[];
+      var value = feltValue;
+
+      while (value > BigInt.zero) {
+        final byte = (value & BigInt.from(0xFF)).toInt();
+        if (byte != 0) {
+          bytes.insert(0, byte);
+        }
+        value = value >> 8;
+      }
+
+      if (bytes.isEmpty) return '';
+
+      final chars = bytes.where((byte) => byte >= 32 && byte <= 126).toList();
+      if (chars.isEmpty) return '';
+
+      return String.fromCharCodes(chars);
+    } catch (e) {
+      print('❌ Error converting Felt to string: $e');
+      try {
+        if (feltValue.toInt() > 0 && feltValue.toInt() <= 1114111) {
+          return String.fromCharCode(feltValue.toInt());
+        }
+        return feltValue.toString();
+      } catch (e2) {
+        return feltValue.toString();
+      }
+    }
+  }
+
+  /// Get only ongoing lock saves
+  Future<List<Map<String, dynamic>>> getOngoingLockSaves() async {
+    final account = _walletService.currentAccount;
+    if (account == null) {
+      throw Exception('Wallet not connected');
+    }
+
+    final userAddress = account.accountAddress;
+
+    try {
+      final functionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_user_ongoing_lock_saves'),
+        calldata: [userAddress],
+      );
+
+      final response = await account.provider.call(
+        request: functionCall,
+        blockId: BlockId.latest,
+      );
+
+      return await response.when(
+        result: (result) => _parseLockSaveResults(result, false),
+        error: (error) {
+          print('❌ Failed to get ongoing lock saves: $error');
+          throw Exception('Failed to get ongoing lock saves: $error');
+        },
+      );
+    } catch (e) {
+      print('❌ Error getting ongoing lock saves: $e');
+      throw Exception('Failed to get ongoing lock saves: $e');
+    }
+  }
+
+  /// Get only matured lock saves
+  Future<List<Map<String, dynamic>>> getMaturedLockSaves() async {
+    final account = _walletService.currentAccount;
+    if (account == null) {
+      throw Exception('Wallet not connected');
+    }
+
+    final userAddress = account.accountAddress;
+
+    try {
+      final functionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_user_matured_lock_saves'),
+        calldata: [userAddress],
+      );
+
+      final response = await account.provider.call(
+        request: functionCall,
+        blockId: BlockId.latest,
+      );
+
+      return await response.when(
+        result: (result) => _parseLockSaveResults(result, true),
+        error: (error) {
+          print('❌ Failed to get matured lock saves: $error');
+          throw Exception('Failed to get matured lock saves: $error');
+        },
+      );
+    } catch (e) {
+      print('❌ Error getting matured lock saves: $e');
+      throw Exception('Failed to get matured lock saves: $e');
+    }
+  }
+
+  /// Get all goal saves for the current user
+  Future<List<Map<String, dynamic>>> getUserGoalSaves() async {
+    final account = _walletService.currentAccount;
+    if (account == null) {
+      throw Exception('Wallet not connected');
+    }
+
+    final userAddress = account.accountAddress;
+
+    try {
+      print('🔍 Getting user goal saves for: ${userAddress.toHexString()}');
+
+      // Get live goal saves
+      final liveFunctionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_user_live_goal_saves'),
+        calldata: [userAddress],
+      );
+
+      final liveResponse = await account.provider.call(
+        request: liveFunctionCall,
+        blockId: BlockId.latest,
+      );
+
+      // Get completed goal saves
+      final completedFunctionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_user_completed_goal_saves'),
+        calldata: [userAddress],
+      );
+
+      final completedResponse = await account.provider.call(
+        request: completedFunctionCall,
+        blockId: BlockId.latest,
+      );
+
+      final goalSaves = <Map<String, dynamic>>[];
+
+      // Parse live goal saves
+      liveResponse.when(
+        result: (result) {
+          if (result.isNotEmpty) {
+            // Each GoalSave struct has 10 fields, so we process in chunks of 10
+            for (int i = 0; i < result.length; i += 10) {
+              if (i + 9 < result.length) {
+                final goalSave = {
+                  'id': result[i].toBigInt(),
+                  'user': result[i + 1].toHexString(),
+                  'title': result[i + 2].toString(),
+                  'category': result[i + 3].toString(),
+                  'target_amount': result[i + 4].toBigInt(),
+                  'current_amount': result[i + 5].toBigInt(),
+                  'contribution_type': result[i + 6].toBigInt().toInt(),
+                  'contribution_amount': result[i + 7].toBigInt(),
+                  'start_time': result[i + 8].toBigInt().toInt(),
+                  'end_time': result[i + 9].toBigInt().toInt(),
+                  'is_completed': false,
+                };
+                goalSaves.add(goalSave);
+              }
+            }
+          }
+        },
+        error: (error) {
+          print('❌ Failed to get live goal saves: $error');
+        },
+      );
+
+      // Parse completed goal saves
+      completedResponse.when(
+        result: (result) {
+          if (result.isNotEmpty) {
+            // Each GoalSave struct has 10 fields, so we process in chunks of 10
+            for (int i = 0; i < result.length; i += 10) {
+              if (i + 9 < result.length) {
+                final goalSave = {
+                  'id': result[i].toBigInt(),
+                  'user': result[i + 1].toHexString(),
+                  'title': result[i + 2].toString(),
+                  'category': result[i + 3].toString(),
+                  'target_amount': result[i + 4].toBigInt(),
+                  'current_amount': result[i + 5].toBigInt(),
+                  'contribution_type': result[i + 6].toBigInt().toInt(),
+                  'contribution_amount': result[i + 7].toBigInt(),
+                  'start_time': result[i + 8].toBigInt().toInt(),
+                  'end_time': result[i + 9].toBigInt().toInt(),
+                  'is_completed': true,
+                };
+                goalSaves.add(goalSave);
+              }
+            }
+          }
+        },
+        error: (error) {
+          print('❌ Failed to get completed goal saves: $error');
+        },
+      );
+
+      print('✅ Retrieved ${goalSaves.length} goal saves');
+      return goalSaves;
+    } catch (e) {
+      print('❌ Error getting user goal saves: $e');
+      throw Exception('Failed to get user goal saves: $e');
+    }
   }
 
   /// Create a goal save
@@ -1031,6 +1563,7 @@ class ContractService {
     required double targetAmount,
     required int contributionType, // 1=daily, 2=weekly, 3=monthly, 4=manual
     required double contributionAmount,
+    required DateTime startDate,
     required DateTime endDate,
   }) async {
     final account = _walletService.currentAccount;
@@ -1054,7 +1587,8 @@ class ContractService {
       final categoryFelt = Felt.fromString(
           category.length > 31 ? category.substring(0, 31) : category);
 
-      // Convert end date to timestamp
+      // Convert dates to timestamps
+      final startTimestamp = (startDate.millisecondsSinceEpoch / 1000).round();
       final endTimestamp = (endDate.millisecondsSinceEpoch / 1000).round();
 
       // Check current allowance for the contract
@@ -1090,6 +1624,7 @@ class ContractService {
             '0x${contributionType.toRadixString(16)}',
             '0x${rawContributionAmount.toRadixString(16)}',
             '0x0', // contribution_amount.high (assuming < 2^128)
+            '0x${startTimestamp.toRadixString(16)}',
             '0x${endTimestamp.toRadixString(16)}',
           ],
         },
@@ -1343,12 +1878,6 @@ class ContractService {
     }
   }
 
-  /// Get all goal saves for the current user
-  Future<List<Map<String, dynamic>>> getUserGoalSaves() async {
-    // Temporarily return empty list to stop terminal spam
-    return [];
-  }
-
   /// Create a group save (public or private)
   Future<String> createGroupSave({
     required String title,
@@ -1358,6 +1887,7 @@ class ContractService {
     required int contributionType, // 1=daily, 2=weekly, 3=monthly, 4=manual
     required double contributionAmount,
     required bool isPublic,
+    required DateTime startDate,
     required DateTime endDate,
   }) async {
     final account = _walletService.currentAccount;
@@ -1384,7 +1914,8 @@ class ContractService {
       final categoryFelt = Felt.fromString(
           category.length > 31 ? category.substring(0, 31) : category);
 
-      // Convert end date to timestamp
+      // Convert dates to timestamps
+      final startTimestamp = (startDate.millisecondsSinceEpoch / 1000).round();
       final endTimestamp = (endDate.millisecondsSinceEpoch / 1000).round();
 
       // Check current allowance for the contract
@@ -1422,6 +1953,7 @@ class ContractService {
             '0x${rawContributionAmount.toRadixString(16)}',
             '0x0', // contribution_amount.high (assuming < 2^128)
             isPublic ? '0x1' : '0x0', // is_public as bool
+            '0x${startTimestamp.toRadixString(16)}',
             '0x${endTimestamp.toRadixString(16)}',
           ],
         },
@@ -1897,6 +2429,278 @@ class ContractService {
     } catch (e) {
       print('❌ Error getting group save rate: $e');
       throw Exception('Failed to get group save rate: $e');
+    }
+  }
+
+  /// Get all group saves for the current user
+  Future<List<Map<String, dynamic>>> getUserGroupSaves() async {
+    final account = _walletService.currentAccount;
+    if (account == null) {
+      throw Exception('Wallet not connected');
+    }
+
+    final userAddress = account.accountAddress;
+
+    try {
+      print('🔍 Getting user group saves for: ${userAddress.toHexString()}');
+
+      // Get live group saves
+      final liveFunctionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_user_live_group_saves'),
+        calldata: [userAddress],
+      );
+
+      final liveResponse = await account.provider.call(
+        request: liveFunctionCall,
+        blockId: BlockId.latest,
+      );
+
+      // Get completed group saves
+      final completedFunctionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_user_completed_group_saves'),
+        calldata: [userAddress],
+      );
+
+      final completedResponse = await account.provider.call(
+        request: completedFunctionCall,
+        blockId: BlockId.latest,
+      );
+
+      final groupSaves = <Map<String, dynamic>>[];
+
+      // Parse live group saves
+      liveResponse.when(
+        result: (result) {
+          if (result.isNotEmpty) {
+            // Each GroupSave struct has 13 fields, so we process in chunks of 13
+            for (int i = 0; i < result.length; i += 13) {
+              if (i + 12 < result.length) {
+                final groupSave = {
+                  'id': result[i].toBigInt(),
+                  'creator': result[i + 1].toHexString(),
+                  'title': result[i + 2].toString(),
+                  'description': result[i + 3].toString(),
+                  'category': result[i + 4].toString(),
+                  'target_amount': result[i + 5].toBigInt(),
+                  'current_amount': result[i + 6].toBigInt(),
+                  'contribution_type': result[i + 7].toBigInt().toInt(),
+                  'contribution_amount': result[i + 8].toBigInt(),
+                  'is_public': result[i + 9].toBigInt() == BigInt.one,
+                  'member_count': result[i + 10].toBigInt().toInt(),
+                  'start_time': result[i + 11].toBigInt().toInt(),
+                  'end_time': result[i + 12].toBigInt().toInt(),
+                  'is_completed': false,
+                };
+                groupSaves.add(groupSave);
+              }
+            }
+          }
+        },
+        error: (error) {
+          print('❌ Failed to get live group saves: $error');
+        },
+      );
+
+      // Parse completed group saves
+      completedResponse.when(
+        result: (result) {
+          if (result.isNotEmpty) {
+            // Each GroupSave struct has 13 fields, so we process in chunks of 13
+            for (int i = 0; i < result.length; i += 13) {
+              if (i + 12 < result.length) {
+                final groupSave = {
+                  'id': result[i].toBigInt(),
+                  'creator': result[i + 1].toHexString(),
+                  'title': result[i + 2].toString(),
+                  'description': result[i + 3].toString(),
+                  'category': result[i + 4].toString(),
+                  'target_amount': result[i + 5].toBigInt(),
+                  'current_amount': result[i + 6].toBigInt(),
+                  'contribution_type': result[i + 7].toBigInt().toInt(),
+                  'contribution_amount': result[i + 8].toBigInt(),
+                  'is_public': result[i + 9].toBigInt() == BigInt.one,
+                  'member_count': result[i + 10].toBigInt().toInt(),
+                  'start_time': result[i + 11].toBigInt().toInt(),
+                  'end_time': result[i + 12].toBigInt().toInt(),
+                  'is_completed': true,
+                };
+                groupSaves.add(groupSave);
+              }
+            }
+          }
+        },
+        error: (error) {
+          print('❌ Failed to get completed group saves: $error');
+        },
+      );
+
+      print('✅ Retrieved ${groupSaves.length} group saves');
+      return groupSaves;
+    } catch (e) {
+      print('❌ Error getting user group saves: $e');
+      throw Exception('Failed to get user group saves: $e');
+    }
+  }
+
+  Future<BigInt> getUserLockSaveBalance() async {
+    final account = _walletService.currentAccount;
+    if (account == null) {
+      print('❌ CONTRACT SERVICE: Wallet not connected');
+      return BigInt.zero; // Return zero instead of throwing
+    }
+
+    final userAddress = account.accountAddress;
+
+    print(
+        '🔍 CONTRACT SERVICE: Getting flexi balance for user: ${userAddress.toHexString()}');
+    print('📞 CONTRACT SERVICE: Contract address: $_contractAddress');
+
+    try {
+      // Prepare function call for get_flexi_balance
+      final functionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_user_lock_save_balance'),
+        calldata: [userAddress],
+      );
+
+      print(
+          '📋 CONTRACT SERVICE: Function call prepared: ${functionCall.entryPointSelector}');
+
+      // Call the contract
+      final response = await account.provider.call(
+        request: functionCall,
+        blockId: BlockId.latest,
+      );
+
+      return response.when(
+        result: (result) {
+          print('📊 CONTRACT SERVICE: Raw balance result: $result');
+
+          if (result.length < 2) {
+            print(
+                '❌ CONTRACT SERVICE: Invalid balance response - not enough elements');
+            return BigInt.zero; // Return zero instead of throwing
+          }
+
+          // Combine low and high parts for u256
+          final low = result[0].toBigInt();
+          final high = result[1].toBigInt();
+
+          print('🔢 CONTRACT SERVICE: Low: $low, High: $high');
+
+          final balance = low + (high << 128);
+          print('✅ CONTRACT SERVICE: Combined balance: $balance');
+
+          return balance;
+        },
+        error: (error) {
+          print('❌ CONTRACT SERVICE: Failed to get lock balance: $error');
+          return BigInt.zero; // Return zero instead of throwing
+        },
+      );
+    } catch (e) {
+      print('❌ CONTRACT SERVICE: Exception getting lock balance: $e');
+      return BigInt.zero; // Return zero instead of throwing
+    }
+  }
+
+  /// Get user goal save balance
+  Future<BigInt> getUserGoalSaveBalance() async {
+    final account = _walletService.currentAccount;
+    if (account == null) {
+      throw Exception('Wallet not connected');
+    }
+
+    final userAddress = account.accountAddress;
+
+    try {
+      print(
+          '🔍 Getting user goal save balance for: ${userAddress.toHexString()}');
+
+      // Prepare function call for get_user_goal_save_balance
+      final functionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_user_goal_save_balance'),
+        calldata: [userAddress],
+      );
+
+      // Call the contract
+      final response = await account.provider.call(
+        request: functionCall,
+        blockId: BlockId.latest,
+      );
+
+      return response.when(
+        result: (result) {
+          if (result.length < 2) {
+            return BigInt.zero;
+          }
+          // Combine low and high parts for u256
+          final low = result[0].toBigInt();
+          final high = result[1].toBigInt();
+          final balance = low + (high << 128);
+          print('✅ User goal save balance: $balance');
+          return balance;
+        },
+        error: (error) {
+          print('❌ Failed to get user goal save balance: $error');
+          return BigInt.zero;
+        },
+      );
+    } catch (e) {
+      print('❌ Error getting user goal save balance: $e');
+      return BigInt.zero;
+    }
+  }
+
+  /// Get user group save balance
+  Future<BigInt> getUserGroupSaveBalance() async {
+    final account = _walletService.currentAccount;
+    if (account == null) {
+      throw Exception('Wallet not connected');
+    }
+
+    final userAddress = account.accountAddress;
+
+    try {
+      print(
+          '🔍 Getting user group save balance for: ${userAddress.toHexString()}');
+
+      // Prepare function call for get_user_group_save_balance
+      final functionCall = FunctionCall(
+        contractAddress: _contractAddress,
+        entryPointSelector: getSelectorByName('get_user_group_save_balance'),
+        calldata: [userAddress],
+      );
+
+      // Call the contract
+      final response = await account.provider.call(
+        request: functionCall,
+        blockId: BlockId.latest,
+      );
+
+      return response.when(
+        result: (result) {
+          if (result.length < 2) {
+            return BigInt.zero;
+          }
+          // Combine low and high parts for u256
+          final low = result[0].toBigInt();
+          final high = result[1].toBigInt();
+          final balance = low + (high << 128);
+          print('✅ User group save balance: $balance');
+          return balance;
+        },
+        error: (error) {
+          print('❌ Failed to get user group save balance: $error');
+          return BigInt.zero;
+        },
+      );
+    } catch (e) {
+      print('❌ Error getting user group save balance: $e');
+      return BigInt.zero;
     }
   }
 }

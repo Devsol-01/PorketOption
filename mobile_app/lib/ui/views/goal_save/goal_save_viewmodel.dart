@@ -50,7 +50,7 @@ class GoalSaveViewModel extends BaseViewModel {
 
   Future<void> initialize() async {
     await loadGoalSaveBalance();
-    //await loadUserGoals();
+    await loadUserGoals();
   }
 
   void toggleBalanceVisibility() {
@@ -83,54 +83,54 @@ class GoalSaveViewModel extends BaseViewModel {
   }
 
   // Load user goals from contract
-  // Future<void> loadUserGoals() async {
-  //   try {
-  //     final goals = await _contractService.getUserGoalSaves();
+  Future<void> loadUserGoals() async {
+    try {
+      final goals = await _contractService.getUserGoalSaves();
 
-  //     // Convert contract data to UI format
-  //     final formattedGoals = goals.map((goal) {
-  //       final targetAmount =
-  //           (goal['target_amount'] as BigInt).toDouble() / 1000000.0;
-  //       final currentAmount =
-  //           (goal['current_amount'] as BigInt).toDouble() / 1000000.0;
-  //       final contributionAmount =
-  //           (goal['contribution_amount'] as BigInt).toDouble() / 1000000.0;
-  //       final startTime = DateTime.fromMillisecondsSinceEpoch(
-  //           (goal['start_time'] as int) * 1000);
-  //       final endTime = DateTime.fromMillisecondsSinceEpoch(
-  //           (goal['end_time'] as int) * 1000);
-  //       final isCompleted = goal['is_completed'] as bool;
+      // Convert contract data to UI format
+      final formattedGoals = goals.map((goal) {
+        final targetAmount =
+            (goal['target_amount'] as BigInt).toDouble() / 1000000.0;
+        final currentAmount =
+            (goal['current_amount'] as BigInt).toDouble() / 1000000.0;
+        final contributionAmount =
+            (goal['contribution_amount'] as BigInt).toDouble() / 1000000.0;
+        final startTime = DateTime.fromMillisecondsSinceEpoch(
+            (goal['start_time'] as int) * 1000);
+        final endTime = DateTime.fromMillisecondsSinceEpoch(
+            (goal['end_time'] as int) * 1000);
+        final isCompleted = goal['is_completed'] as bool;
 
-  //       return {
-  //         'id': goal['id'].toString(),
-  //         'title': goal['title'] as String,
-  //         'category': goal['category'] as String,
-  //         'targetAmount': targetAmount,
-  //         'currentAmount': currentAmount,
-  //         'contributionAmount': contributionAmount,
-  //         'contributionType':
-  //             _getContributionTypeString(goal['contribution_type'] as int),
-  //         'startDate': startTime,
-  //         'endDate': endTime,
-  //         'progress':
-  //             targetAmount > 0 ? (currentAmount / targetAmount) * 100 : 0.0,
-  //         'isCompleted': isCompleted,
-  //         'status': isCompleted ? 'completed' : 'active',
-  //       };
-  //     }).toList();
+        return {
+          'id': goal['id'].toString(),
+          'title': goal['title'] as String,
+          'category': goal['category'] as String,
+          'targetAmount': targetAmount,
+          'currentAmount': currentAmount,
+          'contributionAmount': contributionAmount,
+          'contributionType':
+              _getContributionTypeString(goal['contribution_type'] as int),
+          'startDate': startTime,
+          'endDate': endTime,
+          'progress':
+              targetAmount > 0 ? (currentAmount / targetAmount) * 100 : 0.0,
+          'isCompleted': isCompleted,
+          'status': isCompleted ? 'completed' : 'active',
+        };
+      }).toList();
 
-  //     _liveGoals =
-  //         formattedGoals.where((goal) => goal['status'] == 'active').toList();
-  //     _completedGoals = formattedGoals
-  //         .where((goal) => goal['status'] == 'completed')
-  //         .toList();
-  //     notifyListeners();
-  //   } catch (e) {
-  //     print('Error loading user goals: $e');
-  //     _liveGoals = [];
-  //     _completedGoals = [];
-  //   }
-  // }
+      _liveGoals =
+          formattedGoals.where((goal) => goal['status'] == 'active').toList();
+      _completedGoals = formattedGoals
+          .where((goal) => goal['status'] == 'completed')
+          .toList();
+      notifyListeners();
+    } catch (e) {
+      print('Error loading user goals: $e');
+      _liveGoals = [];
+      _completedGoals = [];
+    }
+  }
 
   // Helper method to convert contribution type to string
   String _getContributionTypeString(int type) {
@@ -176,13 +176,14 @@ class GoalSaveViewModel extends BaseViewModel {
         targetAmount: targetAmount,
         contributionType: contributionType,
         contributionAmount: contributionAmount,
+        startDate: startDate,
         endDate: endDate,
       );
 
       print('Goal created successfully with TX: $txHash');
       // Refresh data
       await loadGoalSaveBalance();
-     // await loadUserGoals();
+      // await loadUserGoals();
     } catch (e) {
       print('Error creating goal: $e');
       throw e; // Re-throw to let caller handle
@@ -212,26 +213,6 @@ class GoalSaveViewModel extends BaseViewModel {
       setBusy(false);
     }
   }
-
-  // Withdraw from goal
-  // Future<void> withdrawFromGoal(String goalId, double amount) async {
-  //   setBusy(true);
-  //   try {
-  //     final txHash = await _contractService.withdrawGoalSave(
-  //       goalId: goalId,
-  //       amount: amount,
-  //     );
-
-  //     print('Withdrawal successful: $txHash');
-  //     // Refresh data
-  //     await loadGoalSaveBalance();
-  //     await loadUserGoals();
-  //   } catch (e) {
-  //     print('Error withdrawing from goal: $e');
-  //   } finally {
-  //     setBusy(false);
-  //   }
-  // }
 
   // Claim completed goal
   Future<void> claimCompletedGoal(String goalId) async {

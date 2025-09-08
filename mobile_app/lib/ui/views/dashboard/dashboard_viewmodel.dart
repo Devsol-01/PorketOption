@@ -101,13 +101,13 @@ class DashboardViewModel extends BaseViewModel {
                 await loadBalance();
               } else {
                 print('❌ Still no wallet found after direct load');
-                _showErrorSnackbar(
-                    'Unable to load wallet. Please try logging in again.');
+                // Don't show error snackbar immediately, try to continue
+                print('🔄 Attempting to continue without wallet for now...');
               }
             } catch (e) {
               print('❌ Error loading wallet directly: $e');
-              _showErrorSnackbar(
-                  'Unable to load wallet. Please try logging in again.');
+              // Don't show error snackbar immediately, try to continue
+              print('🔄 Attempting to continue without wallet for now...');
             }
           }
         }
@@ -121,11 +121,39 @@ class DashboardViewModel extends BaseViewModel {
     } finally {
       setBusy(false);
     }
+
+    // Always try to load balance, even if wallet loading failed
+    await loadBalance();
   }
 
   /// Load wallet balance - Focus on real USDC balance
   Future<void> loadBalance() async {
-    if (_walletInfo == null) return;
+    if (_walletInfo == null) {
+      print('⚠️ No wallet info available, attempting to load wallet first...');
+
+      // Try to load wallet if not available
+      try {
+        _walletInfo = await _walletService.loadWallet();
+        if (_walletInfo == null) {
+          print('❌ Still no wallet available after loading attempt');
+          // Set balances to 0 and continue
+          _usdcBalance = 0.0;
+          _dashboardBalance = 0.0;
+          _balance = BigInt.zero;
+          notifyListeners();
+          return;
+        }
+        print('✅ Wallet loaded during balance check: ${_walletInfo!.address}');
+      } catch (e) {
+        print('❌ Error loading wallet during balance check: $e');
+        // Set balances to 0 and continue
+        _usdcBalance = 0.0;
+        _dashboardBalance = 0.0;
+        _balance = BigInt.zero;
+        notifyListeners();
+        return;
+      }
+    }
 
     try {
       print('💰 Loading real USDC balance from blockchain...');
@@ -146,7 +174,12 @@ class DashboardViewModel extends BaseViewModel {
       notifyListeners();
     } catch (e) {
       print('❌ Error loading balance: $e');
-      _showErrorSnackbar('Error loading balance: $e');
+      // Don't show error snackbar for balance loading failures to avoid spam
+      // Just set balances to 0 and continue
+      _usdcBalance = 0.0;
+      _dashboardBalance = 0.0;
+      _balance = BigInt.zero;
+      notifyListeners();
     }
   }
 
@@ -670,6 +703,90 @@ class DashboardViewModel extends BaseViewModel {
     await loadBalance();
     print('✅ Balance refresh completed');
     _showInfoSnackbar('Balance refreshed: \$${_dashboardBalance}');
+  }
+
+  /// Force reload wallet and balance - useful for debugging wallet issues
+  Future<void> forceReloadWallet() async {
+    print('🔄 Force reloading wallet...');
+
+    try {
+      _walletInfo = await _walletService.loadWallet();
+      if (_walletInfo != null) {
+        print('✅ Wallet reloaded: ${_walletInfo!.address}');
+        await loadBalance();
+        _showInfoSnackbar('Wallet reloaded successfully');
+      } else {
+        print('❌ Failed to reload wallet');
+        _showErrorSnackbar('Failed to reload wallet');
+      }
+    } catch (e) {
+      print('❌ Error reloading wallet: $e');
+      _showErrorSnackbar('Error reloading wallet: $e');
+    }
+  }
+
+  /// Check if balance is loaded and valid
+  bool get isBalanceLoaded => _dashboardBalance > 0.0;
+
+  /// Ensure balance is loaded before transactions
+  Future<bool> ensureBalanceLoaded() async {
+    print(
+        '🔍 Checking if balance is loaded... Current balance: $_dashboardBalance');
+
+    if (!isBalanceLoaded) {
+      print('🔄 Balance not loaded, refreshing...');
+
+      // First ensure wallet is loaded
+      if (_walletInfo == null) {
+        print(
+            '⚠️ No wallet info available, attempting to load wallet first...');
+
+        // Check if user is authenticated with Firebase
+        if (_firebaseWalletManager.isAuthenticated) {
+          print(
+              '✅ User authenticated, initializing Firebase wallet manager...');
+
+          // Initialize Firebase wallet manager to load wallet
+          await _firebaseWalletManager.initialize();
+
+          // Check if wallet is now available
+          if (_walletService.currentAccount == null) {
+            print(
+                '❌ Firebase initialization didn\'t load wallet, trying direct load...');
+
+            // Try direct load as fallback
+            try {
+              _walletInfo = await _walletService.loadWallet();
+              if (_walletInfo == null) {
+                print('❌ Still no wallet available after loading attempt');
+                return false;
+              }
+            } catch (e) {
+              print('❌ Error loading wallet during balance check: $e');
+              return false;
+            }
+          } else {
+            _walletInfo = _walletService.walletInfo;
+          }
+        } else {
+          print('❌ User not authenticated with Firebase');
+          return false;
+        }
+      }
+
+      await loadBalance();
+
+      if (isBalanceLoaded) {
+        print('✅ Balance loaded successfully: $_dashboardBalance');
+        return true;
+      } else {
+        print('❌ Balance still not loaded after refresh');
+        return false;
+      }
+    }
+
+    print('✅ Balance already loaded: $_dashboardBalance');
+    return true;
   }
 
   @override

@@ -12,10 +12,7 @@ pub mod AutomationScheduler {
     use starknet::storage::{
         Map, StoragePathEntry, StoragePointerReadAccess, StoragePointerWriteAccess,
     };
-    use starknet::{
-        ContractAddress, contract_address_const, get_block_timestamp, get_caller_address,
-        get_contract_address,
-    };
+    use starknet::{ContractAddress, get_block_timestamp, get_caller_address};
 
     component!(path: ERC20Component, storage: erc20, event: ERC20Event);
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
@@ -126,9 +123,9 @@ pub mod AutomationScheduler {
             .usdc_token
             .write(
                 IERC20Dispatcher {
-                    contract_address: contract_address_const::<
-                        0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080,
-                    >(),
+                    contract_address: 0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080
+                        .try_into()
+                        .unwrap(),
                 },
             );
         self
@@ -162,8 +159,8 @@ pub mod AutomationScheduler {
             assert(amount > 0, 'Amount must be positive');
 
             // Check user schedule limit
-            let user_count = self.user_schedule_count.entry(caller).read();
-            assert(user_count < self.max_schedules_per_user.read(), 'Too many schedules');
+            let _user_count = self.user_schedule_count.entry(caller).read();
+            assert(_user_count < self.max_schedules_per_user.read(), 'Too many schedules');
 
             // Create new schedule
             let schedule_id = self.schedule_counter.read() + 1;
@@ -185,7 +182,7 @@ pub mod AutomationScheduler {
 
             self.schedules.entry(schedule_id).write(schedule);
             self.user_schedules.entry((caller, schedule_id)).write(true);
-            self.user_schedule_count.entry(caller).write(user_count + 1);
+            self.user_schedule_count.entry(caller).write(_user_count + 1);
 
             self.emit(ScheduleCreated { schedule_id, user: caller, save_type, amount, frequency });
 
@@ -270,8 +267,8 @@ pub mod AutomationScheduler {
             schedule.is_active = false;
             self.schedules.entry(schedule_id).write(schedule);
 
-            let user_count = self.user_schedule_count.entry(caller).read();
-            self.user_schedule_count.entry(caller).write(user_count - 1);
+            let _user_count = self.user_schedule_count.entry(caller).read();
+            self.user_schedule_count.entry(caller).write(_user_count - 1);
 
             self
                 .emit(
@@ -330,7 +327,7 @@ pub mod AutomationScheduler {
         }
 
         fn get_user_schedules(self: @ContractState, user: ContractAddress) -> Array<u256> {
-            let user_count = self.user_schedule_count.entry(user).read();
+            let _user_count = self.user_schedule_count.entry(user).read();
             let mut schedules: Array<u256> = ArrayTrait::new();
             let total_schedules = self.schedule_counter.read();
             let mut schedule_id = 1;

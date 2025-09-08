@@ -125,8 +125,6 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
 
             const SizedBox(height: 50),
 
-
-
             // Flexible Savings Section
             //Column(
             //   children: [
@@ -165,7 +163,7 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
             //   ],
             // ),
 
-           // const SizedBox(height: 10),
+            // const SizedBox(height: 10),
 
             // Transaction History Section
             _buildTransactionHistory(viewModel),
@@ -322,8 +320,10 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
       return;
     }
 
-    print('💰 Deposit sheet using dashboard balance: \$${dashboardViewModel.usdcBalance}');
-    print('💰 Dashboard balance (display): \$${dashboardViewModel.dashboardBalance}');
+    print(
+        '💰 Deposit sheet using dashboard balance: \$${dashboardViewModel.usdcBalance}');
+    print(
+        '💰 Dashboard balance (display): \$${dashboardViewModel.dashboardBalance}');
     print('💰 Dashboard viewmodel instance: ${dashboardViewModel.hashCode}');
 
     showModalBottomSheet(
@@ -333,8 +333,7 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
       builder: (context) => DepositSheet(
         onDeposit: (amount, fundSource) =>
             viewModel.quickSave(amount, fundSource),
-        currentBalance:
-            dashboardViewModel.usdcBalance, // Use real USDC balance
+        currentBalance: dashboardViewModel.usdcBalance, // Use real USDC balance
         isLoading: viewModel.isBusy,
       ),
     );
@@ -362,7 +361,6 @@ class PorketSaveView extends StackedView<PorketSaveViewModel> {
     viewModel.initialize(dashboardViewModel);
     return viewModel;
   }
-
 
   Widget _buildTransactionHistory(PorketSaveViewModel viewModel) {
     if (viewModel.transactions.isEmpty) {

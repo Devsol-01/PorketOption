@@ -11,6 +11,7 @@ class CreateLockViewModel extends BaseViewModel {
   final DashboardViewModel _dashboardViewModel = locator<DashboardViewModel>();
   final ContractService _contractService = locator<ContractService>();
   final WalletService _walletService = locator<WalletService>();
+  final SnackbarService _snackbarService = locator<SnackbarService>();
 
   final TextEditingController amountController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
@@ -24,6 +25,13 @@ class CreateLockViewModel extends BaseViewModel {
   CreateLockViewModel(this._selectedPeriod) {
     // Set initial selected days to minimum of the period
     _selectedDays = _selectedPeriod['minDays'];
+    // Ensure dashboard balance is loaded
+    _ensureDashboardBalance();
+  }
+
+  Future<void> _ensureDashboardBalance() async {
+    // Refresh dashboard balance to ensure it's up to date
+    await _dashboardViewModel.ensureBalanceLoaded();
   }
 
   // Getters
@@ -168,10 +176,26 @@ class CreateLockViewModel extends BaseViewModel {
       final title = titleController.text;
       final duration = _selectedDays;
 
+      // Ensure balance is loaded before checking
+      final balanceLoaded = await _dashboardViewModel.ensureBalanceLoaded();
+      if (!balanceLoaded) {
+        print('❌ Unable to load balance for validation');
+        _snackbarService.showSnackbar(
+          message: 'Unable to verify balance. Please try again.',
+          duration: Duration(seconds: 3),
+        );
+        return;
+      }
+
       // Check dashboard balance first
       if (_dashboardViewModel.dashboardBalance < amount) {
         print(
             '❌ Insufficient dashboard balance: ${_dashboardViewModel.dashboardBalance} < $amount');
+        _snackbarService.showSnackbar(
+          message:
+              'Insufficient balance. Available: \$${_dashboardViewModel.dashboardBalance}, Required: \$${amount}',
+          duration: Duration(seconds: 3),
+        );
         return;
       }
 

@@ -468,9 +468,16 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
 
   Widget _buildGoalCard(
       Map<String, dynamic> goal, GoalSaveViewModel viewModel) {
-    final currentAmount = (goal['currentAmount'] as double? ?? 0.0);
-    final targetAmount = (goal['targetAmount'] as double? ?? 0.0);
+    // Handle BigInt from contract properly
+    final currentAmount = goal['currentAmount'] is BigInt
+        ? (goal['currentAmount'] as BigInt).toDouble() / 1000000.0
+        : (goal['currentAmount'] as double? ?? 0.0);
+    final targetAmount = goal['targetAmount'] is BigInt
+        ? (goal['targetAmount'] as BigInt).toDouble() / 1000000.0
+        : (goal['targetAmount'] as double? ?? 0.0);
     final daysLeft = _calculateDaysLeft(goal['endDate'] as String?);
+
+    final progress = targetAmount > 0 ? (currentAmount / targetAmount) : 0.0;
 
     return GestureDetector(
       onTap: () => viewModel.navigateToGoalDetail(goal),
@@ -528,9 +535,9 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                     overflow: TextOverflow.ellipsis,
                   ),
 
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
 
-                  // Stats row (clean text only)
+                  // Stats row
                   Row(
                     children: [
                       _buildPlainStat(
@@ -542,19 +549,40 @@ class GoalSaveView extends StackedView<GoalSaveViewModel> {
                         label: "Target",
                         value: FormatUtils.formatCurrency(targetAmount),
                       ),
-                      const SizedBox(
-                        width: 30,
-                      ),
+                      const SizedBox(width: 30),
                       _buildPlainStat(
                         label: "Days Left",
                         value: "$daysLeft",
-                        alignRight: false,
-                        highlight: false,
                       ),
                     ],
                   ),
                 ],
               ),
+            ),
+
+            // Progress bar and percentage
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                SizedBox(
+                  width: 100,
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.grey[200],
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      _getCategoryColor(goal['category'] as String?),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${(progress * 100).toStringAsFixed(0)}%',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black54,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

@@ -69,12 +69,11 @@ class GroupSaveViewModel extends BaseViewModel {
   // Load user groups from contract
   Future<void> loadUserGroups() async {
     try {
-      // TODO: Implement contract integration
-      // final groups = await _contractService.getUserGroups();
-      // _liveGroups = groups.where((group) => group['isCompleted'] != true).toList();
-      // _completedGroups = groups.where((group) => group['isCompleted'] == true).toList();
-      _liveGroups = []; // Mock data
-      _completedGroups = []; // Mock data
+      final groups = await _contractService.getUserGroupSaves();
+      _liveGroups =
+          groups.where((group) => group['is_completed'] != true).toList();
+      _completedGroups =
+          groups.where((group) => group['is_completed'] == true).toList();
       notifyListeners();
     } catch (e) {
       print('Error loading user groups: $e');
@@ -86,9 +85,9 @@ class GroupSaveViewModel extends BaseViewModel {
   // Load public groups from contract
   Future<void> loadPublicGroups() async {
     try {
-      // TODO: Implement contract integration
-      // final groups = await _contractService.getPublicGroups();
-      _publicGroups = []; // Mock data
+      final groups = await _contractService.getUserGroupSaves();
+      _publicGroups =
+          groups.where((group) => group['is_public'] == true).toList();
       notifyListeners();
     } catch (e) {
       print('Error loading public groups: $e');

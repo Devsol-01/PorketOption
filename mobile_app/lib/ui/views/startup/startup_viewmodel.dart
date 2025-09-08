@@ -11,8 +11,8 @@ class StartupViewModel extends BaseViewModel {
   // Place anything here that needs to happen before we get into the application
   Future runStartupLogic() async {
     await Future.delayed(const Duration(seconds: 2));
-   _navigationService.navigateToLoginView();
-  
+    _navigationService.navigateToLoginView();
+
     // try {
     //   // Initialize Firebase Wallet Manager
     //   await _firebaseWalletManager.initialize();
