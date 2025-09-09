@@ -54,11 +54,10 @@ class GroupSaveViewModel extends BaseViewModel {
   // Load group save balance from contract
   Future<void> loadGroupSaveBalance() async {
     try {
-      // Get the group save rate (in percentage)
-      final rate = await _contractService.getGroupSaveRate();
-      // For now, we'll use the rate as a placeholder for balance
-      // In a real implementation, you'd calculate based on user's group contributions
-      _groupSaveBalance = rate; // This is just a placeholder
+      // Get the actual user group save balance from contract
+      final balanceBigInt = await _contractService.getUserGroupSaveBalance();
+      // Convert from raw USDC units (6 decimals) to readable format
+      _groupSaveBalance = balanceBigInt.toDouble() / 1000000.0;
       notifyListeners();
     } catch (e) {
       print('Error loading group save balance: $e');
@@ -67,13 +66,15 @@ class GroupSaveViewModel extends BaseViewModel {
   }
 
   // Load user groups from contract
+// Update the loadUserGroups method to use the correct field names
   Future<void> loadUserGroups() async {
     try {
       final groups = await _contractService.getUserGroupSaves();
+      // Use 'isCompleted' instead of 'is_completed' to match the parsed data structure
       _liveGroups =
-          groups.where((group) => group['is_completed'] != true).toList();
+          groups.where((group) => group['isCompleted'] != true).toList();
       _completedGroups =
-          groups.where((group) => group['is_completed'] == true).toList();
+          groups.where((group) => group['isCompleted'] == true).toList();
       notifyListeners();
     } catch (e) {
       print('Error loading user groups: $e');
@@ -86,8 +87,9 @@ class GroupSaveViewModel extends BaseViewModel {
   Future<void> loadPublicGroups() async {
     try {
       final groups = await _contractService.getUserGroupSaves();
+      // Use 'isPublic' instead of 'is_public' to match the parsed data structure
       _publicGroups =
-          groups.where((group) => group['is_public'] == true).toList();
+          groups.where((group) => group['isPublic'] == true).toList();
       notifyListeners();
     } catch (e) {
       print('Error loading public groups: $e');

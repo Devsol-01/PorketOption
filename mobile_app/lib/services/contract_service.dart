@@ -2317,24 +2317,21 @@ class ContractService {
   Future<List<Map<String, dynamic>>> getUserGroupSaves() async {
     final account = _walletService.currentAccount;
     if (account == null) {
-      throw Exception('Wallet not connected');
+      print('❌ CONTRACT SERVICE: Wallet not connected');
+      return []; // Return empty list instead of throwing
     }
 
     final userAddress = account.accountAddress;
 
     try {
-      print('🔍 Getting user group saves for: ${userAddress.toHexString()}');
+      print(
+          '🔍 CONTRACT SERVICE: Getting user group saves for: ${userAddress.toHexString()}');
 
       // Get live group saves
       final liveFunctionCall = FunctionCall(
         contractAddress: _contractAddress,
         entryPointSelector: getSelectorByName('get_user_live_group_saves'),
         calldata: [userAddress],
-      );
-
-      final liveResponse = await account.provider.call(
-        request: liveFunctionCall,
-        blockId: BlockId.latest,
       );
 
       // Get completed group saves
@@ -2344,85 +2341,244 @@ class ContractService {
         calldata: [userAddress],
       );
 
-      final completedResponse = await account.provider.call(
-        request: completedFunctionCall,
-        blockId: BlockId.latest,
-      );
+      // Execute both calls
+      final results = await Future.wait([
+        account.provider
+            .call(request: liveFunctionCall, blockId: BlockId.latest),
+        account.provider
+            .call(request: completedFunctionCall, blockId: BlockId.latest),
+      ]);
 
+      final liveResponse = results[0];
+      final completedResponse = results[1];
       final groupSaves = <Map<String, dynamic>>[];
 
       // Parse live group saves
-      liveResponse.when(
-        result: (result) {
-          if (result.isNotEmpty) {
-            // Each GroupSave struct has 13 fields, so we process in chunks of 13
-            for (int i = 0; i < result.length; i += 13) {
-              if (i + 12 < result.length) {
-                final groupSave = {
-                  'id': result[i].toBigInt(),
-                  'creator': result[i + 1].toHexString(),
-                  'title': result[i + 2].toString(),
-                  'description': result[i + 3].toString(),
-                  'category': result[i + 4].toString(),
-                  'target_amount': result[i + 5].toBigInt(),
-                  'current_amount': result[i + 6].toBigInt(),
-                  'contribution_type': result[i + 7].toBigInt().toInt(),
-                  'contribution_amount': result[i + 8].toBigInt(),
-                  'is_public': result[i + 9].toBigInt() == BigInt.one,
-                  'member_count': result[i + 10].toBigInt().toInt(),
-                  'start_time': result[i + 11].toBigInt().toInt(),
-                  'end_time': result[i + 12].toBigInt().toInt(),
-                  'is_completed': false,
-                };
-                groupSaves.add(groupSave);
-              }
-            }
-          }
+      await liveResponse.when(
+        result: (result) async {
+          print(
+              '📊 CONTRACT SERVICE: Live group saves raw result length: ${result.length}');
+          final parsedGroupSaves = await _parseGroupSaveResults(result, false);
+          groupSaves.addAll(parsedGroupSaves);
+          print(
+              '✅ CONTRACT SERVICE: Parsed ${parsedGroupSaves.length} live group saves');
         },
         error: (error) {
-          print('❌ Failed to get live group saves: $error');
+          print('❌ CONTRACT SERVICE: Failed to get live group saves: $error');
+          // Don't throw, continue with completed saves
         },
       );
 
       // Parse completed group saves
-      completedResponse.when(
-        result: (result) {
-          if (result.isNotEmpty) {
-            // Each GroupSave struct has 13 fields, so we process in chunks of 13
-            for (int i = 0; i < result.length; i += 13) {
-              if (i + 12 < result.length) {
-                final groupSave = {
-                  'id': result[i].toBigInt(),
-                  'creator': result[i + 1].toHexString(),
-                  'title': result[i + 2].toString(),
-                  'description': result[i + 3].toString(),
-                  'category': result[i + 4].toString(),
-                  'target_amount': result[i + 5].toBigInt(),
-                  'current_amount': result[i + 6].toBigInt(),
-                  'contribution_type': result[i + 7].toBigInt().toInt(),
-                  'contribution_amount': result[i + 8].toBigInt(),
-                  'is_public': result[i + 9].toBigInt() == BigInt.one,
-                  'member_count': result[i + 10].toBigInt().toInt(),
-                  'start_time': result[i + 11].toBigInt().toInt(),
-                  'end_time': result[i + 12].toBigInt().toInt(),
-                  'is_completed': true,
-                };
-                groupSaves.add(groupSave);
-              }
-            }
-          }
+      await completedResponse.when(
+        result: (result) async {
+          print(
+              '📊 CONTRACT SERVICE: Completed group saves raw result length: ${result.length}');
+          final parsedGroupSaves = await _parseGroupSaveResults(result, true);
+          groupSaves.addAll(parsedGroupSaves);
+          print(
+              '✅ CONTRACT SERVICE: Parsed ${parsedGroupSaves.length} completed group saves');
         },
         error: (error) {
-          print('❌ Failed to get completed group saves: $error');
+          print(
+              '❌ CONTRACT SERVICE: Failed to get completed group saves: $error');
+          // Don't throw, return what we have
         },
       );
 
-      print('✅ Retrieved ${groupSaves.length} group saves');
+      print(
+          '✅ CONTRACT SERVICE: Retrieved total ${groupSaves.length} group saves');
       return groupSaves;
     } catch (e) {
-      print('❌ Error getting user group saves: $e');
-      throw Exception('Failed to get user group saves: $e');
+      print('❌ CONTRACT SERVICE: Error getting user group saves: $e');
+      return []; // Return empty list instead of throwing
     }
+  }
+
+  /// Helper method to parse group save results
+  Future<List<Map<String, dynamic>>> _parseGroupSaveResults(
+    List<Felt> result,
+    bool isCompleted,
+  ) async {
+    final groupSaves = <Map<String, dynamic>>[];
+
+    if (result.isEmpty) {
+      print('📝 No ${isCompleted ? 'completed' : 'live'} group saves found');
+      return groupSaves;
+    }
+
+    print(
+        '🔍 Raw ${isCompleted ? 'completed' : 'live'} group save result: $result');
+
+    // In Starknet, Array<T> is serialized as [length, element1, element2, ...]
+    // So we skip the first element (length) and start parsing from index 1
+    if (result.isEmpty) {
+      print('⚠️ Empty result array');
+      return groupSaves;
+    }
+
+    final arrayLength = result[0].toBigInt().toInt();
+    print('📏 Array length from contract: $arrayLength');
+
+    // GroupSave struct has 14 fields:
+    // id(u256=2), creator(1), title(1), description(1), category(1),
+    // target_amount(u256=2), current_amount(u256=2), contribution_type(1),
+    // contribution_amount(u256=2), is_public(1), member_count(u256=2),
+    // start_time(1), end_time(1), is_completed(1) = 16 total felts
+    const int structSize = 16;
+    final dataStartIndex = 1; // Skip the length element
+    final expectedTotalLength = dataStartIndex + (arrayLength * structSize);
+
+    if (result.length != expectedTotalLength) {
+      print(
+          '⚠️ Warning: Expected length $expectedTotalLength, got ${result.length}');
+    }
+
+    for (int structIndex = 0; structIndex < arrayLength; structIndex++) {
+      final i = dataStartIndex + (structIndex * structSize);
+      if (i + structSize - 1 < result.length) {
+        try {
+          // Parse u256 fields (2 felts each)
+          BigInt parseU256(int index) {
+            final low = result[index].toBigInt();
+            final high = result[index + 1].toBigInt();
+            return low + (high << 128);
+          }
+
+          final id = parseU256(i); // id: u256
+          final creator =
+              result[i + 2].toHexString(); // creator: ContractAddress
+          final titleFelt = result[i + 3].toBigInt(); // title: felt252
+          final descriptionFelt =
+              result[i + 4].toBigInt(); // description: felt252
+          final categoryFelt = result[i + 5].toBigInt(); // category: felt252
+          final targetAmount =
+              parseU256(i + 6).toDouble() / pow(10, 6); // target_amount: u256
+          final currentAmount =
+              parseU256(i + 8).toDouble() / pow(10, 6); // current_amount: u256
+          final contributionType =
+              result[i + 10].toBigInt().toInt(); // contribution_type: u8
+          final contributionAmount = parseU256(i + 11).toDouble() /
+              pow(10, 6); // contribution_amount: u256
+          final isPublic =
+              result[i + 13].toBigInt() == BigInt.one; // is_public: bool
+          final memberCount = parseU256(i + 14); // member_count: u256
+          final startTime =
+              result[i + 16].toBigInt().toInt(); // start_time: u64
+          final endTime = result[i + 17].toBigInt().toInt(); // end_time: u64
+          final isCompletedField =
+              result[i + 18].toBigInt() == BigInt.one; // is_completed: bool
+
+          // Convert felt252 values to strings
+          String title;
+          try {
+            if (titleFelt == BigInt.zero) {
+              title = 'Untitled';
+            } else {
+              title = _feltToString(titleFelt);
+              if (title.isEmpty) title = 'Untitled';
+            }
+          } catch (e) {
+            print('⚠️ Failed to convert title, using fallback: $e');
+            title = 'Untitled Group';
+          }
+
+          String description;
+          try {
+            if (descriptionFelt == BigInt.zero) {
+              description = 'No description';
+            } else {
+              description = _feltToString(descriptionFelt);
+              if (description.isEmpty) description = 'No description';
+            }
+          } catch (e) {
+            print('⚠️ Failed to convert description, using fallback: $e');
+            description = 'No description';
+          }
+
+          String category;
+          try {
+            if (categoryFelt == BigInt.zero) {
+              category = 'General';
+            } else {
+              category = _feltToString(categoryFelt);
+              if (category.isEmpty) category = 'General';
+            }
+          } catch (e) {
+            print('⚠️ Failed to convert category, using fallback: $e');
+            category = 'General';
+          }
+
+          final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+          String status;
+          if (isCompletedField) {
+            status = 'completed';
+          } else if (currentTime >= endTime) {
+            status = 'expired';
+          } else {
+            status = 'active';
+          }
+
+          String? endDateString;
+          if (endTime > 0) {
+            try {
+              if (endTime < 1000000000) {
+                print('⚠️ Warning: Invalid timestamp detected: $endTime');
+                endDateString = 'Invalid Date';
+              } else {
+                final endDate =
+                    DateTime.fromMillisecondsSinceEpoch(endTime * 1000);
+                endDateString =
+                    '${endDate.day.toString().padLeft(2, '0')}/${endDate.month.toString().padLeft(2, '0')}/${endDate.year}';
+              }
+            } catch (e) {
+              print('⚠️ Error formatting end date: $e');
+              endDateString = 'Invalid Date';
+            }
+          }
+
+          final progressPercent = targetAmount > 0
+              ? (currentAmount / targetAmount * 100).clamp(0, 100)
+              : 0.0;
+
+          final groupSave = {
+            'id': id,
+            'creator': creator,
+            'title': title,
+            'description': description,
+            'category': category,
+            'targetAmount': targetAmount,
+            'currentAmount': currentAmount,
+            'contributionType': contributionType,
+            'contributionAmount': contributionAmount,
+            'isPublic': isPublic,
+            'memberCount': memberCount.toInt(),
+            'startTime': startTime,
+            'endTime': endTime,
+            'endDate': endDateString,
+            'isCompleted': isCompletedField,
+            'status': status,
+            'progressPercent': progressPercent,
+            'isExpired': currentTime >= endTime,
+            'timeRemaining':
+                status == 'active' ? math.max(0, endTime - currentTime) : 0,
+          };
+
+          groupSaves.add(groupSave);
+          print(
+              '✅ Parsed group save: ID ${groupSave['id']}, Title: "${groupSave['title']}", Status: ${groupSave['status']}');
+          print(
+              '   Progress: ${groupSave['currentAmount']}/${groupSave['targetAmount']} (${progressPercent.toStringAsFixed(1)}%)');
+        } catch (e) {
+          print('❌ Error parsing group save at index $i: $e');
+        }
+      } else {
+        print('⚠️ Incomplete struct data at index $i, skipping');
+      }
+    }
+
+    return groupSaves;
   }
 
   Future<BigInt> getUserLockSaveBalance() async {
