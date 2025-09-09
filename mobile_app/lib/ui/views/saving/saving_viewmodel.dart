@@ -24,7 +24,7 @@ class SavingViewModel extends BaseViewModel {
   double get rawBalance => _balance;
   bool get isLoading => _isLoading;
 
-    void initialize() async {
+  void initialize() async {
     print('🎯 Savings viewmodel initialize called');
     await loadBalance();
   }

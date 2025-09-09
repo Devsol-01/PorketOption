@@ -1012,125 +1012,6 @@ class ContractService {
   }
 
   /// Get all lock saves for the current user
-  // Future<List<Map<String, dynamic>>> getUserLockSaves() async {
-  //   final account = _walletService.currentAccount;
-  //   if (account == null) {
-  //     throw Exception('Wallet not connected');
-  //   }
-
-  //   final userAddress = account.accountAddress;
-
-  //   try {
-  //     print('🔍 Getting user lock saves for: ${userAddress.toHexString()}');
-
-  //     // Get ongoing lock saves
-  //     final ongoingFunctionCall = FunctionCall(
-  //       contractAddress: _contractAddress,
-  //       entryPointSelector: getSelectorByName('get_user_ongoing_lock_saves'),
-  //       calldata: [userAddress],
-  //     );
-
-  //     final ongoingResponse = await account.provider.call(
-  //       request: ongoingFunctionCall,
-  //       blockId: BlockId.latest,
-  //     );
-
-  //     // Get matured lock saves
-  //     final maturedFunctionCall = FunctionCall(
-  //       contractAddress: _contractAddress,
-  //       entryPointSelector: getSelectorByName('get_user_matured_lock_saves'),
-  //       calldata: [userAddress],
-  //     );
-
-  //     final maturedResponse = await account.provider.call(
-  //       request: maturedFunctionCall,
-  //       blockId: BlockId.latest,
-  //     );
-
-  //     final lockSaves = <Map<String, dynamic>>[];
-
-  //     // Parse ongoing lock saves
-  //     ongoingResponse.when(
-  //       result: (result) {
-  //         if (result.isNotEmpty) {
-  //           print('🔍 Raw ongoing lock save result: $result');
-  //           // Each LockSave struct has 8 fields, so we process in chunks of 8
-  //           for (int i = 0; i < result.length; i += 8) {
-  //             if (i + 7 < result.length) {
-  //               // Convert amount from raw USDC units (6 decimals) to readable format
-  //               final rawAmount = result[i + 2].toBigInt();
-  //               final amount = rawAmount.toDouble() / pow(10, 6);
-
-  //               // Convert title from Felt back to string
-  //               final titleFelt = result[i + 6].toBigInt();
-  //               print('🔍 Title Felt value: $titleFelt');
-  //               final title = Felt(titleFelt).toString();
-  //               print('🔍 Converted title: $title');
-
-  //               final lockSave = {
-  //                 'id': result[i].toBigInt(),
-  //                 'user': result[i + 1].toHexString(),
-  //                 'amount': amount,
-  //                 'duration': result[i + 3].toBigInt().toInt(),
-  //                 'start_time': result[i + 4].toBigInt().toInt(),
-  //                 'maturity_time': result[i + 5].toBigInt().toInt(),
-  //                 'title': title,
-  //                 'is_matured': false,
-  //               };
-  //               lockSaves.add(lockSave);
-  //             }
-  //           }
-  //         }
-  //       },
-  //       error: (error) {
-  //         print('❌ Failed to get ongoing lock saves: $error');
-  //       },
-  //     );
-
-  //     // Parse matured lock saves
-  //     maturedResponse.when(
-  //       result: (result) {
-  //         if (result.isNotEmpty) {
-  //           // Each LockSave struct has 8 fields, so we process in chunks of 8
-  //           for (int i = 0; i < result.length; i += 8) {
-  //             if (i + 7 < result.length) {
-  //               // Convert amount from raw USDC units (6 decimals) to readable format
-  //               final rawAmount = result[i + 2].toBigInt();
-  //               final amount = rawAmount.toDouble() / pow(10, 6);
-
-  //               // Convert title from Felt back to string
-  //               final titleFelt = result[i + 6].toBigInt();
-  //               final title = Felt(titleFelt).toString();
-
-  //               final lockSave = {
-  //                 'id': result[i].toBigInt(),
-  //                 'user': result[i + 1].toHexString(),
-  //                 'amount': amount,
-  //                 'duration': result[i + 3].toBigInt().toInt(),
-  //                 'start_time': result[i + 4].toBigInt().toInt(),
-  //                 'maturity_time': result[i + 5].toBigInt().toInt(),
-  //                 'title': title,
-  //                 'is_matured': true,
-  //               };
-  //               lockSaves.add(lockSave);
-  //             }
-  //           }
-  //         }
-  //       },
-  //       error: (error) {
-  //         print('❌ Failed to get matured lock saves: $error');
-  //       },
-  //     );
-
-  //     print('✅ Retrieved ${lockSaves.length} lock saves');
-  //     return lockSaves;
-  //   } catch (e) {
-  //     print('❌ Error getting user lock saves: $e');
-  //     throw Exception('Failed to get user lock saves: $e');
-  //   }
-  // }
-
-  /// Get all lock saves for the current user
   Future<List<Map<String, dynamic>>> getUserLockSaves() async {
     final account = _walletService.currentAccount;
     if (account == null) {
@@ -1213,30 +1094,30 @@ class ContractService {
       return lockSaves;
     }
 
-  print(
-      '🔍 Raw ${isMatured ? 'matured' : 'ongoing'} lock save result: $result');
-
-  // In Starknet, Array<T> is serialized as [length, element1, element2, ...]
-  // So we skip the first element (length) and start parsing from index 1
-  if (result.isEmpty) {
-    print('⚠️ Empty result array');
-    return lockSaves;
-  }
-
-  final arrayLength = result[0].toBigInt().toInt();
-  print('📏 Array length from contract: $arrayLength');
-
-  const int structSize = 13;
-  final dataStartIndex = 1; // Skip the length element
-  final expectedTotalLength = dataStartIndex + (arrayLength * structSize);
-
-  if (result.length != expectedTotalLength) {
     print(
-        '⚠️ Warning: Expected length $expectedTotalLength, got ${result.length}');
-  }
+        '🔍 Raw ${isMatured ? 'matured' : 'ongoing'} lock save result: $result');
 
-  for (int structIndex = 0; structIndex < arrayLength; structIndex++) {
-    final i = dataStartIndex + (structIndex * structSize);
+    // In Starknet, Array<T> is serialized as [length, element1, element2, ...]
+    // So we skip the first element (length) and start parsing from index 1
+    if (result.isEmpty) {
+      print('⚠️ Empty result array');
+      return lockSaves;
+    }
+
+    final arrayLength = result[0].toBigInt().toInt();
+    print('📏 Array length from contract: $arrayLength');
+
+    const int structSize = 13;
+    final dataStartIndex = 1; // Skip the length element
+    final expectedTotalLength = dataStartIndex + (arrayLength * structSize);
+
+    if (result.length != expectedTotalLength) {
+      print(
+          '⚠️ Warning: Expected length $expectedTotalLength, got ${result.length}');
+    }
+
+    for (int structIndex = 0; structIndex < arrayLength; structIndex++) {
+      final i = dataStartIndex + (structIndex * structSize);
       if (i + structSize - 1 < result.length) {
         try {
           // Parse u256 fields (2 felts each)

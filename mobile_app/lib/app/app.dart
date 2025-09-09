@@ -49,6 +49,7 @@ import 'package:mobile_app/ui/views/goal_save/goal_save_viewmodel.dart';
 import 'package:mobile_app/ui/views/badges/badges_view.dart';
 import 'package:mobile_app/ui/views/login/login_view.dart';
 import 'package:mobile_app/ui/views/login/login_view.dart';
+import 'package:mobile_app/ui/views/lock_save_details/lock_save_details_view.dart';
 // @stacked-import
 
 @StackedApp(
@@ -76,6 +77,7 @@ import 'package:mobile_app/ui/views/login/login_view.dart';
     MaterialRoute(page: GoalSaveDetailsView),
     MaterialRoute(page: BadgesView),
     MaterialRoute(page: LoginView),
+    MaterialRoute(page: LockSaveDetailsView),
 // @stacked-route
   ],
   dependencies: [

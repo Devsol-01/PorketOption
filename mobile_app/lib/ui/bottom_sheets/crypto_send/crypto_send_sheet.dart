@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stacked/stacked.dart';
@@ -202,7 +201,8 @@ class CryptoSendSheet extends StackedView<CryptoSendSheetModel> {
                     ),
                     child: TextField(
                       controller: viewModel.amountController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       style: GoogleFonts.inter(
                         fontSize: 15,
                         color: Colors.black,
@@ -267,9 +267,8 @@ class CryptoSendSheet extends StackedView<CryptoSendSheetModel> {
                           ? () => viewModel.processCryptoSend(completer!)
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: viewModel.canSend
-                            ? Colors.black
-                            : Colors.grey[300],
+                        backgroundColor:
+                            viewModel.canSend ? Colors.black : Colors.grey[300],
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -283,7 +282,8 @@ class CryptoSendSheet extends StackedView<CryptoSendSheetModel> {
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
                           : Text(

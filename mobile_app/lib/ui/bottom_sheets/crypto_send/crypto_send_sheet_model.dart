@@ -8,7 +8,7 @@ import 'package:mobile_app/services/wallet_service.dart';
 class CryptoSendSheetModel extends BaseViewModel {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
-  
+
   final _walletService = locator<WalletService>();
 
   @override
@@ -20,10 +20,10 @@ class CryptoSendSheetModel extends BaseViewModel {
 
   /// Check if form is valid for sending
   bool get canSend {
-    return addressController.text.isNotEmpty && 
-           amountController.text.isNotEmpty &&
-           double.tryParse(amountController.text) != null &&
-           double.parse(amountController.text) > 0;
+    return addressController.text.isNotEmpty &&
+        amountController.text.isNotEmpty &&
+        double.tryParse(amountController.text) != null &&
+        double.parse(amountController.text) > 0;
   }
 
   Future<void> pasteAddress() async {
@@ -40,21 +40,21 @@ class CryptoSendSheetModel extends BaseViewModel {
     }
 
     setBusy(true);
-    
+
     try {
       final amount = double.parse(amountController.text);
       final address = addressController.text.trim();
-      
+
       print('🚀 Attempting to send $amount USDC to $address');
-      
+
       // Call wallet service to send USDC
       final txHash = await _walletService.sendUsdc(
         recipientAddress: address,
         amount: amount,
       );
-      
+
       print('✅ Transfer successful! TX: $txHash');
-      
+
       completer(SheetResponse(
         confirmed: true,
         data: {
@@ -67,7 +67,7 @@ class CryptoSendSheetModel extends BaseViewModel {
       ));
     } catch (e) {
       print('❌ Transfer failed: $e');
-      
+
       completer(SheetResponse(
         confirmed: false,
         data: {

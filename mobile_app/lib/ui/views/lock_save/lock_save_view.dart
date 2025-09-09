@@ -55,8 +55,8 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                   children: [
                     // Interest Rate
                     Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.white
                             .withOpacity(0.2), // subtle transparent white
@@ -138,12 +138,14 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: Colors.red[600], size: 20),
+                      Icon(Icons.error_outline,
+                          color: Colors.red[600], size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           viewModel.lastError!,
-                          style: TextStyle(color: Colors.red[700], fontSize: 14),
+                          style:
+                              TextStyle(color: Colors.red[700], fontSize: 14),
                         ),
                       ),
                     ],
@@ -381,201 +383,364 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
     );
   }
 
-  Widget _buildLockCard(BuildContext context, Map<String, dynamic> lock, LockSaveViewModel viewModel) {
+  // Widget _buildLockCard(BuildContext context, Map<String, dynamic> lock,
+  //     LockSaveViewModel viewModel) {
+  //   final title = lock['title'] ?? 'Untitled';
+  //   final amount = (lock['amount'] ?? 0.0) as double;
+  //   final status = lock['status'] ?? 'unknown';
+  //   final isMatured = lock['isMatured'] ?? false;
+  //   final timeRemaining = lock['timeRemaining'] ?? 0;
+  //   final maturityDate = lock['maturityDate'];
+
+  //   // Calculate days left
+  //   String daysLeftText = '';
+  //   if (status == 'ongoing' && timeRemaining > 0) {
+  //     final days = (timeRemaining / 86400).ceil(); // Convert seconds to days
+  //     daysLeftText = days == 1 ? '1 day left' : '$days days left';
+  //   } else if (status == 'ready_to_withdraw' || isMatured) {
+  //     daysLeftText = 'Ready to withdraw';
+  //   } else if (status == 'completed') {
+  //     daysLeftText = 'Completed';
+  //   }
+
+  //   // Status color
+  //   Color statusColor;
+  //   switch (status) {
+  //     case 'ongoing':
+  //       statusColor = Colors.blue;
+  //       break;
+  //     case 'ready_to_withdraw':
+  //       statusColor = Colors.green;
+  //       break;
+  //     case 'completed':
+  //       statusColor = Colors.grey;
+  //       break;
+  //     default:
+  //       statusColor = Colors.orange;
+  //   }
+
+  //   return Container(
+  //     padding: const EdgeInsets.all(16),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(12),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black.withOpacity(0.05),
+  //           blurRadius: 8,
+  //           offset: const Offset(0, 2),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         // Header row with title and status
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Expanded(
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   Text(
+  //                     title,
+  //                     style: GoogleFonts.inter(
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.w600,
+  //                       color: Colors.black,
+  //                     ),
+  //                     maxLines: 2,
+  //                     overflow: TextOverflow.ellipsis,
+  //                   ),
+  //                   const SizedBox(height: 4),
+  //                   Text(
+  //                     FormatUtils.formatCurrency(amount),
+  //                     style: GoogleFonts.poppins(
+  //                       fontSize: 20,
+  //                       fontWeight: FontWeight.bold,
+  //                       color: const Color(0xFFFFA82F),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //             Container(
+  //               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+  //               decoration: BoxDecoration(
+  //                 color: statusColor.withOpacity(0.1),
+  //                 borderRadius: BorderRadius.circular(12),
+  //               ),
+  //               child: Text(
+  //                 daysLeftText,
+  //                 style: GoogleFonts.inter(
+  //                   fontSize: 12,
+  //                   fontWeight: FontWeight.w500,
+  //                   color: statusColor,
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+
+  //         const SizedBox(height: 12),
+
+  //         // Details row
+  //         Row(
+  //           children: [
+  //             if (maturityDate != null) ...[
+  //               Icon(
+  //                 Icons.calendar_today,
+  //                 size: 14,
+  //                 color: Colors.grey[600],
+  //               ),
+  //               const SizedBox(width: 4),
+  //               Text(
+  //                 'Maturity: $maturityDate',
+  //                 style: GoogleFonts.inter(
+  //                   fontSize: 14,
+  //                   color: Colors.grey[600],
+  //                 ),
+  //               ),
+  //             ],
+  //           ],
+  //         ),
+
+  //         // Action buttons for matured/ready locks
+  //         if (status == 'ready_to_withdraw' || isMatured) ...[
+  //           const SizedBox(height: 16),
+  //           Row(
+  //             children: [
+  //               Expanded(
+  //                 child: ElevatedButton(
+  //                   onPressed: () =>
+  //                       viewModel.withdrawLock(lock['id'].toString()),
+  //                   style: ElevatedButton.styleFrom(
+  //                     backgroundColor: const Color(0xFFFFA82F),
+  //                     foregroundColor: Colors.white,
+  //                     shape: RoundedRectangleBorder(
+  //                       borderRadius: BorderRadius.circular(8),
+  //                     ),
+  //                   ),
+  //                   child: Text(
+  //                     'Withdraw',
+  //                     style: GoogleFonts.inter(
+  //                       fontWeight: FontWeight.w600,
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //               const SizedBox(width: 12),
+  //               Expanded(
+  //                 child: OutlinedButton(
+  //                   onPressed: () =>
+  //                       _showBreakLockDialog(context, lock, viewModel),
+  //                   style: OutlinedButton.styleFrom(
+  //                     foregroundColor: Colors.red,
+  //                     side: const BorderSide(color: Colors.red),
+  //                     shape: RoundedRectangleBorder(
+  //                       borderRadius: BorderRadius.circular(8),
+  //                     ),
+  //                   ),
+  //                   child: Text(
+  //                     'Break Early',
+  //                     style: GoogleFonts.inter(
+  //                       fontWeight: FontWeight.w600,
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ] else if (status == 'ongoing') ...[
+  //           const SizedBox(height: 16),
+  //           SizedBox(
+  //             width: double.infinity,
+  //             child: OutlinedButton(
+  //               onPressed: () => _showBreakLockDialog(context, lock, viewModel),
+  //               style: OutlinedButton.styleFrom(
+  //                 foregroundColor: Colors.red,
+  //                 side: const BorderSide(color: Colors.red),
+  //                 shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.circular(8),
+  //                 ),
+  //               ),
+  //               child: Text(
+  //                 'Break Lock (Penalty applies)',
+  //                 style: GoogleFonts.inter(
+  //                   fontWeight: FontWeight.w600,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Widget _buildLockCard(BuildContext context, Map<String, dynamic> lock,
+      LockSaveViewModel viewModel) {
     final title = lock['title'] ?? 'Untitled';
     final amount = (lock['amount'] ?? 0.0) as double;
     final status = lock['status'] ?? 'unknown';
     final isMatured = lock['isMatured'] ?? false;
     final timeRemaining = lock['timeRemaining'] ?? 0;
-    final maturityDate = lock['maturityDate'];
 
-    // Calculate days left
-    String daysLeftText = '';
+    // Get lock period in days (you'll need to add this to your lock data)
+    final lockPeriodDays = lock['lockPeriodDays'] ?? 30; // Default to 30 days
+
+    // Calculate progress properly
+    double progress = 0.0;
+    String timeText = '';
+
     if (status == 'ongoing' && timeRemaining > 0) {
-      final days = (timeRemaining / 86400).ceil(); // Convert seconds to days
-      daysLeftText = days == 1 ? '1 day left' : '$days days left';
-    } else if (status == 'ready_to_withdraw' || isMatured) {
-      daysLeftText = 'Ready to withdraw';
-    } else if (status == 'completed') {
-      daysLeftText = 'Completed';
+      final totalSeconds =
+          lockPeriodDays * 24 * 60 * 60; // Convert days to seconds
+      final elapsedSeconds = totalSeconds - timeRemaining;
+      progress = (elapsedSeconds / totalSeconds).clamp(0.0, 1.0);
+
+      final daysLeft = (timeRemaining / (24 * 60 * 60)).ceil();
+      timeText = daysLeft == 1 ? '1 day left' : '$daysLeft days left';
+    } else if (status == 'completed' ||
+        status == 'ready_to_withdraw' ||
+        isMatured) {
+      progress = 1.0;
+      timeText = status == 'completed' ? 'Completed' : 'Ready to withdraw';
     }
 
-    // Status color
-    Color statusColor;
-    switch (status) {
-      case 'ongoing':
-        statusColor = Colors.blue;
-        break;
-      case 'ready_to_withdraw':
-        statusColor = Colors.green;
-        break;
-      case 'completed':
-        statusColor = Colors.grey;
-        break;
-      default:
-        statusColor = Colors.orange;
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header row with title and status
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      FormatUtils.formatCurrency(amount),
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFFFFA82F),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  daysLeftText,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: statusColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 12),
-          
-          // Details row
-          Row(
-            children: [
-              if (maturityDate != null) ...[
-                Icon(
-                  Icons.calendar_today,
-                  size: 14,
-                  color: Colors.grey[600],
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'Maturity: $maturityDate',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ],
-          ),
-          
-          // Action buttons for matured/ready locks
-          if (status == 'ready_to_withdraw' || isMatured) ...[
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => viewModel.withdrawLock(lock['id'].toString()),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFFA82F),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      'Withdraw',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _showBreakLockDialog(context, lock, viewModel),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      'Break Early',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+    return GestureDetector(
+      onTap: () {
+        // Handle tap - navigate to lock details or show actions
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ] else if (status == 'ongoing') ...[
-            const SizedBox(height: 16),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Progress indicator with lock icon
             SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () => _showBreakLockDialog(context, lock, viewModel),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.red,
-                  side: const BorderSide(color: Colors.red),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              width: 56,
+              height: 56,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Background circle (unfilled progress)
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFFE8F0FE),
+                        width: 3,
+                      ),
+                    ),
                   ),
-                ),
-                child: Text(
-                  'Break Lock (Penalty applies)',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w600,
+                  // Progress arc
+                  SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: CircularProgressIndicator(
+                      value: progress,
+                      strokeWidth: 3,
+                      backgroundColor: Colors.transparent,
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Color(0xFF4285F4), // Blue color like in the image
+                      ),
+                    ),
                   ),
-                ),
+                  // Lock icon in center
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE8F0FE),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.lock_outline,
+                      color: Color(0xFF4285F4),
+                      size: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 16),
+
+            // Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF1F2937),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    FormatUtils.formatCurrency(amount),
+                    style: GoogleFonts.inter(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF111827),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    timeText,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF6B7280),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Arrow button
+            Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                color: Color(0xFF1F2937),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white,
+                size: 14,
               ),
             ),
           ],
-        ],
+        ),
       ),
     );
   }
 
-  void _showBreakLockDialog(BuildContext context, Map<String, dynamic> lock, LockSaveViewModel viewModel) {
+  void _showBreakLockDialog(BuildContext context, Map<String, dynamic> lock,
+      LockSaveViewModel viewModel) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -602,7 +767,8 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
             },
             child: Text(
               'Break Lock',
-              style: GoogleFonts.inter(color: Colors.red, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                  color: Colors.red, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -744,7 +910,7 @@ class LockSaveView extends StackedView<LockSaveViewModel> {
         ),
         const SizedBox(height: 8),
         Text(
-          isOngoing 
+          isOngoing
               ? 'Create your first lock savings to get started'
               : 'Your completed lock savings will appear here',
           style: TextStyle(

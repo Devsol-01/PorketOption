@@ -81,7 +81,6 @@ class GoalSaveDetailsView extends StackedView<GoalSaveDetailsViewModel> {
     Color cardColor;
 
     switch (category.toLowerCase()) {
-      
       case 'education':
         categoryIcon = Icons.school;
         cardColor = const Color(0xFF00C851);
@@ -110,7 +109,7 @@ class GoalSaveDetailsView extends StackedView<GoalSaveDetailsViewModel> {
         categoryIcon = Icons.event;
         cardColor = const Color(0xFFB39DDB);
         break;
-        case 'vacation':
+      case 'vacation':
         categoryIcon = Icons.flight;
         cardColor = const Color(0xFF4A90E2);
       default:

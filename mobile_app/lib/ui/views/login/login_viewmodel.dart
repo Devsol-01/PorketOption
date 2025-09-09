@@ -77,4 +77,3 @@ class LoginViewModel extends BaseViewModel {
     super.dispose();
   }
 }
-

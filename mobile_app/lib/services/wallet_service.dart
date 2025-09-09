@@ -757,168 +757,146 @@ class WalletService {
     }
   }
 
-
-
-
-
-
   Future<String> approveUsdc({
-  required String spenderAddress,
-  required double amount,
-}) async {
-  if (_currentAccount == null ||
-      _ownerSigner == null ||
-      _guardianSigner == null) {
-    throw WalletException('No wallet account available');
+    required String spenderAddress,
+    required double amount,
+  }) async {
+    if (_currentAccount == null ||
+        _ownerSigner == null ||
+        _guardianSigner == null) {
+      throw WalletException('No wallet account available');
+    }
+
+    if (amount < 0) {
+      throw WalletException('Amount must be greater than or equal to 0');
+    }
+
+    try {
+      print('🔓 Initiating USDC approval: $amount USDC for $spenderAddress');
+
+      // Check if account is deployed, deploy if necessary
+      final isDeployed =
+          await _checkIfDeployed(_currentAccount!.accountAddress.toHexString());
+      if (!isDeployed) {
+        print('🚀 Account not deployed, deploying first...');
+        await deployAccount();
+      }
+
+      // Convert amount to raw USDC units (6 decimals)
+      final rawAmount = BigInt.from((amount * pow(10, 6)).round());
+      print('📊 Raw approval amount: $rawAmount (${amount} USDC)');
+
+      // Prepare approve call data
+      final calls = [
+        {
+          'contractAddress': _usdcContractAddress,
+          'entrypoint': 'approve',
+          'calldata': [
+            spenderAddress,
+            '0x${rawAmount.toRadixString(16)}',
+            '0x0', // amount.high for amounts < 2^128
+          ],
+        },
+      ];
+
+      print('🔧 Building typed data with Avnu...');
+
+      // Build typed data with AVNU
+      final avnuBuildTypeDataResponse = await _avnuProvider.buildTypedData(
+        _currentAccount!.accountAddress.toHexString(),
+        calls,
+        '', // use sponsor gas token
+        '', // use sponsor gas limit
+        argentClassHash.toHexString(),
+      );
+
+      if (avnuBuildTypeDataResponse is AvnuBuildTypedDataError) {
+        throw WalletException(
+            'Failed to build typed data: $avnuBuildTypeDataResponse');
+      }
+
+      final avnuTypedData =
+          avnuBuildTypeDataResponse as AvnuBuildTypedDataResult;
+
+      // Create owner account signer
+      final ownerAccountSigner = ArgentXGuardianAccountSigner(
+        ownerSigner: _ownerSigner!,
+        guardianSigner: _guardianSigner!,
+      );
+
+      // Compute message hash and sign it
+      final hash = avnuTypedData.hash(_currentAccount!.accountAddress);
+      final signature = await ownerAccountSigner.sign(hash, null);
+
+      print('🚀 Executing USDC approval with Avnu...');
+
+      // Execute the transaction via AVNU provider
+      final avnuExecute = await _avnuProvider.execute(
+        _currentAccount!.accountAddress.toHexString(),
+        jsonEncode(avnuTypedData.toTypedData()),
+        signature.map((e) => e.toHexString()).toList(),
+        null, // account is already deployed
+      );
+
+      if (avnuExecute is AvnuExecuteError) {
+        throw WalletException('USDC approval failed: $avnuExecute');
+      }
+
+      final result = avnuExecute as AvnuExecuteResult;
+      final transactionHash = result.transactionHash;
+
+      if (transactionHash == null || transactionHash.isEmpty) {
+        throw WalletException('Transaction hash is null or empty');
+      }
+
+      print('✅ USDC approval successful! TX: $transactionHash');
+      return transactionHash;
+    } catch (e) {
+      print('❌ USDC approval error: $e');
+      if (e is WalletException) rethrow;
+      throw WalletException('Failed to approve USDC: $e');
+    }
   }
-
-  if (amount < 0) {
-    throw WalletException('Amount must be greater than or equal to 0');
-  }
-
-  try {
-    print('🔓 Initiating USDC approval: $amount USDC for $spenderAddress');
-
-    // Check if account is deployed, deploy if necessary
-    final isDeployed =
-        await _checkIfDeployed(_currentAccount!.accountAddress.toHexString());
-    if (!isDeployed) {
-      print('🚀 Account not deployed, deploying first...');
-      await deployAccount();
-    }
-
-    // Convert amount to raw USDC units (6 decimals)
-    final rawAmount = BigInt.from((amount * pow(10, 6)).round());
-    print('📊 Raw approval amount: $rawAmount (${amount} USDC)');
-
-    // Prepare approve call data
-    final calls = [
-      {
-        'contractAddress': _usdcContractAddress,
-        'entrypoint': 'approve',
-        'calldata': [
-          spenderAddress,
-          '0x${rawAmount.toRadixString(16)}',
-          '0x0', // amount.high for amounts < 2^128
-        ],
-      },
-    ];
-
-    print('🔧 Building typed data with Avnu...');
-
-    // Build typed data with AVNU
-    final avnuBuildTypeDataResponse = await _avnuProvider.buildTypedData(
-      _currentAccount!.accountAddress.toHexString(),
-      calls,
-      '', // use sponsor gas token
-      '', // use sponsor gas limit
-      argentClassHash.toHexString(),
-    );
-
-    if (avnuBuildTypeDataResponse is AvnuBuildTypedDataError) {
-      throw WalletException(
-          'Failed to build typed data: $avnuBuildTypeDataResponse');
-    }
-
-    final avnuTypedData =
-        avnuBuildTypeDataResponse as AvnuBuildTypedDataResult;
-
-    // Create owner account signer
-    final ownerAccountSigner = ArgentXGuardianAccountSigner(
-      ownerSigner: _ownerSigner!,
-      guardianSigner: _guardianSigner!,
-    );
-
-    // Compute message hash and sign it
-    final hash = avnuTypedData.hash(_currentAccount!.accountAddress);
-    final signature = await ownerAccountSigner.sign(hash, null);
-
-    print('🚀 Executing USDC approval with Avnu...');
-
-    // Execute the transaction via AVNU provider
-    final avnuExecute = await _avnuProvider.execute(
-      _currentAccount!.accountAddress.toHexString(),
-      jsonEncode(avnuTypedData.toTypedData()),
-      signature.map((e) => e.toHexString()).toList(),
-      null, // account is already deployed
-    );
-
-    if (avnuExecute is AvnuExecuteError) {
-      throw WalletException('USDC approval failed: $avnuExecute');
-    }
-
-    final result = avnuExecute as AvnuExecuteResult;
-    final transactionHash = result.transactionHash;
-
-    if (transactionHash == null || transactionHash.isEmpty) {
-      throw WalletException('Transaction hash is null or empty');
-    }
-
-    print('✅ USDC approval successful! TX: $transactionHash');
-    return transactionHash;
-  } catch (e) {
-    print('❌ USDC approval error: $e');
-    if (e is WalletException) rethrow;
-    throw WalletException('Failed to approve USDC: $e');
-  }
-}
 
 // Helper function to check current allowance
-Future<double> getUsdcAllowance({
-  required String ownerAddress,
-  required String spenderAddress,
-}) async {
-  try {
-    // Prepare call data for allowance check
-    final calls = [
-      {
-        'contractAddress': _usdcContractAddress,
-        'entrypoint': 'allowance',
-        'calldata': [
-          ownerAddress,
-          spenderAddress,
-        ],
-      },
-    ];
+  Future<double> getUsdcAllowance({
+    required String ownerAddress,
+    required String spenderAddress,
+  }) async {
+    try {
+      // Prepare call data for allowance check
+      final calls = [
+        {
+          'contractAddress': _usdcContractAddress,
+          'entrypoint': 'allowance',
+          'calldata': [
+            ownerAddress,
+            spenderAddress,
+          ],
+        },
+      ];
 
-    // You might need to use a different method to read contract state
-    // This is a placeholder - you'll need to adapt based on your provider's API
-    // For now, returning 0.0 as a safe default
-    print('📊 Checking USDC allowance for $spenderAddress');
-    
-    // TODO: Implement contract call using your available provider
-    // This might require a different method than what's available in _avnuProvider
-    
-    return 0.0;
-  } catch (e) {
-    print('❌ Error getting USDC allowance: $e');
-    return 0.0;
+      // You might need to use a different method to read contract state
+      // This is a placeholder - you'll need to adapt based on your provider's API
+      // For now, returning 0.0 as a safe default
+      print('📊 Checking USDC allowance for $spenderAddress');
+
+      // TODO: Implement contract call using your available provider
+      // This might require a different method than what's available in _avnuProvider
+
+      return 0.0;
+    } catch (e) {
+      print('❌ Error getting USDC allowance: $e');
+      return 0.0;
+    }
   }
-}
 
 // Helper function to revoke approval (set allowance to 0)
-Future<String> revokeUsdcApproval({
-  required String spenderAddress,
-}) async {
-  return approveUsdc(spenderAddress: spenderAddress, amount: 0.0);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
+  Future<String> revokeUsdcApproval({
+    required String spenderAddress,
+  }) async {
+    return approveUsdc(spenderAddress: spenderAddress, amount: 0.0);
+  }
 
   /// 📱 Get wallet summary with all balances
   Future<WalletSummary> getWalletSummary() async {

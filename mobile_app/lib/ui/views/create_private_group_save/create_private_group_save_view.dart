@@ -198,9 +198,7 @@ class CreatePrivateGroupSaveView
 
                       // Terms and Conditions
 
-
-
-                                            // Terms and Conditions
+                      // Terms and Conditions
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -211,7 +209,8 @@ class CreatePrivateGroupSaveView
                               value: viewModel.isTermsAccepted,
                               onChanged: (value) =>
                                   viewModel.toggleTermsAcceptance(),
-                              activeColor: Colors.green, // thumb color when active
+                              activeColor:
+                                  Colors.green, // thumb color when active
                               activeTrackColor: Colors.green
                                   .withOpacity(0.5), // track color when active
                               //inactiveThumbColor: Colors.grey, // thumb color when inactive
@@ -222,9 +221,7 @@ class CreatePrivateGroupSaveView
                             child: Text(
                               'I hereby agree that I will forfeit the interest accrued on this Goal savings if I fail to meet the goal amount by the set withdrawal date.',
                               style: GoogleFonts.inter(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                  height: 1),
+                                  color: Colors.black, fontSize: 14, height: 1),
                             ),
                           ),
                         ],
@@ -233,71 +230,72 @@ class CreatePrivateGroupSaveView
                       const SizedBox(height: 20),
 
                       // Create Goal Button
-InkWell(
-  onTap: viewModel.isBusy
-      ? null
-      : (viewModel.canCreateGoal ? viewModel.createPrivateGroup : null),
-  borderRadius: BorderRadius.circular(46),
-  child: Container(
-    width: 358,
-    height: 50, // use same as Figma input/button height
-    decoration: BoxDecoration(
-      color: Colors.white, // background for light mode
-      borderRadius: BorderRadius.circular(46),
-      boxShadow: [
-        const BoxShadow(
-          color: Color.fromRGBO(13, 213, 13, 0.1),
-          offset: Offset(-4, 4),
-          blurRadius: 20,
-          spreadRadius: 0,
-          inset: true
-        ),
-        const BoxShadow(
-          color: Color.fromRGBO(13, 213, 13, 0.1),
-          offset: Offset(4, 4),
-          blurRadius: 6,
-          spreadRadius: 0,
-          inset: true
-        ),
-      ],
-    ),
-    child: Center(
-      child: viewModel.isBusy
-          ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Creating...',
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            )
-          : const Text(
-              'Create Goal Save',
-              style: TextStyle(
-                color: Colors.green,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-    ),
-  ),
-),
-
+                      InkWell(
+                        onTap: viewModel.isBusy
+                            ? null
+                            : (viewModel.canCreateGoal
+                                ? viewModel.createPrivateGroup
+                                : null),
+                        borderRadius: BorderRadius.circular(46),
+                        child: Container(
+                          width: 358,
+                          height: 50, // use same as Figma input/button height
+                          decoration: BoxDecoration(
+                            color: Colors.white, // background for light mode
+                            borderRadius: BorderRadius.circular(46),
+                            boxShadow: [
+                              const BoxShadow(
+                                  color: Color.fromRGBO(13, 213, 13, 0.1),
+                                  offset: Offset(-4, 4),
+                                  blurRadius: 20,
+                                  spreadRadius: 0,
+                                  inset: true),
+                              const BoxShadow(
+                                  color: Color.fromRGBO(13, 213, 13, 0.1),
+                                  offset: Offset(4, 4),
+                                  blurRadius: 6,
+                                  spreadRadius: 0,
+                                  inset: true),
+                            ],
+                          ),
+                          child: Center(
+                            child: viewModel.isBusy
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.green),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      const Text(
+                                        'Creating...',
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : const Text(
+                                    'Create Goal Save',
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
 
                       const SizedBox(height: 32),
                     ],

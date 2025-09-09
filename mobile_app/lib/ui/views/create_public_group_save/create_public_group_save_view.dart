@@ -182,24 +182,24 @@ class CreatePublicGroupSaveView
                       Container(
                         width: double.infinity,
                         height: 56,
-  decoration: BoxDecoration(
-    color: Colors.white, // Light mode background
-    borderRadius: BorderRadius.circular(46),
-    boxShadow: [
-      BoxShadow(
-        color: const Color.fromRGBO(13, 213, 13, 0.1),
-        offset: const Offset(-4, 4),
-        blurRadius: 20,
-        spreadRadius: 0,
-      ),
-      BoxShadow(
-        color: const Color.fromRGBO(13, 213, 13, 0.1),
-        offset: const Offset(4, 4),
-        blurRadius: 6,
-        spreadRadius: 0,
-      ),
-    ],
-  ),
+                        decoration: BoxDecoration(
+                          color: Colors.white, // Light mode background
+                          borderRadius: BorderRadius.circular(46),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromRGBO(13, 213, 13, 0.1),
+                              offset: const Offset(-4, 4),
+                              blurRadius: 20,
+                              spreadRadius: 0,
+                            ),
+                            BoxShadow(
+                              color: const Color.fromRGBO(13, 213, 13, 0.1),
+                              offset: const Offset(4, 4),
+                              blurRadius: 6,
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
                         child: ElevatedButton(
                           onPressed: viewModel.isBusy
                               ? null
